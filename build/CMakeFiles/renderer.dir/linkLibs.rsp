@@ -1,0 +1,1 @@
+  -LD:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/lib  -LD:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/bin  -Wl,-Bstatic -lglad -lglfw3 -Wl,-Bdynamic -lassimp D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/lib/libimgui.a -lassimp-5 -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

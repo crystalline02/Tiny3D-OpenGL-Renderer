@@ -1,0 +1,110 @@
+[
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\camera.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\camera.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/camera.cpp",
+  "output": "CMakeFiles/renderer.dir/src/camera.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\globals.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\globals.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/globals.cpp",
+  "output": "CMakeFiles/renderer.dir/src/globals.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\light.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\light.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/light.cpp",
+  "output": "CMakeFiles/renderer.dir/src/light.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\main.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\main.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/main.cpp",
+  "output": "CMakeFiles/renderer.dir/src/main.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\material.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\material.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/material.cpp",
+  "output": "CMakeFiles/renderer.dir/src/material.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\mesh.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\mesh.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/mesh.cpp",
+  "output": "CMakeFiles/renderer.dir/src/mesh.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\model.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\model.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/model.cpp",
+  "output": "CMakeFiles/renderer.dir/src/model.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\postproc.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\postproc.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/postproc.cpp",
+  "output": "CMakeFiles/renderer.dir/src/postproc.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\shader.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\shader.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/shader.cpp",
+  "output": "CMakeFiles/renderer.dir/src/shader.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\skybox.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\src\\skybox.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/src/skybox.cpp",
+  "output": "CMakeFiles/renderer.dir/src/skybox.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\imgui\\imgui.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/imgui.cpp",
+  "output": "imgui/CMakeFiles/imgui.dir/imgui.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_demo.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\imgui\\imgui_demo.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/imgui_demo.cpp",
+  "output": "imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_draw.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\imgui\\imgui_draw.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/imgui_draw.cpp",
+  "output": "imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_impl_glfw.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\imgui\\imgui_impl_glfw.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/imgui_impl_glfw.cpp",
+  "output": "imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_impl_opengl3.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\imgui\\imgui_impl_opengl3.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/imgui_impl_opengl3.cpp",
+  "output": "imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_stdlib.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\imgui\\imgui_stdlib.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/imgui_stdlib.cpp",
+  "output": "imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_tables.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\imgui\\imgui_tables.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/imgui_tables.cpp",
+  "output": "imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj"
+},
+{
+  "directory": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_widgets.cpp.obj -c D:\\baidu\\BaiduSyncdisk\\opengl_learn\\renderer_opengl1.1\\imgui\\imgui_widgets.cpp",
+  "file": "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/imgui_widgets.cpp",
+  "output": "imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj"
+}
+]

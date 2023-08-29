@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.2)
+project(Renderer)
+# set(CMAKE_BUILD_TYPE  Release)
+aux_source_directory(${CMAKE_SOURCE_DIR}/src SRC_CPP)
+# 注意！链接库的书写顺序也很重要！target_link_libraries链接多个库时如果顺序不对有可能编译不成功！
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+add_subdirectory(${CMAKE_SOURCE_DIR}/imgui)
+set(LIBS libglad.a libglfw3.a libassimp.dll.a imgui libassimp-5.dll)
+add_executable(renderer ${SRC_CPP})
+target_include_directories(renderer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_directories(renderer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+target_link_libraries(renderer PRIVATE ${LIBS})
