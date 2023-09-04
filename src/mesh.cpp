@@ -17,6 +17,15 @@ m_vertices(vertices), m_indices(indices), m_material(material), m_isblend(false)
     setup_mesh();
 }
 
+Mesh::~Mesh()
+{
+    glDeleteBuffers(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteBuffers(1, &VAO_normal);
+    glDeleteBuffers(1, &VAO_tangent);
+}
+
 void Mesh::setup_mesh()
 {
     glGenVertexArrays(1, &VAO);
@@ -79,16 +88,34 @@ void Mesh::draw(const Blinn_phong& shader, const Camera& camera, const glm::mat4
         glEnable(GL_CULL_FACE);
 
     glBindVertexArray(VAO);
-    for(int i = 0; i < 3; ++i) glEnableVertexAttribArray(i);
+    for(int i = 0; i < 4; ++i) glEnableVertexAttribArray(i);
     shader.set_uniforms(m_material, camera, model);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 
-    // Render settings back to defalut
+    // Render settings back to default
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
+    glBindVertexArray(0);
+}
+
+void Mesh::draw_gbuffer(const G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const
+{
+    assert(shader.shader_dir() == "./shader/G_buffer");
+    assert(fbo != 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glEnable(GL_DEPTH_TEST);
+    glBindVertexArray(VAO);
+    for(int i = 0; i < 4; ++i) glEnableVertexAttribArray(i);
+    shader.use();
+    shader.set_uniforms(m_material, camera, model);
+    glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, (void*)0);
+
+    // Render settings back to default
+    glDisable(GL_DEPTH_TEST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindVertexArray(0);
 }
 

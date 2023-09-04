@@ -15,6 +15,7 @@ class Direction_light;
 class Point_light;
 class Light;
 class Depth_shader;
+class G_buffer;
 
 struct Vertex
 {
@@ -27,12 +28,14 @@ struct Vertex
 class Mesh
 {
 public:
-    Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const Material& material);
-    void draw(const Blinn_phong& shader, const Camera& camera, const glm::mat4& model, GLuint fbo = 0) const;
-    void draw_normals(const Normal& shader, const Camera& camera, const glm::mat4& model) const;
-    void draw_tangent(const Tangent_normal& shader, const Camera& camera, const glm::mat4& model) const;
-    void draw_outline(const Single_color& shader, const Camera& camera, const glm::mat4& model) const;
-    void draw_depthmap(const Depth_shader& depth_shader, const Light& light, const glm::mat4& model) const;
+    Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const Material &material);
+    ~Mesh();
+    void draw(const Blinn_phong &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo = 0) const;
+    void draw_gbuffer(const G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const;
+    void draw_normals(const Normal &shader, const Camera &camera, const glm::mat4 &model) const;
+    void draw_tangent(const Tangent_normal &shader, const Camera &camera, const glm::mat4 &model) const;
+    void draw_outline(const Single_color &shader, const Camera &camera, const glm::mat4 &model) const;
+    void draw_depthmap(const Depth_shader &depth_shader, const Light &light, const glm::mat4 &model) const;
     inline bool is_blend_mesh() const { return m_material.is_blend_mat(); }
     inline glm::vec3 center() const { return m_center; }
     inline void set_outline(bool isoutline) { m_outlined = isoutline; }

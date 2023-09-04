@@ -1,4 +1,4 @@
-# Install script for directory: D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1
+# Install script for directory: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui/cmake_install.cmake")
+  include("C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/build/imgui/cmake_install.cmake")
 
 endif()
 
@@ -51,5 +51,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

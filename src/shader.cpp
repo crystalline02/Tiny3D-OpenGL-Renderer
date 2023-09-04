@@ -314,6 +314,7 @@ void Sky_cube::set_uniforms(const Camera& camera, float intensity, GLuint textur
     util::set_mat("projection", camera.projection(), program_id);
     util::set_int("skybox", texture_unit, program_id);
     util::set_float("brightness", intensity, program_id);
+    util::set_float("threshold", util::Globals::threshold, program_id);
 }
 
 void Depth_cubemap::set_uniforms(const glm::mat4& model, const Light& light) const
@@ -349,7 +350,6 @@ Post_proc::Post_proc(): Shader("./shader/post_quad")
 
 void Post_proc::set_uniforms(GLuint image_unit, GLuint blured_image_unit) const
 {
-
     util::set_int("image", image_unit, program_id);
     util::set_int("blured_brightness", blured_image_unit, program_id);
     util::set_bool("hdr", util::Globals::hdr, program_id);
@@ -379,4 +379,80 @@ void Blur::set_uniforms(GLuint image_unit, bool horizental) const
 Blur *Blur::get_instance()
 {
     return instance ? instance : new Blur();
+}
+
+void G_buffer::set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const
+{
+    util::set_mat("model", model, program_id);
+    util::set_mat("normal_mat", glm::inverse(glm::transpose(glm::mat3(model))), program_id);
+    material.set_uniforms("material", program_id);
+    util::set_floats("view_pos", camera.position(), program_id);
+}
+
+G_buffer* G_buffer::instance = nullptr;
+
+G_buffer::G_buffer() : Shader("./shader/G_buffer")
+{
+    
+}
+
+G_buffer *G_buffer::get_instance()
+{
+    return instance ? instance : new G_buffer();
+}
+
+void Lighting_pass::set_uniforms(const Camera &camera) const
+{
+    util::set_int("position_buffer", util::Globals::G_color_units[0], program_id);
+    util::set_int("normal_depth", util::Globals::G_color_units[1], program_id);
+    util::set_int("surface_normal", util::Globals::G_color_units[2], program_id);
+    util::set_int("albedo_specular", util::Globals::G_color_units[3], program_id);
+    util::set_int("ambient_buffer", util::Globals::G_color_units[4], program_id);
+    util::set_int("point_lights_count", Light::point_lights_count(), program_id);
+    util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
+    util::set_int("direction_lights_count", Light::direction_lights_count(), program_id);
+    std::vector<Light*> all_lights = Light::get_lights();
+    for(Light *& light: all_lights)
+    {
+        switch(light->type())
+        {
+        case Light_type::POINT:
+        {
+            light->set_uniforms("point_lights", program_id);
+            break;
+        }
+        case Light_type::SPOT:
+        {
+            light->set_uniforms("spot_lights", program_id);
+            break;
+        }
+        case Light_type::SUN:
+        {
+            light->set_uniforms("direction_lights", program_id);
+            break;
+        }
+        default:
+            break;
+        }
+    }
+    Skybox::set_uniforms("skybox", camera, program_id);
+    util::set_floats("view_pos", camera.position(), program_id);
+    util::set_float("bias", util::Globals::shadow_bias, program_id);
+    for(int i = 0; i < util::Globals::cascade_levels.size(); ++i)
+        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], program_id);
+    util::set_int("cascade_count", util::Globals::cascade_levels.size(), program_id);
+    util::set_int("gamma_correct", !util::Globals::post_process, program_id);
+    util::set_float("threshold", util::Globals::threshold, program_id);
+}
+
+Lighting_pass *Lighting_pass::get_instance()
+{
+    return instance ? instance : new Lighting_pass();
+}
+
+Lighting_pass* Lighting_pass::instance = nullptr;
+
+Lighting_pass::Lighting_pass() : Shader("./shader/lighting_pass")
+{
+    
 }

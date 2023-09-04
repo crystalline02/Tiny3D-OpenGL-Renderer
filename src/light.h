@@ -35,8 +35,8 @@ public:
     inline unsigned int index() const { return m_index; }
     virtual void set_uniforms(const char* name, GLuint program) const;
     virtual Light_type type() const = 0;
-    static std::vector<Light*>& get_lights();  // 静态成员函数只能访问静态成员变量，不能访问非静态的成员变量
     virtual void resize_depthmap(int shadow_size) const = 0;
+    static std::vector<Light*>& get_lights();  // 静态成员函数只能访问静态成员变量，不能访问非静态的成员变量
     static unsigned int& point_lights_count();
     static unsigned int& spot_lights_count();
     static unsigned int& direction_lights_count();

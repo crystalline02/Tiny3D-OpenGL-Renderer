@@ -1,5 +1,6 @@
 #include "postproc.h"
 #include "globals.h"
+#include "camera.h"
 #include "shader.h"
 
 Postproc_quad* Postproc_quad::instance = nullptr;
@@ -10,7 +11,7 @@ Postproc_quad *Postproc_quad::get_instance()
     else return instance;
 }
 
-void Postproc_quad::draw(const Post_proc& shader)
+void Postproc_quad::draw(const Post_proc& shader) const
 {
     assert(shader.shader_dir() == "./shader/post_quad");
     if(util::Globals::bloom)
@@ -22,10 +23,37 @@ void Postproc_quad::draw(const Post_proc& shader)
     glBindVertexArray(quad_VAO);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Dump depth information from scene fbo to default fbo
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, util::Globals::scene_fbo_ms);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(0, 0, util::Globals::camera.width(), util::Globals::camera.height(),
+        0, 0, util::Globals::camera.width(), util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
     glBindVertexArray(0);
 }
 
-void Postproc_quad::run_blur(const Blur &shader, GLuint &blur_image_unit)
+void Postproc_quad::lighting_pass(const Lighting_pass &shader, const Camera &camera, GLuint fbo) const
+{
+    assert(shader.shader_dir() == "./shader/lighting_pass");
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glBindVertexArray(quad_VAO);
+    for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
+    shader.use();
+    shader.set_uniforms(camera);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    // Dump depth information from GBuffer fbo to current light_pass fbo
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, util::Globals::Gbuffer_fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+    glBlitFramebuffer(0, 0, util::Globals::camera.width(), util::Globals::camera.height(),
+        0, 0, util::Globals::camera.width(), util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+    glBindVertexArray(0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Postproc_quad::run_blur(const Blur &shader, GLuint &blur_image_unit) const
 {
     assert(shader.shader_dir() == "./shader/blur");
     if(!util::Globals::bloom) 
@@ -34,7 +62,7 @@ void Postproc_quad::run_blur(const Blur &shader, GLuint &blur_image_unit)
         return;
     }
     bool horizental = true;
-    int amount = 16;
+    int amount = 10;
     assert((amount & 1) == 0);
     for(int i = 0; i < amount; ++i)
     {

@@ -27,11 +27,11 @@ namespace util
     struct Globals
     {
         static bool first_mouse, blend, cull_face, skybox, visualize_normal, wireframe, visualize_tangent,
-            hdr, post_process, bloom;
+            hdr, post_process, bloom, deferred_rendering;
         static double last_xpos, last_ypos;
         static int cascade_size, cubemap_size;
         static GLuint scene_fbo_ms, scene_unit[2], pingpong_fbos[2], pingpong_colorbuffers_units[2], 
-            blur_brightimage_unit;
+            blur_brightimage_unit, Gbuffer_fbo, G_color_units[4];
         static Camera camera;
         static double delta_time, last_time;
         static float normal_magnitude, shadow_bias, tangent_magnitude, exposure, threshold;
@@ -117,7 +117,8 @@ namespace util
         GLint location = glGetUniformLocation(program_id, name);
         if(location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(mat3)); 
     }
-    void genfbos();
+    void genFBOs();
+    void create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units);
     void create_pingpong_framebuffer_ms(GLuint* pingpong_fbos, GLuint* pingpong_texture_units);
     void create_cascademap_framebuffer(GLuint& depth_fbo, GLuint& depth_map, GLuint texture_unit);
     void create_depthcubemap_framebuffer(GLuint& depth_fbo, GLuint& depth_cubemap, GLuint texture_unit);

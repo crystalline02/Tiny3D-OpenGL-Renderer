@@ -351,6 +351,8 @@ glm::mat4 Light_vertices::get_bar_dir_matrix(glm::vec3 direction, glm::vec3 post
 void Light_vertices::draw(const Shader& shader, const Camera& camera)
 {
     assert(shader.shader_dir() == "./shader/single_color");
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glEnable(GL_DEPTH_TEST);
     shader.use();
     shader.set_single_color(glm::vec3(0.f));

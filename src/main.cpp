@@ -22,14 +22,16 @@
 #include "skybox.h"
 #include "globals.h"
 
-// 注意全局区的全局对象初始化顺序是不定的，特别注意如果一个类有静态成员变量还在全局区初始化，需要用到一种称为constructor on demand的做法，我踩坑了
-
 int main(int argc, char** argv)
 {
 	INIT_GLFW();
 
  	// Init window
-	GLFWwindow* window = glfwCreateWindow(util::Globals::camera.width(), util::Globals::camera.height(), "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(util::Globals::camera.width(), 
+		util::Globals::camera.height(), 
+		"OpenGL renderer", 
+		nullptr, 
+		nullptr);
 	if(window == nullptr)
 	{
 		std::cout << "Failed to create glfw window!" << std::endl;
@@ -90,7 +92,7 @@ int main(int argc, char** argv)
 	Spot_light light6(glm::vec3(-2.f, -2.6f, -1.5f), glm::vec3(2.25f, 1.91f, 2.27f), glm::vec3(.5f, .5f, .5f), 5.f);
 
 	// Scene framebuffer for postprocessing
-	util::genfbos();
+	util::genFBOs();
 
 	while(!glfwWindowShouldClose(window))
 	{
@@ -102,13 +104,20 @@ int main(int argc, char** argv)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// Render preperation
+		// Render preperation, mainly clear framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);  // 设置ClearColor的值
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // 使用ClearColor的值来clearGL_COLOR_BUFFER_BIT,GL_DEPTH_BUFFER_BIT默认为无穷大，GL_STENCIL_BUFFER_BIT默认为0
 		if(util::Globals::post_process)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, util::Globals::scene_fbo_ms);
+			glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+		if(util::Globals::deferred_rendering)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, util::Globals::Gbuffer_fbo);
 			glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -120,35 +129,40 @@ int main(int argc, char** argv)
 		// model.set_model(model_mat);
 		model.set_cullface(util::Globals::cull_face);
 		model.set_blend(util::Globals::blend);
-		
-		// Draw light
-		if(!util::Globals::post_process)
-			Light_vertices::get_instance()->draw(color_shader, util::Globals::camera);
 
 		// Draw depth maps
 		model.draw_depthmaps(cascade_shader, depth_cube_shader);
-
-		// Draw model
-		model.draw(object_shader, util::Globals::camera, util::Globals::post_process ? util::Globals::scene_fbo_ms : 0);
+		
+		// Draw model.If deferred rendering is enabled, we draw on g-buffers,if not we draw objects directly.
+		if(util::Globals::deferred_rendering)
+		{
+			model.gbuffer_pass(*G_buffer::get_instance(), util::Globals::camera, util::Globals::Gbuffer_fbo);
+			Postproc_quad::get_instance()->lighting_pass(*Lighting_pass::get_instance(), util::Globals::camera, util::Globals::post_process ? util::Globals::scene_fbo_ms : 0);
+		}
+		else
+			model.draw(object_shader, util::Globals::camera, util::Globals::post_process ? util::Globals::scene_fbo_ms : 0);
 
 		// Draw skybox
 		if(util::Globals::skybox) 
 			Skybox::get_instance()->draw(skybox_shader, util::Globals::camera, util::Globals::post_process ? util::Globals::scene_fbo_ms : 0);
 
+		// Post process
+		if(util::Globals::post_process)
+			Postproc_quad::get_instance()->draw(*Post_proc::get_instance());
+
+		// Draw outline
+		model.draw_outline(color_shader, util::Globals::camera);
+
+		// Draw light
+		Light_vertices::get_instance()->draw(color_shader, util::Globals::camera);
+
 		// Draw model normals
-		if(util::Globals::visualize_normal) 
+		if(util::Globals::visualize_normal)
 			model.draw_normals(normal_shader, util::Globals::camera);
 
 		// Draw model tangent normal
 		if(util::Globals::visualize_tangent) 
 			model.draw_tangent(tangent_shader, util::Globals::camera);
-		
-		// Draw outline
-		model.draw_outline(color_shader, util::Globals::camera);
-
-		// Draw post process
-		if(util::Globals::post_process)
-			Postproc_quad::get_instance()->draw(*Post_proc::get_instance());
 
 		// Imgui user interface design
 		util::imgui_design();

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <map>
 #include <unordered_map>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -19,16 +20,19 @@ class Tangent_normal;
 class Depth_cubemap;
 class Material;
 class Light;
+class G_buffer;
+class Lighting_pass;
 
 class Model
 {
 public:
     Model(const char *path, const glm::mat4& model = glm::mat4(1.f));
-    void draw(const Blinn_phong& model_shader, const Camera& camera, GLuint fbo = 0) const;
-    void draw_normals(const Normal& normal_shader, const Camera& camera) const;
-    void draw_tangent(const Tangent_normal& tangent_shader, const Camera& camera) const;
-    void draw_outline(const Single_color& single_color, const Camera& camera) const;
-    void draw_depthmaps(const Cascade_map& depth_shader, const Depth_cubemap& depth_cube_shader) const;
+    void draw(const Blinn_phong &shader, const Camera& camera, GLuint fbo = 0) const;
+    void gbuffer_pass(const G_buffer &shader, const Camera& camera, GLuint fbo);
+    void draw_normals(const Normal &shader, const Camera &camera) const;
+    void draw_tangent(const Tangent_normal &shader, const Camera &camera) const;
+    void draw_outline(const Single_color &shader, const Camera &camera) const;
+    void draw_depthmaps(const Cascade_map &shader_cascade, const Depth_cubemap &shader_depthcube) const;
     void switch_model(const std::string new_path);
     inline void set_model(glm::mat4 model) { m_model_mat = model; }
     inline static GLuint num_textures() { return Model::loaded_textures.size(); }
@@ -46,6 +50,7 @@ private:
     std::vector<unsigned int> retrive_texture_units(aiMaterial* materia, aiTextureType type);
     Material process_material(aiMaterial* material);
     std::vector<Mesh> m_meshes;
+    std::map<float, const Mesh*> m_blend_meshes_temp;
     std::string directory;
     glm::mat4 m_model_mat;
 

@@ -7,7 +7,6 @@
 #include "light.h"
 
 #include <chrono>
-#include <map>
 #include <iostream>
 #include <filesystem>
 
@@ -173,16 +172,28 @@ void Model::set_cullface(bool iscull)
 void Model::draw(const Blinn_phong& model_shader, const Camera& camera, GLuint fbo) const
 {
     // This is not a good ideal to solve blending problem, but temporarily works
-    std::map<float,const Mesh*> blend_meshes;
+    std::map<float, const Mesh*> blend_mesh;
     for(const Mesh& mesh: m_meshes)
     {
         if(!mesh.is_blend_mesh())
             mesh.draw(model_shader, camera, m_model_mat, fbo);
         else  
-            blend_meshes[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh.center(), 1.f)) - camera.position())] = &mesh;
+            blend_mesh[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh.center(), 1.f)) - camera.position())] = &mesh;
     }
-    for(std::map<float, const Mesh*>::reverse_iterator it = blend_meshes.rbegin(); it != blend_meshes.rend() ; ++it)
+    for(std::map<float, const Mesh*>::reverse_iterator it = blend_mesh.rbegin(); it != blend_mesh.rend() ; ++it)
         it->second->draw(model_shader, camera, m_model_mat);
+    blend_mesh.clear();
+}
+
+void Model::gbuffer_pass(const G_buffer &shader, const Camera &camera, GLuint fbo)
+{
+    for(const Mesh& mesh: m_meshes)
+    {
+        if(mesh.is_blend_mesh())
+            m_blend_meshes_temp[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh.center(), 1.f)) - camera.position())] = &mesh;
+        else 
+            mesh.draw_gbuffer(shader, camera, m_model_mat, fbo);
+    }
 }
 
 void Model::switch_model(const std::string new_path)

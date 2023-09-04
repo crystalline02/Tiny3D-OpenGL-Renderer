@@ -1,6 +1,6 @@
-D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/CMakeFiles/renderer.dir
-D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/CMakeFiles/edit_cache.dir
-D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/CMakeFiles/rebuild_cache.dir
-D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui/CMakeFiles/imgui.dir
-D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui/CMakeFiles/edit_cache.dir
-D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/build/imgui/CMakeFiles/rebuild_cache.dir
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/build/CMakeFiles/renderer.dir
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/build/CMakeFiles/edit_cache.dir
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/build/CMakeFiles/rebuild_cache.dir
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/build/imgui/CMakeFiles/imgui.dir
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/build/imgui/CMakeFiles/edit_cache.dir
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/build/imgui/CMakeFiles/rebuild_cache.dir

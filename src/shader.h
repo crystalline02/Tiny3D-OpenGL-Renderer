@@ -107,3 +107,23 @@ private:
     Post_proc();
     static Post_proc* instance;
 };
+
+class G_buffer: public Shader
+{
+public:
+    void set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const;
+    static G_buffer* get_instance();
+private:
+    G_buffer();
+    static G_buffer* instance;
+};
+
+class Lighting_pass: public Shader
+{
+public:
+    void set_uniforms(const Camera &camera) const;
+    static Lighting_pass* get_instance();
+private:
+    Lighting_pass();
+    static Lighting_pass* instance;
+};

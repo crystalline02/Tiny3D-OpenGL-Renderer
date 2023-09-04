@@ -20,7 +20,8 @@ bool util::Globals::first_mouse = true,
     util::Globals::wireframe = false,
     util::Globals::hdr = false,
     util::Globals::post_process = false,
-    util::Globals::bloom = false;
+    util::Globals::bloom = false,
+    util::Globals::deferred_rendering = false;
 double util::Globals::last_xpos = 0.f, 
     util::Globals::last_ypos = 0.f,
     util::Globals::delta_time = 0.f,
@@ -36,7 +37,9 @@ GLuint util::Globals::scene_fbo_ms,
     util::Globals::scene_unit[2],
     util::Globals::pingpong_fbos[2], 
     util::Globals::pingpong_colorbuffers_units[2],
-    util::Globals::blur_brightimage_unit;
+    util::Globals::blur_brightimage_unit,
+    util::Globals::Gbuffer_fbo,
+    util::Globals::G_color_units[4];
 
 // Camera util::Globals::camera(1920, 1080, glm::vec3(0.f, 2.f, 6.f), -90.f, 0.f, 45.f, 0.1f, 100.f, glm::vec3(0.f, 1.f, 0.f));
 Camera util::Globals::camera = Camera(1920, 1080, glm::vec3(0.f), 4.f);
@@ -339,6 +342,25 @@ void util::imgui_design()
     {
         
     }
+    if(ImGui::CollapsingHeader("postprocess"))
+    {
+        ImGui::Checkbox("posteffects", &Globals::post_process);
+        if(Globals::post_process)
+        {
+            ImGui::Checkbox("HDR", &Globals::hdr);
+            if(Globals::hdr)
+            {
+                ImGui::SameLine();
+                ImGui::SliderFloat("exposure", &Globals::exposure, 0.f, 5.f);
+            }
+            ImGui::Checkbox("bloom", &Globals::bloom);
+            if(Globals::bloom)
+            {
+                ImGui::SameLine();
+                ImGui::SliderFloat("threshold", &Globals::threshold, 0.f, 5.f);
+            }
+        }
+    }
     std::vector<std::string> model_dirs = Model::all_models();
     if(ImGui::BeginCombo("model", model_dirs[Model::seleted_model()].c_str()))
     {
@@ -392,33 +414,109 @@ void util::imgui_design()
         }
         ImGui::EndCombo();
     }
-
+    ImGui::Checkbox("deferred rendering(experimental)", &Globals::deferred_rendering);
     ImGui::Checkbox("wireframe", &Globals::wireframe);
-    ImGui::Checkbox("posteffects", &Globals::post_process);
-    if(Globals::post_process)
-    {
-        ImGui::Checkbox("HDR", &Globals::hdr);
-        if(Globals::hdr)
-        {
-            ImGui::SameLine();
-            ImGui::SliderFloat("exposure", &Globals::exposure, 0.f, 5.f);
-        }
-        ImGui::Checkbox("bloom", &Globals::bloom);
-        if(Globals::bloom)
-        {
-            ImGui::SameLine();
-            ImGui::SliderFloat("threshold", &Globals::threshold, 0.f, 5.f);
-        }
-    }
 	ImGui::Checkbox("blend", &Globals::blend);
 	ImGui::Checkbox("cull face", &Globals::cull_face);
 	ImGui::End();
 }
 
-void util::genfbos()
+void util::genFBOs()
 {
     create_scene_framebuffer_ms(Globals::scene_fbo_ms, Globals::scene_unit);
     create_pingpong_framebuffer_ms(Globals::pingpong_fbos, Globals::pingpong_colorbuffers_units);
+    create_G_frambuffer(Globals::Gbuffer_fbo, Globals::G_color_units);
+}
+
+void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
+{
+    glGenFramebuffers(1, &G_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, G_fbo);
+
+    GLuint g_position, g_normal_depth, g_surface_normal, g_albedo_specular, g_ambient; 
+    glGenTextures(1, &g_position);
+    G_color_units[0] = Model::num_textures();
+    Model::add_texture("G buffer position buffer", G_color_units[0]);
+    glActiveTexture(GL_TEXTURE0 + G_color_units[0]);
+    glBindTexture(GL_TEXTURE_2D, g_position);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
+        0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, g_position, 0);
+    
+    glGenTextures(1, &g_normal_depth);
+    G_color_units[1] = Model::num_textures();
+    Model::add_texture("G buffer normal buffer", G_color_units[1]);
+    glActiveTexture(GL_TEXTURE0 + G_color_units[1]);
+    glBindTexture(GL_TEXTURE_2D, g_normal_depth);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
+        0, GL_RGBA, GL_FLOAT, nullptr); 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, g_normal_depth, 0);
+
+    glGenTextures(1, &g_surface_normal);
+    G_color_units[2] = Model::num_textures();
+    Model::add_texture("G buffer surface normal buffer", G_color_units[2]);
+    glActiveTexture(GL_TEXTURE0 + G_color_units[2]);
+    glBindTexture(GL_TEXTURE_2D, g_surface_normal);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
+        0, GL_RGBA, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, g_surface_normal, 0);
+
+    glGenTextures(1, &g_albedo_specular);
+    G_color_units[3] = Model::num_textures();
+    Model::add_texture("G buffer albedo_specular buffer", G_color_units[3]);
+    glActiveTexture(GL_TEXTURE0 + G_color_units[3]);
+    glBindTexture(GL_TEXTURE_2D, g_albedo_specular);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, util::Globals::camera.width(), util::Globals::camera.height(),
+        0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, g_albedo_specular, 0);
+
+    glGenTextures(1, &g_ambient);
+    G_color_units[4] = Model::num_textures();
+    Model::add_texture("G buffer ambient buffer", G_color_units[4]);
+    glActiveTexture(GL_TEXTURE0 + G_color_units[4]);
+    glBindTexture(GL_TEXTURE_2D, g_ambient);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, util::Globals::camera.width(), util::Globals::camera.height(),
+        0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, g_ambient, 0);
+    
+    unsigned int color_attachments[5] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+    glDrawBuffers(5, color_attachments);
+
+    GLuint g_rbo;
+    glGenRenderbuffers(1, &g_rbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, g_rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, util::Globals::camera.width(), util::Globals::camera.height());
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, g_rbo);
+
+    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cout << "G framebuffer incomplete!\n";
+        exit(1);
+    }
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void util::create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint *pingpong_texture_units)

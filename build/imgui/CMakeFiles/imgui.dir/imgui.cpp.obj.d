@@ -1,7 +1,7 @@
 imgui/CMakeFiles/imgui.dir/imgui.cpp.obj: \
- D:\baidu\BaiduSyncdisk\opengl_learn\renderer_opengl1.1\imgui\imgui.cpp \
- D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/include/imgui.h \
- D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/include/imconfig.h \
+ C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui.cpp \
+ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/include/imgui.h \
+ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/include/imconfig.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/float.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/float.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/crtdefs.h \
@@ -35,7 +35,7 @@ imgui/CMakeFiles/imgui.dir/imgui.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/mm_malloc.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/errno.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/std_abs.h \
- D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/include/imgui_internal.h \
+ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/include/imgui_internal.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/stdio.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/corecrt_stdio_config.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/_mingw_off_t.h \
@@ -171,7 +171,7 @@ imgui/CMakeFiles/imgui.dir/imgui.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/prfchwintrin.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/keylockerintrin.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/amxfp16intrin.h \
- D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/imgui/include/imstb_textedit.h \
+ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/include/imstb_textedit.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/stdint.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/stdint.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/windows.h \

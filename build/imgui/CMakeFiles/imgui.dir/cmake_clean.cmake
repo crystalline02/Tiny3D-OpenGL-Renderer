@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.pdb"
   "CMakeFiles/imgui.dir/imgui.cpp.obj"
   "CMakeFiles/imgui.dir/imgui.cpp.obj.d"
   "CMakeFiles/imgui.dir/imgui_demo.cpp.obj"
@@ -15,8 +17,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/imgui.dir/imgui_tables.cpp.obj.d"
   "CMakeFiles/imgui.dir/imgui_widgets.cpp.obj"
   "CMakeFiles/imgui.dir/imgui_widgets.cpp.obj.d"
-  "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/lib/libimgui.a"
-  "D:/baidu/BaiduSyncdisk/opengl_learn/renderer_opengl1.1/lib/libimgui.pdb"
 )
 
 # Per-language clean rules from dependency scanning.
