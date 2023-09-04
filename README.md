@@ -1,7 +1,7 @@
 # Tiny3D-OpenGL-Renderer
 This is a project of opengl renderer imitating general 3D solfware like blender.
 # Technique
-Tranparent blending.
+Transparent blending.
 Cubemap shadow mapping.
 Cascaded shadow mapping.
 Parallax mapping.
