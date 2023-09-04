@@ -1,6 +1,7 @@
 # Tiny3D-OpenGL-Renderer
 This is a project of opengl renderer imitating general 3D solfware like blender.
 # Technique
+Cubemap shadow mapping.
 Cascaded shadow mapping.
 Parallax mapping.
 Deferred rendering.
@@ -13,3 +14,4 @@ HDR.
 Geometry picking.
 Gizmo visualizing.
 PBR.
+Variance shadow mapping.
