@@ -14,6 +14,7 @@ class Light;
 class Shader;
 class Camera;
 class Light_vertices;
+class Model;
 
 #define INIT_GLFW() \
 	glfwInit(); \
@@ -27,14 +28,15 @@ namespace util
     struct Globals
     {
         static bool first_mouse, blend, cull_face, skybox, visualize_normal, wireframe, visualize_tangent,
-            hdr, post_process, bloom, deferred_rendering;
+            hdr, bloom, deferred_rendering, SSAO;
         static double last_xpos, last_ypos;
         static int cascade_size, cubemap_size;
         static GLuint scene_fbo_ms, scene_unit[2], pingpong_fbos[2], pingpong_colorbuffers_units[2], 
-            blur_brightimage_unit, Gbuffer_fbo, G_color_units[4];
+            blur_brightimage_unit, Gbuffer_fbo, G_color_units[5], ssao_fbo, ssao_color_unit, ssao_noisetex_unit,
+            ssao_blur_fbo, ssao_blur_unit;
         static Camera camera;
         static double delta_time, last_time;
-        static float normal_magnitude, shadow_bias, tangent_magnitude, exposure, threshold;
+        static float normal_magnitude, shadow_bias, tangent_magnitude, exposure, threshold, ssao_radius;
         static glm::vec3 bg_color;
         static std::vector<float> cascade_levels;
     };
@@ -117,14 +119,17 @@ namespace util
         GLint location = glGetUniformLocation(program_id, name);
         if(location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(mat3)); 
     }
-    void genFBOs();
+
+    void gen_FBOs();
     void create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units);
-    void create_pingpong_framebuffer_ms(GLuint* pingpong_fbos, GLuint* pingpong_texture_units);
-    void create_cascademap_framebuffer(GLuint& depth_fbo, GLuint& depth_map, GLuint texture_unit);
-    void create_depthcubemap_framebuffer(GLuint& depth_fbo, GLuint& depth_cubemap, GLuint texture_unit);
+    void create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint* pingpong_texture_units);
+    void create_cascademap_framebuffer(GLuint &depth_fbo, GLuint& depth_map, GLuint texture_unit);
+    void create_depthcubemap_framebuffer(GLuint &depth_fbo, GLuint& depth_cubemap, GLuint texture_unit);
+    void create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo,
+        GLuint &ssao_color_unit, GLuint &ssao_blur_unit, GLuint &ssao_noisetex_unit);
     void create_cubemap(GLuint texture_unit, const std::vector<std::string>& faces);
     void create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units);
-    void get_blur_image_unit(GLuint* pingpong_fbos, GLuint* pingpong_colorbuffer_units);
-    void imgui_design();
+    void imgui_design(Model &model);
+    std::array<glm::vec3, 64> get_ssao_samples();
     std::array<glm::vec3, 8> get_frustum_corner_world(const Camera& camera, float near, float far);
 }

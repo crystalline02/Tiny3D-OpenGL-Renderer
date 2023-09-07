@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui
+# Install script for directory: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

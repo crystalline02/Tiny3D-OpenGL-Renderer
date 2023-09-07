@@ -52,10 +52,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2
+CMAKE_SOURCE_DIR = C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build
+CMAKE_BINARY_DIR = C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build
 
 # Include any dependencies generated for this target.
 include imgui/CMakeFiles/imgui.dir/depend.make
@@ -70,123 +70,123 @@ include imgui/CMakeFiles/imgui.dir/flags.make
 
 imgui/CMakeFiles/imgui.dir/imgui.cpp.obj: imgui/CMakeFiles/imgui.dir/flags.make
 imgui/CMakeFiles/imgui.dir/imgui.cpp.obj: imgui/CMakeFiles/imgui.dir/includes_CXX.rsp
-imgui/CMakeFiles/imgui.dir/imgui.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/imgui.cpp
+imgui/CMakeFiles/imgui.dir/imgui.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui.cpp
 imgui/CMakeFiles/imgui.dir/imgui.cpp.obj: imgui/CMakeFiles/imgui.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui.cpp.obj"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui.cpp.obj -MF CMakeFiles\imgui.dir\imgui.cpp.obj.d -o CMakeFiles\imgui.dir\imgui.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui.cpp.obj"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui.cpp.obj -MF CMakeFiles\imgui.dir\imgui.cpp.obj.d -o CMakeFiles\imgui.dir\imgui.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui.cpp
 
 imgui/CMakeFiles/imgui.dir/imgui.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui.cpp.i"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui.cpp > CMakeFiles\imgui.dir\imgui.cpp.i
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui.cpp > CMakeFiles\imgui.dir\imgui.cpp.i
 
 imgui/CMakeFiles/imgui.dir/imgui.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui.cpp.s"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui.cpp -o CMakeFiles\imgui.dir\imgui.cpp.s
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui.cpp -o CMakeFiles\imgui.dir\imgui.cpp.s
 
 imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj: imgui/CMakeFiles/imgui.dir/flags.make
 imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj: imgui/CMakeFiles/imgui.dir/includes_CXX.rsp
-imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/imgui_demo.cpp
+imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_demo.cpp
 imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj: imgui/CMakeFiles/imgui.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj -MF CMakeFiles\imgui.dir\imgui_demo.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_demo.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_demo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj -MF CMakeFiles\imgui.dir\imgui_demo.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_demo.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_demo.cpp
 
 imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_demo.cpp.i"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_demo.cpp > CMakeFiles\imgui.dir\imgui_demo.cpp.i
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_demo.cpp > CMakeFiles\imgui.dir\imgui_demo.cpp.i
 
 imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_demo.cpp.s"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_demo.cpp -o CMakeFiles\imgui.dir\imgui_demo.cpp.s
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_demo.cpp -o CMakeFiles\imgui.dir\imgui_demo.cpp.s
 
 imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj: imgui/CMakeFiles/imgui.dir/flags.make
 imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj: imgui/CMakeFiles/imgui.dir/includes_CXX.rsp
-imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/imgui_draw.cpp
+imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_draw.cpp
 imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj: imgui/CMakeFiles/imgui.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj -MF CMakeFiles\imgui.dir\imgui_draw.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_draw.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_draw.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj -MF CMakeFiles\imgui.dir\imgui_draw.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_draw.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_draw.cpp
 
 imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_draw.cpp.i"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_draw.cpp > CMakeFiles\imgui.dir\imgui_draw.cpp.i
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_draw.cpp > CMakeFiles\imgui.dir\imgui_draw.cpp.i
 
 imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_draw.cpp.s"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_draw.cpp -o CMakeFiles\imgui.dir\imgui_draw.cpp.s
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_draw.cpp -o CMakeFiles\imgui.dir\imgui_draw.cpp.s
 
 imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj: imgui/CMakeFiles/imgui.dir/flags.make
 imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj: imgui/CMakeFiles/imgui.dir/includes_CXX.rsp
-imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/imgui_impl_glfw.cpp
+imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_impl_glfw.cpp
 imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj: imgui/CMakeFiles/imgui.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj -MF CMakeFiles\imgui.dir\imgui_impl_glfw.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_impl_glfw.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_impl_glfw.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj -MF CMakeFiles\imgui.dir\imgui_impl_glfw.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_impl_glfw.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_impl_glfw.cpp
 
 imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.i"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_impl_glfw.cpp > CMakeFiles\imgui.dir\imgui_impl_glfw.cpp.i
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_impl_glfw.cpp > CMakeFiles\imgui.dir\imgui_impl_glfw.cpp.i
 
 imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.s"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_impl_glfw.cpp -o CMakeFiles\imgui.dir\imgui_impl_glfw.cpp.s
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_impl_glfw.cpp -o CMakeFiles\imgui.dir\imgui_impl_glfw.cpp.s
 
 imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj: imgui/CMakeFiles/imgui.dir/flags.make
 imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj: imgui/CMakeFiles/imgui.dir/includes_CXX.rsp
-imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/imgui_impl_opengl3.cpp
+imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_impl_opengl3.cpp
 imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj: imgui/CMakeFiles/imgui.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj -MF CMakeFiles\imgui.dir\imgui_impl_opengl3.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_impl_opengl3.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_impl_opengl3.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj -MF CMakeFiles\imgui.dir\imgui_impl_opengl3.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_impl_opengl3.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_impl_opengl3.cpp
 
 imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.i"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_impl_opengl3.cpp > CMakeFiles\imgui.dir\imgui_impl_opengl3.cpp.i
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_impl_opengl3.cpp > CMakeFiles\imgui.dir\imgui_impl_opengl3.cpp.i
 
 imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.s"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_impl_opengl3.cpp -o CMakeFiles\imgui.dir\imgui_impl_opengl3.cpp.s
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_impl_opengl3.cpp -o CMakeFiles\imgui.dir\imgui_impl_opengl3.cpp.s
 
 imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj: imgui/CMakeFiles/imgui.dir/flags.make
 imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj: imgui/CMakeFiles/imgui.dir/includes_CXX.rsp
-imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/imgui_stdlib.cpp
+imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_stdlib.cpp
 imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj: imgui/CMakeFiles/imgui.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj -MF CMakeFiles\imgui.dir\imgui_stdlib.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_stdlib.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_stdlib.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj -MF CMakeFiles\imgui.dir\imgui_stdlib.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_stdlib.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_stdlib.cpp
 
 imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_stdlib.cpp.i"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_stdlib.cpp > CMakeFiles\imgui.dir\imgui_stdlib.cpp.i
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_stdlib.cpp > CMakeFiles\imgui.dir\imgui_stdlib.cpp.i
 
 imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_stdlib.cpp.s"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_stdlib.cpp -o CMakeFiles\imgui.dir\imgui_stdlib.cpp.s
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_stdlib.cpp -o CMakeFiles\imgui.dir\imgui_stdlib.cpp.s
 
 imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj: imgui/CMakeFiles/imgui.dir/flags.make
 imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj: imgui/CMakeFiles/imgui.dir/includes_CXX.rsp
-imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/imgui_tables.cpp
+imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_tables.cpp
 imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj: imgui/CMakeFiles/imgui.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj -MF CMakeFiles\imgui.dir\imgui_tables.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_tables.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_tables.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj -MF CMakeFiles\imgui.dir\imgui_tables.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_tables.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_tables.cpp
 
 imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_tables.cpp.i"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_tables.cpp > CMakeFiles\imgui.dir\imgui_tables.cpp.i
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_tables.cpp > CMakeFiles\imgui.dir\imgui_tables.cpp.i
 
 imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_tables.cpp.s"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_tables.cpp -o CMakeFiles\imgui.dir\imgui_tables.cpp.s
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_tables.cpp -o CMakeFiles\imgui.dir\imgui_tables.cpp.s
 
 imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj: imgui/CMakeFiles/imgui.dir/flags.make
 imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj: imgui/CMakeFiles/imgui.dir/includes_CXX.rsp
-imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/imgui/imgui_widgets.cpp
+imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_widgets.cpp
 imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj: imgui/CMakeFiles/imgui.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj -MF CMakeFiles\imgui.dir\imgui_widgets.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_widgets.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_widgets.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj -MF CMakeFiles\imgui.dir\imgui_widgets.cpp.obj.d -o CMakeFiles\imgui.dir\imgui_widgets.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_widgets.cpp
 
 imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/imgui.dir/imgui_widgets.cpp.i"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_widgets.cpp > CMakeFiles\imgui.dir\imgui_widgets.cpp.i
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_widgets.cpp > CMakeFiles\imgui.dir\imgui_widgets.cpp.i
 
 imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/imgui.dir/imgui_widgets.cpp.s"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui\imgui_widgets.cpp -o CMakeFiles\imgui.dir\imgui_widgets.cpp.s
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_widgets.cpp -o CMakeFiles\imgui.dir\imgui_widgets.cpp.s
 
 # Object files for target imgui
 imgui_OBJECTS = \
@@ -202,29 +202,29 @@ imgui_OBJECTS = \
 # External object files for target imgui
 imgui_EXTERNAL_OBJECTS =
 
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui.cpp.obj
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/build.make
-C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX static library C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\lib\libimgui.a"
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && $(CMAKE_COMMAND) -P CMakeFiles\imgui.dir\cmake_clean_target.cmake
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\imgui.dir\link.txt --verbose=$(VERBOSE)
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/build.make
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a: imgui/CMakeFiles/imgui.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX static library C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\lib\libimgui.a"
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && $(CMAKE_COMMAND) -P CMakeFiles\imgui.dir\cmake_clean_target.cmake
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\imgui.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-imgui/CMakeFiles/imgui.dir/build: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.2/lib/libimgui.a
+imgui/CMakeFiles/imgui.dir/build: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/lib/libimgui.a
 .PHONY : imgui/CMakeFiles/imgui.dir/build
 
 imgui/CMakeFiles/imgui.dir/clean:
-	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui && $(CMAKE_COMMAND) -P CMakeFiles\imgui.dir\cmake_clean.cmake
+	cd /d C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui && $(CMAKE_COMMAND) -P CMakeFiles\imgui.dir\cmake_clean.cmake
 .PHONY : imgui/CMakeFiles/imgui.dir/clean
 
 imgui/CMakeFiles/imgui.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2 C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\imgui C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\imgui\CMakeFiles\imgui.dir\DependInfo.cmake --color=$(COLOR)
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3 C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\imgui\CMakeFiles\imgui.dir\DependInfo.cmake --color=$(COLOR)
 .PHONY : imgui/CMakeFiles/imgui.dir/depend
 

@@ -72,6 +72,7 @@ uniform sampler2D normal_depth;
 uniform sampler2D surface_normal;
 uniform sampler2D albedo_specular;
 uniform sampler2D ambient_buffer;
+uniform sampler2D ssao_buffer;
 uniform int point_lights_count;
 uniform int spot_lights_count;
 uniform int direction_lights_count;
@@ -83,8 +84,8 @@ uniform vec3 view_pos;
 uniform float bias;
 uniform float cascade_levels[10];
 uniform int cascade_count;
-uniform bool gamma_correct;
 uniform float threshold;
+uniform bool ssao;
 
 vec3 caculate_point_light(Point_light light);
 vec3 caculate_spot_light(Spot_light light);
@@ -97,7 +98,6 @@ float get_viewdepth(float fdepth, float near, float far);
 float linearize_depth(float fdepth, float near, float far);
 
 // global variables
-const float gamma = 2.2f;
 vec4 position_buffer_sample = texture(position_buffer, texture_coord);
 vec3 frag_pos = position_buffer_sample.rgb;
 float frag_alpha = position_buffer_sample.a;
@@ -109,6 +109,7 @@ vec4 frag_albedo_specular = texture(albedo_specular, texture_coord);
 vec3 frag_albedo = frag_albedo_specular.rgb;
 float frag_specular = frag_albedo_specular.a;
 vec3 frag_ambient = texture(ambient_buffer, texture_coord).rgb;
+float occulsion = texture(ssao_buffer, texture_coord).r;
 
 void main()
 {
@@ -131,9 +132,7 @@ void main()
     } 
     result += ambient;
     result += caculate_skybox(skybox);
-
-    if(gamma_correct) result = pow(result, vec3(1.f / gamma));
-
+    result -= ssao ? (1.f - occulsion) * 0.15f : 0.f;
     FragColor = vec4(result, 1.f);
     if(dot(result, vec3(0.2126f, 0.7152f, 0.0722f)) < threshold) BrightColor = vec4(0.f);
     else BrightColor = vec4(result, 1.f);

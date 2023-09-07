@@ -88,14 +88,24 @@ public:
     void set_uniforms(const Camera& camera, float intensity, GLuint texture_unit) const;
 };
 
-class Blur: public Shader
+class Bloom_blur: public Shader
 {
 public:
     void set_uniforms(GLuint image_unit, bool horizental) const;
-    static Blur* get_instance();
+    static Bloom_blur* get_instance();
 private:
-    Blur();
-    static Blur* instance;
+    Bloom_blur();
+    static Bloom_blur* instance;
+};
+
+class SSAO_blur: public Shader
+{
+public:
+    static SSAO_blur* get_instance();
+    void set_uniforms() const;
+private:
+    SSAO_blur();
+    static SSAO_blur* instance;
 };
 
 class Post_proc: public Shader
@@ -116,6 +126,16 @@ public:
 private:
     G_buffer();
     static G_buffer* instance;
+};
+
+class SSAO: public Shader
+{
+public:
+    void set_uniforms() const;
+    static SSAO* get_instance();
+private:
+    SSAO();
+    static SSAO* instance;
 };
 
 class Lighting_pass: public Shader

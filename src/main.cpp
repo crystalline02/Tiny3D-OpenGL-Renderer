@@ -18,7 +18,7 @@
 #include "light.h"
 #include "material.h"
 #include "model.h"
-#include "postproc.h"
+#include "quad.h"
 #include "skybox.h"
 #include "globals.h"
 
@@ -69,12 +69,8 @@ int main(int argc, char** argv)
 	io.FontGlobalScale = ImGui::GetFrameHeight() * .3f;
 	ImGui::GetStyle().ScaleAllSizes(ImGui::GetFrameHeight() * .3f);
 
-	// Models
-	// Model model("./model/FoodPlatter/FoodPlatter006.obj");
-	// Model model("./model/CoffeeCart/CoffeeCart.obj");
+	// Model
 	Model model("./model/cubes/cubes.obj");
-	// Model model("./model/NicolaquintoSofaFormentera/NicolaquintoSofaFormentera001_Cycles.obj");
-	// Model model("./model/Genshin/aodina.obj");
 
 	// Shaders
 	Blinn_phong object_shader;
@@ -92,13 +88,13 @@ int main(int argc, char** argv)
 	Spot_light light6(glm::vec3(-2.f, -2.6f, -1.5f), glm::vec3(2.25f, 1.91f, 2.27f), glm::vec3(.5f, .5f, .5f), 5.f);
 
 	// Scene framebuffer for postprocessing
-	util::genFBOs();
+	util::gen_FBOs();
 
 	while(!glfwWindowShouldClose(window))
 	{
 		// Process input
 		util::process_input(window);
-		
+
 		// Start of imgui
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -107,14 +103,11 @@ int main(int argc, char** argv)
 		// Render preperation, mainly clear framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);  // 设置ClearColor的值
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // 使用ClearColor的值来clearGL_COLOR_BUFFER_BIT,GL_DEPTH_BUFFER_BIT默认为无穷大，GL_STENCIL_BUFFER_BIT默认为0
-		if(util::Globals::post_process)
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, util::Globals::scene_fbo_ms);
-			glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // 使用ClearColor的值来clearGL_COLOR_BUFFER_BIT,GL_DEPTH_BUFFER_BIT默认为1.f，GL_STENCIL_BUFFER_BIT默认为0
+		glBindFramebuffer(GL_FRAMEBUFFER, util::Globals::scene_fbo_ms);
+		glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		if(util::Globals::deferred_rendering)
 		{
 			glBindFramebuffer(GL_FRAMEBUFFER, util::Globals::Gbuffer_fbo);
@@ -137,18 +130,22 @@ int main(int argc, char** argv)
 		if(util::Globals::deferred_rendering)
 		{
 			model.gbuffer_pass(*G_buffer::get_instance(), util::Globals::camera, util::Globals::Gbuffer_fbo);
-			Postproc_quad::get_instance()->lighting_pass(*Lighting_pass::get_instance(), util::Globals::camera, util::Globals::post_process ? util::Globals::scene_fbo_ms : 0);
+			Postproc_quad::get_instance()->lighting_pass(*Lighting_pass::get_instance(), util::Globals::camera, util::Globals::scene_fbo_ms);
+			if(util::Globals::SSAO)
+			{
+				Postproc_quad::get_instance()->ssao_pass(*SSAO::get_instance(), *SSAO_blur::get_instance(), util::Globals::ssao_fbo, util::Globals::ssao_blur_fbo);
+			}
+			model.forward_tranparency(object_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 		}
 		else
-			model.draw(object_shader, util::Globals::camera, util::Globals::post_process ? util::Globals::scene_fbo_ms : 0);
+			model.draw(object_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 
 		// Draw skybox
 		if(util::Globals::skybox) 
-			Skybox::get_instance()->draw(skybox_shader, util::Globals::camera, util::Globals::post_process ? util::Globals::scene_fbo_ms : 0);
+			Skybox::get_instance()->draw(skybox_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 
 		// Post process
-		if(util::Globals::post_process)
-			Postproc_quad::get_instance()->draw(*Post_proc::get_instance());
+		Postproc_quad::get_instance()->draw(*Post_proc::get_instance());
 
 		// Draw outline
 		model.draw_outline(color_shader, util::Globals::camera);
@@ -165,7 +162,7 @@ int main(int argc, char** argv)
 			model.draw_tangent(tangent_shader, util::Globals::camera);
 
 		// Imgui user interface design
-		util::imgui_design();
+		util::imgui_design(model);
 
 		// End of imgui
 		ImGui::Render();

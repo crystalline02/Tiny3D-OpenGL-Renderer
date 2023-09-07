@@ -12,12 +12,12 @@
 
 std::unordered_map<std::string, unsigned int> Model::loaded_textures;
 std::vector<std::string> Model::model_dirs = {};
-unsigned int Model::seleted = 0;
+unsigned int Model::seleted = 1;
 
 Model::Model(const char *path, const glm::mat4& model): 
 m_model_mat(model)
 {
-    std::cout << "Loading model from" << path << "......\n";
+    std::cout << "Loading model from " << path << "......\n";
     auto start = std::chrono::high_resolution_clock::now();
     load_model(std::string(path));
     auto end = std::chrono::high_resolution_clock::now();
@@ -25,19 +25,27 @@ m_model_mat(model)
     if(model_dirs.empty())
     {
         for(const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator("./model"))
-            if(std::filesystem::is_directory(entry.path()))
-                model_dirs.push_back(entry.path().string());
+        {
+            std::string cur_dir_name = entry.path().string();
+            if(std::filesystem::is_directory(cur_dir_name))
+            {
+                size_t pos = 0;
+                while((pos = cur_dir_name.find("\\", pos)) != std::string::npos)
+                    cur_dir_name.replace(pos, 1, "/");
+                model_dirs.push_back(cur_dir_name);
+            }
+        }
     }
 }
 
 void Model::draw_normals(const Normal& normal_shader, const Camera& camera) const
 {
-    for(const Mesh& mesh: m_meshes) mesh.draw_normals(normal_shader, camera, m_model_mat);
+    for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_normals(normal_shader, camera, m_model_mat);
 }
 
 void Model::draw_tangent(const Tangent_normal &tangent_shader, const Camera &camera) const
 {
-    for(const Mesh& mesh: m_meshes) mesh.draw_tangent(tangent_shader, camera, m_model_mat);
+    for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_tangent(tangent_shader, camera, m_model_mat);
 }
 
 void Model::load_model(std::string path)
@@ -54,10 +62,18 @@ void Model::load_model(std::string path)
     process_node(scene->mRootNode, scene);
 }
 
+void Model::clear_model()
+{
+    // 这里的clear并没有clear texture buffer，后面可以加上，可能需要改动很多代码
+    m_meshes.clear();
+    m_blend_meshes_temp.clear();
+    directory.clear();
+}
+
 void Model::process_node(aiNode* node, const aiScene* scene)
 {
     for(int i = 0; i < node->mNumMeshes; ++i)
-        m_meshes.push_back(process_mesh(scene->mMeshes[node->mMeshes[i]], scene));
+        m_meshes.push_back(std::make_unique<Mesh>(*process_mesh(scene->mMeshes[node->mMeshes[i]], scene)));
     for(int i = 0; i < node->mNumChildren; ++i)
         process_node(node->mChildren[i], scene);
 }
@@ -125,7 +141,7 @@ std::vector<unsigned int> Model::retrive_texture_units(aiMaterial* material, aiT
     return texture_units;
 }
 
-Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
+Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -156,29 +172,42 @@ Mesh Model::process_mesh(aiMesh* mesh, const aiScene* scene)
     else
         material = Material();
 
-    return Mesh(vertices, indices, material);
+    return new Mesh(vertices, indices, material);
+}
+
+void Model::switch_model(Model &model, unsigned int id)
+{
+    if(seleted == id) return;
+    seleted = id;
+    for(const std::filesystem::directory_entry entry : std::filesystem::directory_iterator(model_dirs[seleted]))
+    {
+        std::string name = entry.path().string();
+        if(!std::filesystem::is_directory(name))
+            if(name.substr(name.find_last_of("."), name.size() - name.find_last_of(".")) == ".obj")
+                model.reload(name.replace(name.find("\\", 0), 1, "/"));
+    }
 }
 
 void Model::set_blend(bool isblend)
 {
-    for(Mesh& mesh: m_meshes) mesh.set_blend(isblend);
+    for(std::unique_ptr<Mesh>& mesh: m_meshes) mesh->set_blend(isblend);
 }
 
 void Model::set_cullface(bool iscull)
 {
-    for(Mesh& mesh: m_meshes) mesh.set_cullface(iscull);
+    for(std::unique_ptr<Mesh>& mesh: m_meshes) mesh->set_cullface(iscull);
 }
 
 void Model::draw(const Blinn_phong& model_shader, const Camera& camera, GLuint fbo) const
 {
     // This is not a good ideal to solve blending problem, but temporarily works
     std::map<float, const Mesh*> blend_mesh;
-    for(const Mesh& mesh: m_meshes)
+    for(const std::unique_ptr<Mesh>& mesh: m_meshes)
     {
-        if(!mesh.is_blend_mesh())
-            mesh.draw(model_shader, camera, m_model_mat, fbo);
+        if(!mesh->is_blend_mesh())
+            mesh->draw(model_shader, camera, m_model_mat, fbo);
         else  
-            blend_mesh[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh.center(), 1.f)) - camera.position())] = &mesh;
+            blend_mesh[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh->center(), 1.f)) - camera.position())] = mesh.get();
     }
     for(std::map<float, const Mesh*>::reverse_iterator it = blend_mesh.rbegin(); it != blend_mesh.rend() ; ++it)
         it->second->draw(model_shader, camera, m_model_mat);
@@ -187,30 +216,43 @@ void Model::draw(const Blinn_phong& model_shader, const Camera& camera, GLuint f
 
 void Model::gbuffer_pass(const G_buffer &shader, const Camera &camera, GLuint fbo)
 {
-    for(const Mesh& mesh: m_meshes)
+    for(const std::unique_ptr<Mesh>& mesh: m_meshes)
     {
-        if(mesh.is_blend_mesh())
-            m_blend_meshes_temp[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh.center(), 1.f)) - camera.position())] = &mesh;
+        if(mesh->is_blend_mesh())
+            m_blend_meshes_temp[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh->center(), 1.f)) - camera.position())] = mesh.get();
         else 
-            mesh.draw_gbuffer(shader, camera, m_model_mat, fbo);
+            mesh->draw_gbuffer(shader, camera, m_model_mat, fbo);
     }
 }
 
-void Model::switch_model(const std::string new_path)
+void Model::forward_tranparency(const Blinn_phong &shader, const Camera &camera, GLuint fbo)
 {
-    directory = new_path.substr(0, new_path.find_last_of("/"));
+    for(std::map<float, const Mesh*>::const_reverse_iterator it = m_blend_meshes_temp.rbegin(); it != m_blend_meshes_temp.rend(); ++it)
+        it->second->draw(shader, camera, m_model_mat, fbo);
+    // 别忘了clear这个map容器，要不然这个容器越来越大，程序越来越卡...
+    m_blend_meshes_temp.clear();
+}
+
+void Model::reload(const std::string new_path)
+{
+    clear_model();
+    std::cout << "Loading model from " << new_path << "......\n";
+    auto start = std::chrono::high_resolution_clock::now();
+    load_model(std::string(new_path));
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Model loaded, time:" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms.\n";
 }
 
 void Model::draw_outline(const Single_color& single_color, const Camera& camera) const
 {
-    for(const Mesh& mesh: m_meshes) if(mesh.is_outline()) mesh.draw_outline(single_color, camera, glm::scale(m_model_mat, glm::vec3(1.008f)));
+    for(const std::unique_ptr<Mesh>& mesh: m_meshes) if(mesh->is_outline()) mesh->draw_outline(single_color, camera, glm::scale(m_model_mat, glm::vec3(1.008f)));
     glClear(GL_STENCIL_BUFFER_BIT);
 }
 
 void Model::set_outline(bool isoutline)
 {
-    for(Mesh& mesh: m_meshes)
-        mesh.set_outline(isoutline);
+    for(std::unique_ptr<Mesh>& mesh: m_meshes)
+        mesh->set_outline(isoutline);
 }
 
 void Model::draw_depthmaps(const Cascade_map& cascade_shader, const Depth_cubemap& depth_cube_shader) const
@@ -233,12 +275,12 @@ void Model::draw_depthmaps(const Cascade_map& cascade_shader, const Depth_cubema
         if(light->type() == Light_type::SUN)
         {
             glViewport(0, 0, util::Globals::cascade_size, util::Globals::cascade_size);
-            for(const Mesh& mesh: m_meshes) mesh.draw_depthmap(cascade_shader, *light, m_model_mat);
+            for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(cascade_shader, *light, m_model_mat);
         }
         else
         {
             glViewport(0, 0, util::Globals::cubemap_size, util::Globals::cubemap_size);
-            for(const Mesh& mesh: m_meshes) mesh.draw_depthmap(depth_cube_shader, *light, m_model_mat);
+            for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(depth_cube_shader, *light, m_model_mat);
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

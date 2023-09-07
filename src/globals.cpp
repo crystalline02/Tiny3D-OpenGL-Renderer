@@ -6,9 +6,11 @@
 #include "light.h"
 #include "model.h"
 #include "skybox.h"
-#include "postproc.h"
+#include "quad.h"
+#include "model.h"
 
 #include <chrono>
+#include <random>
 #include <imgui.h>
 
 bool util::Globals::first_mouse = true,
@@ -19,9 +21,9 @@ bool util::Globals::first_mouse = true,
     util::Globals::visualize_tangent = false,
     util::Globals::wireframe = false,
     util::Globals::hdr = false,
-    util::Globals::post_process = false,
     util::Globals::bloom = false,
-    util::Globals::deferred_rendering = false;
+    util::Globals::deferred_rendering = false,
+    util::Globals::SSAO = false;
 double util::Globals::last_xpos = 0.f, 
     util::Globals::last_ypos = 0.f,
     util::Globals::delta_time = 0.f,
@@ -30,7 +32,8 @@ float util::Globals::normal_magnitude = 0.2f,
     util::Globals::tangent_magnitude = 0.2f,
     util::Globals::shadow_bias = 0.0005f,
     util::Globals::exposure = 1.f,
-    util::Globals::threshold = 1.f;
+    util::Globals::threshold = 1.f,
+    util::Globals::ssao_radius = 0.15f;
 int util::Globals::cascade_size = 1024,
     util::Globals::cubemap_size = 1024;
 GLuint util::Globals::scene_fbo_ms, 
@@ -39,7 +42,12 @@ GLuint util::Globals::scene_fbo_ms,
     util::Globals::pingpong_colorbuffers_units[2],
     util::Globals::blur_brightimage_unit,
     util::Globals::Gbuffer_fbo,
-    util::Globals::G_color_units[4];
+    util::Globals::G_color_units[5],
+    util::Globals::ssao_fbo,
+    util::Globals::ssao_color_unit,
+    util::Globals::ssao_noisetex_unit,
+    util::Globals::ssao_blur_fbo,
+    util::Globals::ssao_blur_unit;
 
 // Camera util::Globals::camera(1920, 1080, glm::vec3(0.f, 2.f, 6.f), -90.f, 0.f, 45.f, 0.1f, 100.f, glm::vec3(0.f, 1.f, 0.f));
 Camera util::Globals::camera = Camera(1920, 1080, glm::vec3(0.f), 4.f);
@@ -252,7 +260,7 @@ void util::create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void util::imgui_design()
+void util::imgui_design(Model& model)
 {
     ImGui::Begin("Settings");
 	ImGui::ColorEdit3("Backgroud", glm::value_ptr(Globals::bg_color));
@@ -344,21 +352,17 @@ void util::imgui_design()
     }
     if(ImGui::CollapsingHeader("postprocess"))
     {
-        ImGui::Checkbox("posteffects", &Globals::post_process);
-        if(Globals::post_process)
+        ImGui::Checkbox("HDR", &Globals::hdr);
+        if(Globals::hdr)
         {
-            ImGui::Checkbox("HDR", &Globals::hdr);
-            if(Globals::hdr)
-            {
-                ImGui::SameLine();
-                ImGui::SliderFloat("exposure", &Globals::exposure, 0.f, 5.f);
-            }
-            ImGui::Checkbox("bloom", &Globals::bloom);
-            if(Globals::bloom)
-            {
-                ImGui::SameLine();
-                ImGui::SliderFloat("threshold", &Globals::threshold, 0.f, 5.f);
-            }
+            ImGui::SameLine();
+            ImGui::SliderFloat("exposure", &Globals::exposure, 0.f, 5.f);
+        }
+        ImGui::Checkbox("bloom", &Globals::bloom);
+        if(Globals::bloom)
+        {
+            ImGui::SameLine();
+            ImGui::SliderFloat("threshold", &Globals::threshold, 0.f, 5.f);
         }
     }
     std::vector<std::string> model_dirs = Model::all_models();
@@ -366,7 +370,7 @@ void util::imgui_design()
     {
         for(int i = 0; i < model_dirs.size(); ++i)
             if(ImGui::Selectable(model_dirs[i].c_str()))
-                Model::set_selected(i);
+                Model::switch_model(model, i);
         ImGui::EndCombo();
     }
     ImGui::Checkbox("normal", &Globals::visualize_normal);
@@ -415,17 +419,47 @@ void util::imgui_design()
         ImGui::EndCombo();
     }
     ImGui::Checkbox("deferred rendering(experimental)", &Globals::deferred_rendering);
+    if(Globals::deferred_rendering)
+    {
+        ImGui::Checkbox("SSAO", &Globals::SSAO);
+        if(Globals::SSAO)
+        {
+            ImGui::SameLine();
+            ImGui::SliderFloat("radius", &Globals::ssao_radius, 0.01f, 0.3f);
+        }
+    }
     ImGui::Checkbox("wireframe", &Globals::wireframe);
 	ImGui::Checkbox("blend", &Globals::blend);
 	ImGui::Checkbox("cull face", &Globals::cull_face);
 	ImGui::End();
 }
 
-void util::genFBOs()
+std::array<glm::vec3, 64> util::get_ssao_samples()
+{
+    std::array<glm::vec3, 64> samples;
+    std::uniform_real_distribution<float> rand(0.f, 1.f);
+    std::default_random_engine generator;
+    for(unsigned int i = 0; i < 64; ++i)
+    {
+        float scale = float(i) / 64.f;
+        scale = .1f * (1.f - scale * scale) + scale * scale * 1.f;
+        glm::vec3 sample = glm::vec3(rand(generator) * 2.f - 1.f,
+            rand(generator) * 2.f - 1.f,
+            rand(generator)
+        );
+        sample = glm::normalize(sample) * scale;
+        samples[i] = sample;
+    }
+    return samples;
+}
+
+void util::gen_FBOs()
 {
     create_scene_framebuffer_ms(Globals::scene_fbo_ms, Globals::scene_unit);
     create_pingpong_framebuffer_ms(Globals::pingpong_fbos, Globals::pingpong_colorbuffers_units);
     create_G_frambuffer(Globals::Gbuffer_fbo, Globals::G_color_units);
+    create_ssao_framebuffer(Globals::ssao_fbo, Globals::ssao_blur_fbo, 
+        Globals::ssao_color_unit, Globals::ssao_blur_unit, Globals::ssao_noisetex_unit);
 }
 
 void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
@@ -600,7 +634,68 @@ void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, GLuint& depth_cube
     {
         std::cout << "Depth framebuffer incomplete!\n";
         exit(1);
+
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void util::create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo, GLuint &ssao_color_unit, 
+    GLuint &ssao_blur_unit, GLuint &ssao_noisetex_unit)
+{
+    // create ssao_noisetex used to generate random vector to generate tiled TBN matrix for placing the ssao samples
+    std::array<glm::vec3, 16> rand_vector;
+    std::uniform_real_distribution<float> rand(0.f, 1.f);
+    std::default_random_engine generator;
+    for(int i = 0; i < 16; ++i)
+    {
+        rand_vector[i] = glm::vec3(rand(generator) * 2.f - 1.f,
+            rand(generator) * 2.f - 1.f,
+            0.f);
+    }
+
+    GLuint noisetex;
+    glGenTextures(1, &noisetex);
+    ssao_noisetex_unit = Model::num_textures();
+    Model::add_texture("SSAO noisetex", ssao_noisetex_unit);
+    glActiveTexture(GL_TEXTURE0 + ssao_noisetex_unit);
+    glBindTexture(GL_TEXTURE_2D, noisetex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &rand_vector[0]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    
+    // create ssao framebuffer
+    glGenFramebuffers(1, &ssao_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, ssao_fbo);
+    GLuint ssao_color_buffer;
+    glGenTextures(1, &ssao_color_buffer);
+    ssao_color_unit = Model::num_textures();
+    Model::add_texture("SSAO color buffer", ssao_color_unit);
+    glActiveTexture(GL_TEXTURE0 + ssao_color_unit);
+    glBindTexture(GL_TEXTURE_2D, ssao_color_buffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, util::Globals::camera.width(), util::Globals::camera.height(),
+        0, GL_RED, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssao_color_buffer, 0);
+
+    // create ssao_blur framebuffer
+    glGenFramebuffers(1, &ssao_blur_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, ssao_blur_fbo);
+    GLuint ssao_blur_buffer;
+    glGenTextures(1, &ssao_blur_buffer);
+    ssao_blur_unit = Model::num_textures();
+    Model::add_texture("SSAO blur buffer", ssao_blur_unit);
+    glActiveTexture(GL_TEXTURE0 + ssao_blur_unit);
+    glBindTexture(GL_TEXTURE_2D, ssao_blur_buffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, util::Globals::camera.width(), util::Globals::camera.height(), 0,
+        GL_RED, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssao_blur_buffer, 0);
+
+    glActiveTexture(GL_TEXTURE0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

@@ -36,6 +36,7 @@ public:
     void draw_tangent(const Tangent_normal &shader, const Camera &camera, const glm::mat4 &model) const;
     void draw_outline(const Single_color &shader, const Camera &camera, const glm::mat4 &model) const;
     void draw_depthmap(const Depth_shader &depth_shader, const Light &light, const glm::mat4 &model) const;
+    void clear();
     inline bool is_blend_mesh() const { return m_material.is_blend_mat(); }
     inline glm::vec3 center() const { return m_center; }
     inline void set_outline(bool isoutline) { m_outlined = isoutline; }

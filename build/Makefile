@@ -56,10 +56,10 @@ RM = "C:\Program Files\CMake\bin\cmake.exe" -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2
+CMAKE_SOURCE_DIR = C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build
+CMAKE_BINARY_DIR = C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -86,9 +86,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\\CMakeFiles\progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\\CMakeFiles\progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.2\build\CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\build\CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -309,29 +309,29 @@ src/model.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/model.cpp.s
 .PHONY : src/model.cpp.s
 
-src/postproc.obj: src/postproc.cpp.obj
-.PHONY : src/postproc.obj
+src/quad.obj: src/quad.cpp.obj
+.PHONY : src/quad.obj
 
 # target to build an object file
-src/postproc.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/postproc.cpp.obj
-.PHONY : src/postproc.cpp.obj
+src/quad.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/quad.cpp.obj
+.PHONY : src/quad.cpp.obj
 
-src/postproc.i: src/postproc.cpp.i
-.PHONY : src/postproc.i
+src/quad.i: src/quad.cpp.i
+.PHONY : src/quad.i
 
 # target to preprocess a source file
-src/postproc.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/postproc.cpp.i
-.PHONY : src/postproc.cpp.i
+src/quad.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/quad.cpp.i
+.PHONY : src/quad.cpp.i
 
-src/postproc.s: src/postproc.cpp.s
-.PHONY : src/postproc.s
+src/quad.s: src/quad.cpp.s
+.PHONY : src/quad.s
 
 # target to generate assembly for a file
-src/postproc.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/postproc.cpp.s
-.PHONY : src/postproc.cpp.s
+src/quad.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/quad.cpp.s
+.PHONY : src/quad.cpp.s
 
 src/shader.obj: src/shader.cpp.obj
 .PHONY : src/shader.obj
@@ -412,9 +412,9 @@ help:
 	@echo ... src/model.obj
 	@echo ... src/model.i
 	@echo ... src/model.s
-	@echo ... src/postproc.obj
-	@echo ... src/postproc.i
-	@echo ... src/postproc.s
+	@echo ... src/quad.obj
+	@echo ... src/quad.i
+	@echo ... src/quad.s
 	@echo ... src/shader.obj
 	@echo ... src/shader.i
 	@echo ... src/shader.s

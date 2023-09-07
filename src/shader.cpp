@@ -247,7 +247,6 @@ void Blinn_phong::set_uniforms(const Material& material, const Camera& camera, c
         }
     }
     util::set_bool("bloom", util::Globals::bloom, program_id);
-    util::set_bool("gamma_correct", !util::Globals::post_process, program_id);
     util::set_float("threshold", util::Globals::threshold, program_id);
     util::set_int("point_lights_count", Light::point_lights_count(), program_id);
     util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
@@ -353,7 +352,6 @@ void Post_proc::set_uniforms(GLuint image_unit, GLuint blured_image_unit) const
     util::set_int("image", image_unit, program_id);
     util::set_int("blured_brightness", blured_image_unit, program_id);
     util::set_bool("hdr", util::Globals::hdr, program_id);
-    util::set_bool("gamma_correct", util::Globals::post_process, program_id);
     util::set_bool("bloom", util::Globals::bloom, program_id);
     util::set_float("exposure", util::Globals::exposure, program_id);
 }
@@ -363,22 +361,39 @@ Post_proc *Post_proc::get_instance()
     return instance ? instance : new Post_proc();
 }
 
-Blur* Blur::instance = nullptr;
+Bloom_blur* Bloom_blur::instance = nullptr;
 
-Blur::Blur(): Shader("./shader/blur")
+Bloom_blur::Bloom_blur(): Shader("./shader/bloom_blur")
 {
 
 }
 
-void Blur::set_uniforms(GLuint image_unit, bool horizental) const
+void Bloom_blur::set_uniforms(GLuint image_unit, bool horizental) const
 {
     util::set_int("image", image_unit, program_id);
     util::set_bool("horizental", horizental, program_id);
 }
 
-Blur *Blur::get_instance()
+Bloom_blur *Bloom_blur::get_instance()
 {
-    return instance ? instance : new Blur();
+    return instance ? instance : new Bloom_blur();
+}
+
+SSAO_blur* SSAO_blur::instance = nullptr;
+
+SSAO_blur *SSAO_blur::get_instance()
+{
+    return instance ? instance : new SSAO_blur();
+}
+
+void SSAO_blur::set_uniforms() const
+{
+    util::set_int("ssao_buffer", util::Globals::ssao_color_unit, program_id);
+}
+
+SSAO_blur::SSAO_blur() : Shader("./shader/ssao_blur")
+{
+    
 }
 
 void G_buffer::set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const
@@ -401,6 +416,30 @@ G_buffer *G_buffer::get_instance()
     return instance ? instance : new G_buffer();
 }
 
+void SSAO::set_uniforms() const
+{
+    util::set_int("position_buffer", util::Globals::G_color_units[0], program_id);
+    util::set_int("surface_normal", util::Globals::G_color_units[2], program_id);
+    util::set_int("noise_tex", util::Globals::ssao_noisetex_unit, program_id);
+    util::set_float("radius", util::Globals::ssao_radius, program_id);
+    // Here I take samples when assigning uniforms, which means smaples differs per rendering frame per fragment
+    std::array<glm::vec3, 64> samples = util::get_ssao_samples();
+    for(int i = 0; i < 64; ++i)
+        util::set_floats(("samples[" + std::to_string(i) + "]").c_str(), samples[i], program_id);
+}
+
+SSAO *SSAO::get_instance()
+{
+    return instance ? instance : new SSAO();
+}
+
+SSAO* SSAO::instance = nullptr;
+
+SSAO::SSAO() : Shader("./shader/ssao")
+{
+
+}
+
 void Lighting_pass::set_uniforms(const Camera &camera) const
 {
     util::set_int("position_buffer", util::Globals::G_color_units[0], program_id);
@@ -408,6 +447,7 @@ void Lighting_pass::set_uniforms(const Camera &camera) const
     util::set_int("surface_normal", util::Globals::G_color_units[2], program_id);
     util::set_int("albedo_specular", util::Globals::G_color_units[3], program_id);
     util::set_int("ambient_buffer", util::Globals::G_color_units[4], program_id);
+    util::set_int("ssao_buffer", util::Globals::ssao_blur_unit, program_id);
     util::set_int("point_lights_count", Light::point_lights_count(), program_id);
     util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
     util::set_int("direction_lights_count", Light::direction_lights_count(), program_id);
@@ -441,8 +481,8 @@ void Lighting_pass::set_uniforms(const Camera &camera) const
     for(int i = 0; i < util::Globals::cascade_levels.size(); ++i)
         util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], program_id);
     util::set_int("cascade_count", util::Globals::cascade_levels.size(), program_id);
-    util::set_int("gamma_correct", !util::Globals::post_process, program_id);
     util::set_float("threshold", util::Globals::threshold, program_id);
+    util::set_bool("ssao", util::Globals::SSAO, program_id);
 }
 
 Lighting_pass *Lighting_pass::get_instance()

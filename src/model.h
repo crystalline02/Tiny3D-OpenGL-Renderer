@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <memory>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -29,27 +30,30 @@ public:
     Model(const char *path, const glm::mat4& model = glm::mat4(1.f));
     void draw(const Blinn_phong &shader, const Camera& camera, GLuint fbo = 0) const;
     void gbuffer_pass(const G_buffer &shader, const Camera& camera, GLuint fbo);
+    void forward_tranparency(const Blinn_phong &shader, const Camera& camera, GLuint fbo);
     void draw_normals(const Normal &shader, const Camera &camera) const;
     void draw_tangent(const Tangent_normal &shader, const Camera &camera) const;
     void draw_outline(const Single_color &shader, const Camera &camera) const;
     void draw_depthmaps(const Cascade_map &shader_cascade, const Depth_cubemap &shader_depthcube) const;
-    void switch_model(const std::string new_path);
+    void reload(const std::string new_path);
     inline void set_model(glm::mat4 model) { m_model_mat = model; }
+    static void switch_model(Model &model, unsigned int id);
     inline static GLuint num_textures() { return Model::loaded_textures.size(); }
     inline static std::vector<std::string> all_models() { return model_dirs; }
     inline static unsigned int seleted_model() { return seleted; }
-    inline static void set_selected(unsigned int id) { seleted = id; }
     inline static void add_texture(const char* path, unsigned int unit) { Model::loaded_textures[path] = unit; }
     void set_blend(bool isblend);
     void set_outline(bool isoutline);
     void set_cullface(bool iscull);
 private:
     void load_model(std::string path);
+    void clear_model();
     void process_node(aiNode* node, const aiScene* scene);
-    Mesh process_mesh(aiMesh* mesh, const aiScene* scene);
+    Mesh* process_mesh(aiMesh* mesh, const aiScene* scene);
     std::vector<unsigned int> retrive_texture_units(aiMaterial* materia, aiTextureType type);
     Material process_material(aiMaterial* material);
-    std::vector<Mesh> m_meshes;
+
+    std::vector<std::unique_ptr<Mesh>> m_meshes;  // unique_ptr
     std::map<float, const Mesh*> m_blend_meshes_temp;
     std::string directory;
     glm::mat4 m_model_mat;

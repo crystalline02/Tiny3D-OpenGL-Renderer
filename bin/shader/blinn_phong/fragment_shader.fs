@@ -99,7 +99,6 @@ layout(std140, Binding = 2) uniform Light_matrices
 };
 
 uniform bool bloom;
-uniform bool gamma_correct;
 uniform float threshold;
 uniform float bias;
 uniform Skybox skybox;
@@ -117,7 +116,6 @@ uniform Direction_light direction_lights[8];
 uniform float cascade_levels[10];
 uniform int cascade_count;
 
-const float gamma = 2.2f;
 const float parallel_map_scale = .028f;
 const float min_layer = 8.f;
 const float max_layer = mix(32.f, 64.f, parallel_map_scale / 0.05f);
@@ -170,9 +168,6 @@ void main()
     result += ambient;
     result += caculate_skybox(skybox, material);
     
-    // gamma correction
-    if(gamma_correct) result = pow(result, 1.f / vec3(gamma));
-
     float alpha = material.use_opacity_map ? texture(material.opacity_maps[0], fs_in.texture_coord).r : material.opacity;
     FragColor = vec4(result, alpha);
     if(bloom)

@@ -19,11 +19,7 @@ m_vertices(vertices), m_indices(indices), m_material(material), m_isblend(false)
 
 Mesh::~Mesh()
 {
-    glDeleteBuffers(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteBuffers(1, &VAO_normal);
-    glDeleteBuffers(1, &VAO_tangent);
+    clear();
 }
 
 void Mesh::setup_mesh()
@@ -180,4 +176,13 @@ void Mesh::draw_depthmap(const Depth_shader& depth_shader, const Light& light, c
     
     glDisable(GL_DEPTH_TEST);
     glBindVertexArray(0);
+}
+
+void Mesh::clear()
+{
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &VAO_normal);
+    glDeleteVertexArrays(1, &VAO_tangent);
 }
