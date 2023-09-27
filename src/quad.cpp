@@ -75,7 +75,7 @@ void Postproc_quad::ssao_pass(const SSAO &shader, const SSAO_blur &blur_shader, 
 
 void Postproc_quad::run_blur(const Bloom_blur &shader, GLuint &blur_buffer_unit) const
 {
-    assert(shader.shader_dir() == "./shader/blur");
+    assert(shader.shader_dir() == "./shader/bloom_blur");
     if(!util::Globals::bloom) 
     {
         blur_buffer_unit = -1;
