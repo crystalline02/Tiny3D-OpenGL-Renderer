@@ -164,7 +164,6 @@ int main(int argc, char** argv)
 		// Imgui user interface design
 		util::imgui_design(model);
 
-
 		// End of imgui
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

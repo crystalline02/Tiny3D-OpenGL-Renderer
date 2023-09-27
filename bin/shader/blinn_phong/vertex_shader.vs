@@ -28,8 +28,8 @@ void main()
 	我在笔记上有写出每一步计算的坐标的表达式
 
 	另外，提一提表达式，经过M_presp得到的坐标为[nx, ny, z(n+f)-nf, z]（这里xyz表示顶点在view space下的坐标，我们从view space开始看）
-	再做平移缩放，经过M_orth后坐标为[/frac{x}{ratio*tan(halffov)}, /frac{y}{tan(halffov)}, /frac{z(n+f)}{n-f} - /frac{2nf}{(f-n)}, z]，这就是NDC下[-1, 1]^3（自动计算完成）的坐标，也即此处的gl_Positon；
-	然后在自动执行透视除法，得到坐标[/frac{x}{z*ratio*tan(halffov)}, /frac{y}{z*tan(halffov)}, /frac{(n+f)}{n-f} - /frac{2nf}{z(f-n)},z]；
+	再做平移缩放，经过M_orth后坐标为[/frac{x}{ratio*tan(halffov)}, /frac{y}{tan(halffov)}, /frac{z(n+f)}{n-f} - /frac{2nf}{(f-n)}, z]，即此处的gl_Positon，空间为clip space；
+	然后在自动执行透视除法，得到坐标[/frac{x}{z*ratio*tan(halffov)}, /frac{y}{z*tan(halffov)}, /frac{(n+f)}{n-f} - /frac{2nf}{z(f-n)},z],这就是NDC下[-1, 1]^3（自动计算完成）的坐标，空间为ndc space；
 	*/
     gl_Position = model * vec4(aPos, 1.f);  // local space -> world space
     vs_out.normal = normalize(normal_mat * aNormal);  // local space -> world space
