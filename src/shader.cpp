@@ -496,3 +496,13 @@ Lighting_pass::Lighting_pass() : Shader("./shader/lighting_pass")
 {
     
 }
+
+PBR::PBR(): Shader("./shader/physically_based")
+{
+
+}
+
+void PBR::set_uniforms() const
+{
+    
+}

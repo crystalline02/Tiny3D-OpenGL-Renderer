@@ -80,6 +80,7 @@ int main(int argc, char** argv)
 	Cascade_map cascade_shader;
 	Depth_cubemap depth_cube_shader;
 	Tangent_normal tangent_shader;
+	PBR pbr_shader;
 
 	// Lights
 	Point_light light1(glm::vec3(2.f, 1.5f, -2.f), glm::vec3(1.f, .1f, .1f), 4.2f);

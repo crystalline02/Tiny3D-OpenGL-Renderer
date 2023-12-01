@@ -39,6 +39,13 @@ public:
     void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const;
 };
 
+class PBR: public Shader
+{
+public:
+    PBR();
+    void set_uniforms() const;
+};
+
 class Single_color: public Shader
 {
 public:
