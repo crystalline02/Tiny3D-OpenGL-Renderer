@@ -12,7 +12,13 @@ out VS_OUT
     vec2 texture_coord;  // UV
 } vs_out;
 
+uniform mat4 model;
+uniform mat3 normal_mat;
+
 void main()
 {
-    
+    gl_Position = model * vec4(aPos, 1.f);  // world
+    vs_out.normal = normalize(normal_mat * aNormal);  // world
+    vs_out.tangent = normalize(normal_mat * aTangent);  // world
+    vs_out.texture_coord = aTextureCoord;
 }
