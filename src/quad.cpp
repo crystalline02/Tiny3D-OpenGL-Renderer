@@ -16,7 +16,7 @@ void Postproc_quad::draw(const Post_proc& shader) const
     assert(shader.shader_dir() == "./shader/post_quad");
     if(util::Globals::bloom)
         run_blur(*Bloom_blur::get_instance(), util::Globals::blur_brightimage_unit);
-
+    
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     shader.use();
     shader.set_uniforms(util::Globals::scene_unit[0], util::Globals::blur_brightimage_unit);

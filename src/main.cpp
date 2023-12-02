@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 	Model model("./model/cubes/cubes.obj");
 
 	// Shaders
-	Blinn_phong object_shader;
+	Blinn_phong bp_shader;
 	Single_color color_shader;
 	Sky_cube skybox_shader;
 	Normal normal_shader;
@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// Render preperation, mainly clear framebuffer
+		// Rendering preperation, mainly clearing framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);  // 设置ClearColor的值
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // 使用ClearColor的值来clearGL_COLOR_BUFFER_BIT,GL_DEPTH_BUFFER_BIT默认为1.f，GL_STENCIL_BUFFER_BIT默认为0
@@ -116,10 +116,10 @@ int main(int argc, char** argv)
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-		glEnable(GL_MULTISAMPLE);
+		glEnable(GL_MULTISAMPLE); 
 		Shader::update_uniform_blocks(util::Globals::camera);
-		glm::mat4 model_mat(1.f);
-		model_mat = glm::rotate(model_mat, glm::radians((float)glfwGetTime() * 15.f), glm::vec3(0.f, 1.f, 0.f));
+		// glm::mat4 model_mat(1.f);
+		// model_mat = glm::rotate(model_mat, glm::radians((float)glfwGetTime() * 15.f), glm::vec3(0.f, 1.f, 0.f));
 		// model.set_model(model_mat);
 		model.set_cullface(util::Globals::cull_face);
 		model.set_blend(util::Globals::blend);
@@ -136,10 +136,10 @@ int main(int argc, char** argv)
 			{
 				Postproc_quad::get_instance()->ssao_pass(*SSAO::get_instance(), *SSAO_blur::get_instance(), util::Globals::ssao_fbo, util::Globals::ssao_blur_fbo);
 			}
-			model.forward_tranparency(object_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.forward_tranparency(bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 		}
 		else
-			model.draw(object_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.draw(bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 
 		// Draw skybox
 		if(util::Globals::skybox) 
@@ -153,7 +153,7 @@ int main(int argc, char** argv)
 
 		// Draw light
 		Light_vertices::get_instance()->draw(color_shader, util::Globals::camera);
-
+		
 		// Draw model normals
 		if(util::Globals::visualize_normal)
 			model.draw_normals(normal_shader, util::Globals::camera);

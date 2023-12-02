@@ -10,24 +10,22 @@ uniform float exposure;
 
 out vec4 FragColor;
 
-const float gamma = 2.2f;
-
-vec3 gamma_correction(vec3 color);
-vec4 gamma_decorrection(vec4 color);
 
 void main()
 {
-    vec4 image_sample = vec4(0.f);
+    vec3 sample_color = vec3(0.f);
+    float sample_alpha = 0.f;
     for(int i = 0; i < 4; ++i)
     {
         vec4 sub_sample = texelFetch(image, ivec2(gl_FragCoord.xy), i);
-        image_sample += sub_sample.a <= 0.0001f ? gamma_decorrection(sub_sample) : sub_sample;
+        sample_color += sub_sample.rgb;
+        sample_alpha = max(sample_alpha, sub_sample.a);
     }
-    image_sample *= .25f;
-    if(image_sample.a <= 0.0001f) discard;
+    sample_color *= .25f;
+    // if(sample_alpha <= 0.0001f) discard;
 
-    vec3 result = image_sample.rgb;
-    if(bloom)
+    vec3 result = sample_color;
+    if(bloom && sample_alpha > 0.0001f)
     {
         vec3 brighness_sample = vec3(0.f);
         for(int i = 0; i < 4; ++i)
@@ -35,17 +33,6 @@ void main()
         brighness_sample *= .25f;
         result += brighness_sample;
     }
-    if(hdr) result = vec3(1.f) - exp(-result * exposure);
-    result = gamma_correction(result);
+    if(hdr && sample_alpha > 0.0001f) result = vec3(1.f) - exp(-result * exposure);
     FragColor = vec4(result, 1.f);
-}
-
-vec3 gamma_correction(vec3 color)
-{
-    return pow(color, vec3(1.f / gamma));
-}
-
-vec4 gamma_decorrection(vec4 color)
-{
-    return vec4(pow(color.rgb, vec3(gamma)), color.a);
 }

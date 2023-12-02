@@ -205,12 +205,18 @@ void Model::draw(const Blinn_phong& model_shader, const Camera& camera, GLuint f
     for(const std::unique_ptr<Mesh>& mesh: m_meshes)
     {
         if(!mesh->is_blend_mesh())
+        {
             mesh->draw(model_shader, camera, m_model_mat, fbo);
-        else  
+        }
+        else 
+        {
             blend_mesh[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh->center(), 1.f)) - camera.position())] = mesh.get();
+        }
     }
     for(std::map<float, const Mesh*>::reverse_iterator it = blend_mesh.rbegin(); it != blend_mesh.rend() ; ++it)
-        it->second->draw(model_shader, camera, m_model_mat);
+    {
+        it->second->draw(model_shader, camera, m_model_mat, fbo);
+    }
     blend_mesh.clear();
 }
 

@@ -131,6 +131,7 @@ vec3 get_shading_normal(Material material, vec2 texture_coord);
 vec2 get_parallax_mapping_texturecoord(vec2 texture_coord, Material material, vec3 view_dir);
 mat3 orthogonalize_TBN(mat3 fs_TBN);
 float gray_scale(vec3 color);
+vec3 gamma_correct(vec3 color);
 
 float calculate_cascade_shadow(Direction_light light, int index);
 float calculate_cubemap_shadow(Point_light light, vec3 light_dir);
@@ -146,7 +147,9 @@ void main()
     先着色再深度测试，early depth testing就没有用了
     */
     // 所有位置相关向量和方向相关向量都都是在world space下的
-    if(material.opacity < 0.0001f || (material.use_opacity_map && texture(material.opacity_maps[0], fs_in.texture_coord).r < 0.0001f)) discard;
+    if(material.opacity < 0.0001f 
+    || (material.use_opacity_map && texture(material.opacity_maps[0], fs_in.texture_coord).r < 0.0001f)) 
+        discard;
 
     vec3 result = vec3(0.f);
     vec3 ambient = vec3(0.f);  // Ambient is isolated form specular and diffuse
@@ -169,7 +172,11 @@ void main()
     result += caculate_skybox(skybox, material);
     
     float alpha = material.use_opacity_map ? texture(material.opacity_maps[0], fs_in.texture_coord).r : material.opacity;
+    result = gamma_correct(result);
     FragColor = vec4(result, alpha);
+    /* 需要提一句，blend function发生在fragment shader计算一个像素的FragColor之后和一个vec4写入frame buffer
+    之前，也就是说如果开启了blend，在FragColor之后还有一次计算
+    */
     if(bloom)
     {
         float brightness = dot(result, vec3(0.2126f, 0.7152f, 0.0722f));
@@ -395,4 +402,9 @@ mat3 orthogonalize_TBN(mat3 fs_TBN)
 float gray_scale(vec3 color)
 {
     return 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
+}
+
+vec3 gamma_correct(vec3 color)
+{
+    return pow(color, vec3(1.f / 2.2f));
 }
