@@ -1,110 +1,110 @@
 [
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\camera.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\camera.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/camera.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\camera.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\camera.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/camera.cpp",
   "output": "CMakeFiles/renderer.dir/src/camera.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\globals.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\globals.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/globals.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\globals.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\globals.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/globals.cpp",
   "output": "CMakeFiles/renderer.dir/src/globals.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\light.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\light.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/light.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\light.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\light.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/light.cpp",
   "output": "CMakeFiles/renderer.dir/src/light.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\main.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\main.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/main.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\main.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\main.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/main.cpp",
   "output": "CMakeFiles/renderer.dir/src/main.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\material.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\material.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/material.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\material.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\material.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/material.cpp",
   "output": "CMakeFiles/renderer.dir/src/material.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\mesh.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\mesh.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/mesh.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\mesh.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\mesh.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/mesh.cpp",
   "output": "CMakeFiles/renderer.dir/src/mesh.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\model.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\model.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/model.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\model.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\model.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/model.cpp",
   "output": "CMakeFiles/renderer.dir/src/model.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\quad.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\quad.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/quad.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\quad.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\quad.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/quad.cpp",
   "output": "CMakeFiles/renderer.dir/src/quad.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\shader.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\shader.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/shader.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\shader.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\shader.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/shader.cpp",
   "output": "CMakeFiles/renderer.dir/src/shader.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\skybox.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\src\\skybox.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/src/skybox.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\skybox.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\src\\skybox.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/src/skybox.cpp",
   "output": "CMakeFiles/renderer.dir/src/skybox.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\imgui\\imgui.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\imgui\\imgui.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/imgui.cpp",
   "output": "imgui/CMakeFiles/imgui.dir/imgui.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_demo.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\imgui\\imgui_demo.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_demo.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_demo.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\imgui\\imgui_demo.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/imgui_demo.cpp",
   "output": "imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_draw.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\imgui\\imgui_draw.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_draw.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_draw.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\imgui\\imgui_draw.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/imgui_draw.cpp",
   "output": "imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_impl_glfw.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\imgui\\imgui_impl_glfw.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_impl_glfw.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_impl_glfw.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\imgui\\imgui_impl_glfw.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/imgui_impl_glfw.cpp",
   "output": "imgui/CMakeFiles/imgui.dir/imgui_impl_glfw.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_impl_opengl3.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\imgui\\imgui_impl_opengl3.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_impl_opengl3.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_impl_opengl3.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\imgui\\imgui_impl_opengl3.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/imgui_impl_opengl3.cpp",
   "output": "imgui/CMakeFiles/imgui.dir/imgui_impl_opengl3.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_stdlib.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\imgui\\imgui_stdlib.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_stdlib.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_stdlib.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\imgui\\imgui_stdlib.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/imgui_stdlib.cpp",
   "output": "imgui/CMakeFiles/imgui.dir/imgui_stdlib.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_tables.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\imgui\\imgui_tables.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_tables.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_tables.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\imgui\\imgui_tables.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/imgui_tables.cpp",
   "output": "imgui/CMakeFiles/imgui.dir/imgui_tables.cpp.obj"
 },
 {
-  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui",
-  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_widgets.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.3\\imgui\\imgui_widgets.cpp",
-  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/imgui_widgets.cpp",
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\imgui_widgets.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.4\\imgui\\imgui_widgets.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/imgui_widgets.cpp",
   "output": "imgui/CMakeFiles/imgui.dir/imgui_widgets.cpp.obj"
 }
 ]

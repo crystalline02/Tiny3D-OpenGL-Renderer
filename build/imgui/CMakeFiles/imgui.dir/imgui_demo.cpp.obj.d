@@ -1,7 +1,7 @@
 imgui/CMakeFiles/imgui.dir/imgui_demo.cpp.obj: \
- C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.3\imgui\imgui_demo.cpp \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/include/imgui.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/imgui/include/imconfig.h \
+ C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.4\imgui\imgui_demo.cpp \
+ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/include/imgui.h \
+ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/imgui/include/imconfig.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/float.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/float.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/crtdefs.h \

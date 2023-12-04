@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3
+# Install script for directory: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/imgui/cmake_install.cmake")
+  include("C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/imgui/cmake_install.cmake")
 
 endif()
 
@@ -51,5 +51,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.3/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
