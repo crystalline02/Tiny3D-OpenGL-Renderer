@@ -101,7 +101,6 @@ uniform Direction_light direction_lights[8];
 uniform Material material;
 uniform Skybox skybox;
 
-
 void main()
 {
     
