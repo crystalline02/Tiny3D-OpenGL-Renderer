@@ -211,7 +211,12 @@ void Shader::set_viewpos(const glm::vec3& view_pos) const
     util::set_floats("view_pos", view_pos, program_id);
 }
 
-Blinn_phong::Blinn_phong(): Shader("./shader/blinn_phong") 
+Object_shader::Object_shader(std::string dir_path): Shader(dir_path)
+{
+
+}
+
+Blinn_phong::Blinn_phong(): Object_shader("./shader/blinn_phong") 
 {     
 
 }
@@ -258,6 +263,43 @@ void Blinn_phong::set_uniforms(const Material& material, const Camera& camera, c
     Skybox::set_uniforms("skybox", camera, program_id);
 }
 
+PBR::PBR(): Object_shader("./shader/physically_based")
+{
+
+}
+
+void PBR::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
+{
+    util::set_mat("model", model, program_id);
+    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);
+    std::vector<Light*> all_lights = Light::get_lights();
+    for(Light*& light : all_lights)
+    {
+        switch(light->type())
+        {
+        case Light_type::POINT:
+        {
+            light->set_uniforms("point_lights", program_id);
+            break;
+        }
+        case Light_type::SPOT:
+        {
+            light->set_uniforms("spot_lights", program_id);
+            break;
+        }
+        case Light_type::SUN:
+        {
+            light->set_uniforms("direction_lights", program_id);
+            break;
+        }
+        defalut:
+            break;
+        }
+    }
+    material.set_uniforms("material", program_id);
+    Skybox::set_uniforms("skybox", camera, program_id);
+}
+
 Single_color::Single_color(): Shader("./shader/single_color") 
 {
     // Bind current shader's Matices uniform block to Binding Point 0
@@ -271,7 +313,7 @@ void Single_color::set_uniforms(const glm::mat4& model, const glm::vec3& color) 
 
 Depth_shader::Depth_shader(std::string dir_path): Shader(dir_path)
 {
-
+    
 }
 
 Cascade_map::Cascade_map(): Depth_shader("./shader/cascade_map")
@@ -493,16 +535,6 @@ Lighting_pass *Lighting_pass::get_instance()
 Lighting_pass* Lighting_pass::instance = nullptr;
 
 Lighting_pass::Lighting_pass() : Shader("./shader/lighting_pass")
-{
-    
-}
-
-PBR::PBR(): Shader("./shader/physically_based")
-{
-
-}
-
-void PBR::set_uniforms() const
 {
     
 }

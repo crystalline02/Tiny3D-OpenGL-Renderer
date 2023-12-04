@@ -61,9 +61,12 @@ void Mesh::setup_mesh()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(const Blinn_phong& shader, const Camera& camera, const glm::mat4& model, GLuint fbo) const
+void Mesh::draw(const Object_shader& shader, const Camera& camera, const glm::mat4& model, GLuint fbo) const
 {
-    assert(shader.shader_dir() == "./shader/blinn_phong");
+    if(m_material.mat_type() == Mat_type::Blinn_Phong)
+        assert(shader.shader_dir() == "./shader/blinn_phong");
+    else if(m_material.mat_type() == Mat_type::PBR)
+        assert(shader.shader_dir() == "./shader/physically_based");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     shader.use();
     // Render settings

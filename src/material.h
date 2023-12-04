@@ -35,6 +35,7 @@ public:
     inline float normal_strength() { return m_normal_stength; }
     inline void set_opacity(float opacity) { m_opacity = opacity; }
     inline bool is_blend_mat() const { return (!m_opacity_map_units.empty()) || (m_opacity_map_units.empty() && m_opacity < 1.f); }
+    inline Mat_type mat_type() const { return m_type; }
 private:
     glm::vec3 m_diffuse_color, m_specular_color, m_ambient_color;
     std::vector<unsigned int> m_diffuse_map_units, 

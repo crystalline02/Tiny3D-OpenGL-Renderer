@@ -28,9 +28,9 @@ class Model
 {
 public:
     Model(const char *path, const glm::mat4& model = glm::mat4(1.f));
-    void draw(const Blinn_phong &shader, const Camera& camera, GLuint fbo = 0) const;
+    void draw(const Object_shader &shader, const Camera& camera, GLuint fbo = 0) const;
     void gbuffer_pass(const G_buffer &shader, const Camera& camera, GLuint fbo);
-    void forward_tranparency(const Blinn_phong &shader, const Camera& camera, GLuint fbo);
+    void forward_tranparent(const Object_shader &shader, const Camera& camera, GLuint fbo);
     void draw_normals(const Normal &shader, const Camera &camera) const;
     void draw_tangent(const Tangent_normal &shader, const Camera &camera) const;
     void draw_outline(const Single_color &shader, const Camera &camera) const;

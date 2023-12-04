@@ -214,7 +214,7 @@ void Model::set_cullface(bool iscull)
     for(std::unique_ptr<Mesh>& mesh: m_meshes) mesh->set_cullface(iscull);
 }
 
-void Model::draw(const Blinn_phong& model_shader, const Camera& camera, GLuint fbo) const
+void Model::draw(const Object_shader& model_shader, const Camera& camera, GLuint fbo) const
 {
     // This is not a good ideal to solve blending problem, but temporarily works
     std::map<float, const Mesh*> blend_mesh;
@@ -247,7 +247,7 @@ void Model::gbuffer_pass(const G_buffer &shader, const Camera &camera, GLuint fb
     }
 }
 
-void Model::forward_tranparency(const Blinn_phong &shader, const Camera &camera, GLuint fbo)
+void Model::forward_tranparent(const Object_shader &shader, const Camera &camera, GLuint fbo)
 {
     for(std::map<float, const Mesh*>::const_reverse_iterator it = m_blend_meshes_temp.rbegin(); it != m_blend_meshes_temp.rend(); ++it)
         it->second->draw(shader, camera, m_model_mat, fbo);

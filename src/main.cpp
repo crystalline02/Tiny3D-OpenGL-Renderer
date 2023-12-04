@@ -74,13 +74,13 @@ int main(int argc, char** argv)
 
 	// Shaders
 	Blinn_phong bp_shader;
+	PBR pbr_shader;
 	Single_color color_shader;
 	Sky_cube skybox_shader;
 	Normal normal_shader;
 	Cascade_map cascade_shader;
 	Depth_cubemap depth_cube_shader;
 	Tangent_normal tangent_shader;
-	PBR pbr_shader;
 
 	// Lights
 	Point_light light1(glm::vec3(2.f, 1.5f, -2.f), glm::vec3(1.f, .1f, .1f), 4.2f);
@@ -136,10 +136,10 @@ int main(int argc, char** argv)
 			{
 				Postproc_quad::get_instance()->ssao_pass(*SSAO::get_instance(), *SSAO_blur::get_instance(), util::Globals::ssao_fbo, util::Globals::ssao_blur_fbo);
 			}
-			model.forward_tranparency(bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.forward_tranparent(util::Globals::pbr_mat ? (Object_shader&)pbr_shader : (Object_shader&)bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 		}
 		else
-			model.draw(bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.draw(util::Globals::pbr_mat ? (Object_shader&)pbr_shader : (Object_shader&)bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 
 		// Draw skybox
 		if(util::Globals::skybox) 

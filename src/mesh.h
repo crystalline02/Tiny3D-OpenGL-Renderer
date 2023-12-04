@@ -15,6 +15,7 @@ class Direction_light;
 class Point_light;
 class Light;
 class Depth_shader;
+class Object_shader;
 class G_buffer;
 
 struct Vertex
@@ -30,7 +31,7 @@ class Mesh
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const Material &material);
     ~Mesh();
-    void draw(const Blinn_phong &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo = 0) const;
+    void draw(const Object_shader &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo = 0) const;
     void draw_gbuffer(const G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const;
     void draw_normals(const Normal &shader, const Camera &camera, const glm::mat4 &model) const;
     void draw_tangent(const Tangent_normal &shader, const Camera &camera, const glm::mat4 &model) const;

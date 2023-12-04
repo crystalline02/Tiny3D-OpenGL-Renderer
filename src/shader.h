@@ -25,25 +25,31 @@ public:
     void set_globals() const;
     void set_normal_mat(const glm::mat4& model) const;
     void set_material(const char* name, const Material& material) const;
-    void set_material_PRB(const char* name, const Material& material) const;
 protected:
     std::string m_dir;
     static GLuint ubo_matrices, ubo_fn, ubo_light_matrices;
     GLuint program_id;
 };
 
-class Blinn_phong: public Shader
+class Object_shader: public Shader
+{
+public:
+    Object_shader(std::string dir_path);
+    virtual void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const = 0;
+};
+
+class Blinn_phong: public Object_shader
 {
 public:
     Blinn_phong();
-    void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const;
+    void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const override;
 };
 
-class PBR: public Shader
+class PBR: public Object_shader
 {
 public:
     PBR();
-    void set_uniforms() const;
+    void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const override;
 };
 
 class Single_color: public Shader
