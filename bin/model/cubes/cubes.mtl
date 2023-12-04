@@ -1,4 +1,4 @@
-# Blender 3.5.1 MTL File: 'cubes.blend'
+# Blender 4.0.1 MTL File: 'cubes.blend'
 # www.blender.org
 
 newmtl Material
@@ -31,8 +31,8 @@ d 1.000000
 illum 2
 map_Kd StoneBricksSplitface001_COL_2K.jpg
 map_Ks StoneBricksSplitface001_GLOSS_2K.jpg
-map_Bump -bm 0.510000 StoneBricksSplitface001_NRM_2K.png
-map_disp StoneBricksSplitface001_DISP_2K.png
+map_Bump -bm 1.000000 StoneBricksSplitface001_NRM_2K.png
+map_Disp StoneBricksSplitface001_DISP_2K.png
 
 newmtl Material.004
 Ns 250.000000
@@ -45,14 +45,17 @@ d 1.000000
 illum 2
 
 newmtl Material.005
-Ns 250.000000
 Ka 1.000000 1.000000 1.000000
-Kd 0.233768 0.381414 0.800000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
 d 1.000000
 illum 2
+map_Kd MetalCorrodedHeavy001_COL_1K_METALNESS.jpg
+map_Ns MetalCorrodedHeavy001_ROUGHNESS_1K_METALNESS.jpg
+map_refl MetalCorrodedHeavy001_METALNESS_1K_METALNESS.jpg
+map_Bump -bm 1.000000 MetalCorrodedHeavy001_NRM_1K_METALNESS.jpg
+map_Disp MetalCorrodedHeavy001_DISP_1K_METALNESS.jpg
 
 newmtl Material.006
 Ns 250.000000
@@ -78,16 +81,6 @@ newmtl Material.008
 Ns 250.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.171255 0.180685 0.800000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.450000
-d 1.000000
-illum 2
-
-newmtl Material.009
-Ns 250.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.592960 0.800000 0.257346
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.450000
