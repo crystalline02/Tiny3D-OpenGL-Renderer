@@ -44,6 +44,7 @@ public:
     inline void set_blend(bool isblend) { m_isblend = isblend; }
     inline bool isblend() const { return m_isblend; }
     inline void set_cullface(bool cullface) { m_iscullface = cullface; }
+    void switch_mat_type(Mat_type new_type);
 private:
     void setup_mesh();
     bool m_outlined;

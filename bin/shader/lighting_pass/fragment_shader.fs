@@ -110,6 +110,7 @@ vec3 frag_albedo = frag_albedo_specular.rgb;
 float frag_specular = frag_albedo_specular.a;
 vec3 frag_ambient = texture(ambient_buffer, texture_coord).rgb;
 float occulsion = texture(ssao_buffer, texture_coord).r;
+vec3 gamma_correct(vec3 color);
 
 void main()
 {
@@ -133,6 +134,7 @@ void main()
     result += ambient;
     result += caculate_skybox(skybox);
     result -= ssao ? (1.f - occulsion) * 0.15f : 0.f;
+    result = gamma_correct(result);
     FragColor = vec4(result, 1.f);
     if(dot(result, vec3(0.2126f, 0.7152f, 0.0722f)) < threshold) BrightColor = vec4(0.f);
     else BrightColor = vec4(result, 1.f);
@@ -297,4 +299,9 @@ float linearize_depth(float fdepth, float near, float far)
     float z_ndc = fdepth * 2 - 1;
     float z_view = 2 * near * far/ (far + near - z_ndc * (far - near));
     return (z_view - near) / (far - near); 
+}
+
+vec3 gamma_correct(vec3 color)
+{
+    return pow(color, vec3(1.f / 2.2f));
 }

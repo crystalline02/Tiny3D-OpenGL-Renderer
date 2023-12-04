@@ -25,7 +25,7 @@ public:
     void set_globals() const;
     void set_normal_mat(const glm::mat4& model) const;
     void set_material(const char* name, const Material& material) const;
-    void set_skybox(const char* name, const Camera& camera) const;
+    void set_material_PRB(const char* name, const Material& material) const;
 protected:
     std::string m_dir;
     static GLuint ubo_matrices, ubo_fn, ubo_light_matrices;

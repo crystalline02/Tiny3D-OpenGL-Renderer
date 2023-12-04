@@ -42,6 +42,7 @@ public:
     inline static std::vector<std::string> all_models() { return model_dirs; }
     inline static unsigned int seleted_model() { return seleted; }
     inline static void add_texture(const char* path, unsigned int unit) { Model::loaded_textures[path] = unit; }
+    void switch_mat_type(Mat_type new_type);
     void set_blend(bool isblend);
     void set_outline(bool isoutline);
     void set_cullface(bool iscull);

@@ -80,10 +80,12 @@ void Model::process_node(aiNode* node, const aiScene* scene)
 
 Material Model::process_material(aiMaterial* material)
 {
-    std::vector<unsigned int> diffuse_maps_units, specular_maps_units, ambient_maps_units, opacity_maps_units, normal_maps_units, displacement_maps_units;
+    std::vector<unsigned int> diffuse_maps_units, specular_maps_units, ambient_maps_units, 
+        opacity_maps_units, normal_maps_units, displacement_maps_units, metalic_maps_units;
     diffuse_maps_units = retrive_texture_units(material, aiTextureType_DIFFUSE);
     specular_maps_units = retrive_texture_units(material, aiTextureType_SPECULAR);
     ambient_maps_units = retrive_texture_units(material, aiTextureType_AMBIENT);
+    metalic_maps_units = retrive_texture_units(material, aiTextureType_METALNESS);
     opacity_maps_units = retrive_texture_units(material, aiTextureType_OPACITY);
     normal_maps_units = retrive_texture_units(material, aiTextureType_HEIGHT);
     displacement_maps_units = retrive_texture_units(material, aiTextureType_DISPLACEMENT);
@@ -92,7 +94,8 @@ Material Model::process_material(aiMaterial* material)
         ambient_maps_units,
         opacity_maps_units,
         normal_maps_units,
-        displacement_maps_units);
+        displacement_maps_units,
+        metalic_maps_units);
     if(diffuse_maps_units.empty())
     {
         aiColor3D color;
@@ -117,6 +120,13 @@ Material Model::process_material(aiMaterial* material)
         material->Get(AI_MATKEY_OPACITY, opacity);
         ret_mat.set_opacity(opacity);
     }
+    if(metalic_maps_units.empty())
+    {
+        float metalic;
+        material->Get(AI_MATKEY_METALLIC_FACTOR, metalic);
+        ret_mat.set_metalic(metalic);
+    }
+    
     return ret_mat;
 }
 
@@ -186,6 +196,12 @@ void Model::switch_model(Model &model, unsigned int id)
             if(name.substr(name.find_last_of("."), name.size() - name.find_last_of(".")) == ".obj")
                 model.reload(name.replace(name.find("\\", 0), 1, "/"));
     }
+}
+
+void Model::switch_mat_type(Mat_type new_type)
+{
+    for(std::unique_ptr<Mesh>& mesh : m_meshes)
+        mesh->switch_mat_type(new_type);
 }
 
 void Model::set_blend(bool isblend)

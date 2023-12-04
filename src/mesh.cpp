@@ -186,3 +186,8 @@ void Mesh::clear()
     glDeleteVertexArrays(1, &VAO_normal);
     glDeleteVertexArrays(1, &VAO_tangent);
 }
+
+void Mesh::switch_mat_type(Mat_type new_type)
+{
+    m_material.switch_mat_type(new_type);
+}

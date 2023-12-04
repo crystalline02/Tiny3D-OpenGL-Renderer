@@ -3,6 +3,12 @@
 #include <glad/glad.h>
 #include <vector>
 
+enum class Mat_type
+{
+    Blinn_Phong, 
+    PBR
+};
+
 class Material
 {
 public:
@@ -15,11 +21,14 @@ public:
         const std::vector<unsigned int>& ambient_map_units,
         const std::vector<unsigned int>& opacity_map_units,
         const std::vector<unsigned int>& normal_map_units,
-        const std::vector<unsigned int>& displacement_map_units);
+        const std::vector<unsigned int>& displacement_map_units,
+        const std::vector<unsigned int>& metalic_map_units);
     void set_uniforms(const char* name, GLint program) const;
+    void switch_mat_type(Mat_type new_type);
     inline void set_diffuse_color(const glm::vec3& color) { m_diffuse_color = color; }
     inline void set_specular_color(const glm::vec3& color) { m_specular_color = color; }
     inline void set_ambient_color(const glm::vec3& color) { m_ambient_color  = color; }
+    inline void set_metalic(const float& metalic) { m_metalic = metalic; }
     inline void set_shinness(float shinness) { m_shinness = shinness; }
     inline int shinness() { return m_shinness; }
     inline void set_normal_strength(float strength) { m_normal_stength = strength; }
@@ -33,8 +42,10 @@ private:
         m_ambient_map_units, 
         m_opacity_map_units,
         m_normal_map_units,
-        m_displacement_map_units;
+        m_displacement_map_units,
+        m_metalic_map_units;
     int m_shinness;
-    float m_opacity, m_normal_stength;
+    Mat_type m_type;
+    float m_opacity, m_normal_stength, m_metalic, m_roughntss;
 };
 

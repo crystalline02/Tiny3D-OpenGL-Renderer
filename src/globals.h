@@ -28,7 +28,7 @@ namespace util
     struct Globals
     {
         static bool first_mouse, blend, cull_face, skybox, visualize_normal, wireframe, visualize_tangent,
-            hdr, bloom, deferred_rendering, SSAO;
+            hdr, bloom, deferred_rendering, SSAO, pbr_mat;
         static double last_xpos, last_ypos;
         static int cascade_size, cubemap_size;
         static GLuint scene_fbo_ms, scene_unit[2], pingpong_fbos[2], pingpong_colorbuffers_units[2], 

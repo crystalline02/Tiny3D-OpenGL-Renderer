@@ -7,7 +7,7 @@
 #include "model.h"
 #include "skybox.h"
 #include "quad.h"
-#include "model.h"
+#include "material.h"
 
 #include <chrono>
 #include <random>
@@ -23,7 +23,8 @@ bool util::Globals::first_mouse = true,
     util::Globals::hdr = false,
     util::Globals::bloom = false,
     util::Globals::deferred_rendering = false,
-    util::Globals::SSAO = false;
+    util::Globals::SSAO = false,
+    util::Globals::pbr_mat = false;
 double util::Globals::last_xpos = 0.f, 
     util::Globals::last_ypos = 0.f,
     util::Globals::delta_time = 0.f,
@@ -348,7 +349,31 @@ void util::imgui_design(Model& model)
     }
     if(ImGui::CollapsingHeader("material"))
     {
-        
+        std::vector<std::string> mat_type_string = {"blinn phong", "PBR"};
+        if(ImGui::BeginCombo("type", mat_type_string[Globals::pbr_mat].c_str()))
+        {
+            for(int i = 0; i < mat_type_string.size(); ++i)
+            {
+                if(ImGui::Selectable(mat_type_string[i].c_str()))
+                {
+                    Mat_type new_type;
+                    if(i == 0)
+                    {
+                        Globals::pbr_mat = false;
+                        new_type = Mat_type::Blinn_Phong;
+                    }
+                    else if (i == 1)
+                    {
+                        Globals::pbr_mat = true;
+                        new_type = Mat_type::PBR;
+                    }
+                    model.switch_mat_type(new_type);
+                }
+
+            }
+
+            ImGui::EndCombo();
+        }
     }
     if(ImGui::CollapsingHeader("postprocess"))
     {
