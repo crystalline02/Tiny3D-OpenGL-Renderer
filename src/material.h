@@ -47,6 +47,6 @@ private:
         m_metalic_map_units;
     int m_shinness;
     Mat_type m_type;
-    float m_opacity, m_normal_stength, m_metalic, m_roughntss;
+    float m_opacity, m_normal_stength, m_metalic, m_roughness;
 };
 

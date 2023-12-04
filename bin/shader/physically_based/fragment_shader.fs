@@ -14,21 +14,22 @@ layout(location = 1) out vec4 BrightColor;
 struct Material
 {
     sampler2D albedo_maps[4];
-    sampler2D specular_maps[4];
     sampler2D opacity_maps[4];
+    sampler2D roughness_maps[4];
     sampler2D normal_maps[4];
     sampler2D displacement_maps[4];
     sampler2D metalic_maps[4];
     
     bool use_albedo_map;
     bool use_opacity_map;
+    bool use_roughness_map;
     bool use_normal_map;
     bool use_displacement_map;
     bool use_metalic_map;
 
     vec3 albedo_color;
-    vec3 specular_color;
     float opacity;
+    float roughness;
     float metalic;
     float normal_map_strength;
 };
@@ -103,5 +104,5 @@ uniform Skybox skybox;
 
 void main()
 {
-    FragColor = vec4(1.f, 1., 0.f, 1.f);
+    
 }
