@@ -83,8 +83,8 @@ int main(int argc, char** argv)
 	Tangent_normal tangent_shader;
 
 	// Lights
-	Point_light light1(glm::vec3(2.f, 1.5f, -2.f), glm::vec3(1.f, .1f, .1f), 4.2f);
-	Point_light light4(glm::vec3(-2.f, 1.5f, 2.f), glm::vec3(.1f, .1f, 1.f), 4.2f);
+	Point_light light1(glm::vec3(2.f, 1.5f, -2.f), glm::vec3(1.f, .4392f, .3294f), 4.2f);
+	Point_light light4(glm::vec3(-2.f, 1.5f, 2.f), glm::vec3(0.3137f, 0.8627f, 0.9961f), 4.2f);
 	Direction_light light5(glm::vec3(-1.f, -1.f, -1.f), glm::vec3(0.f, 1.8f, 0.f), glm::vec3(.9373f, .702f, .4745f), .85f);
 	Spot_light light6(glm::vec3(-2.f, -2.6f, -1.5f), glm::vec3(2.25f, 1.91f, 2.27f), glm::vec3(.5f, .5f, .5f), 5.f);
 

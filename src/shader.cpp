@@ -142,13 +142,13 @@ Shader::Shader(std::string dir_path): m_dir(dir_path)
         glGenBuffers(1, &ubo_light_matrices);
         glBindBuffer(GL_UNIFORM_BUFFER, ubo_matrices);
         glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-        glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_matrices, 0, 2 * sizeof(glm::mat4));  // Bind m_ubo_matrics to Binding Point 0
+        glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_matrices, 0, 2 * sizeof(glm::mat4));  // Bind ubo_matrics to Binding Point 0
         glBindBuffer(GL_UNIFORM_BUFFER, ubo_fn);
         glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(float), nullptr, GL_STATIC_DRAW);
-        glBindBufferRange(GL_UNIFORM_BUFFER, 1, ubo_fn, 0, 2 * sizeof(float));  // Bind m_ubo_FN to Binding point 1
+        glBindBufferRange(GL_UNIFORM_BUFFER, 1, ubo_fn, 0, 2 * sizeof(float));  // Bind ubo_FN to Binding point 1
         glBindBuffer(GL_UNIFORM_BUFFER, ubo_light_matrices);
         glBufferData(GL_UNIFORM_BUFFER, 80 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-        glBindBufferRange(GL_UNIFORM_BUFFER, 2, ubo_light_matrices, 0, 80 * sizeof(glm::mat4));
+        glBindBufferRange(GL_UNIFORM_BUFFER, 2, ubo_light_matrices, 0, 80 * sizeof(glm::mat4));  // Bind ubo_light_matrices to Binding point 2
         glBindBuffer(GL_UNIFORM_BUFFER, 0);  // Unbind
     }
 }
@@ -182,12 +182,12 @@ void Shader::update_uniform_blocks(const Camera& camera)
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(float), sizeof(float), &n);
     
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_light_matrices);
-    std::vector<Light*> all_lights = Light::get_lights();
+   std::vector<Light*> all_lights = Light::get_lights(); 
     for(Light*& light: all_lights)
     {
         if(light->type() == Light_type::SUN)
         {
-            Direction_light* dir_light = static_cast<Direction_light*>(light);
+            Direction_light* dir_light = static_cast<Direction_light*>(light);  // 父类指针指向子类对象时，强转父类指针为子类指针，已知可以完成转换，故用static cast
             std::vector<glm::mat4> light_matrices = dir_light->light_space_mat(camera);
             assert(light_matrices.size() <= 10);
             glBufferSubData(GL_UNIFORM_BUFFER, dir_light->index() * 10 * sizeof(glm::mat4), light_matrices.size() * sizeof(glm::mat4), light_matrices.data());
@@ -299,6 +299,9 @@ void PBR::set_uniforms(const Material& material, const Camera& camera, const glm
     util::set_int("point_lights_count", Light::point_lights_count(), program_id);
     util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
     util::set_int("direction_lights_count", Light::direction_lights_count(), program_id);
+    util::set_int("cascade_count", int(util::Globals::cascade_levels.size() + 1), program_id);
+    for(int i = 0; i < util::Globals::cascade_levels.size(); ++i)
+        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], program_id);
     util::set_floats("view_pos", camera.position(), program_id);
     util::set_float("bias", util::Globals::shadow_bias, program_id);
     material.set_uniforms("material", program_id);

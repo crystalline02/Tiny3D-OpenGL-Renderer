@@ -56,6 +56,7 @@ struct Point_light
 struct Spot_light
 {
     vec3 position;
+    vec3 direction;
     vec3 color;
     float diffuse;
     float specular;
@@ -97,7 +98,7 @@ layout(std140, Binding = 1) uniform FN
 
 layout(std140, Binding = 2) uniform Light_matrices
 {
-    mat4 light_space_mat[8][10];
+    mat4 light_space_mat[8][10];  // light space matrix for directional lights
 };
 
 uniform Point_light point_lights[16];
@@ -107,6 +108,8 @@ uniform int point_lights_count;
 uniform int spot_lights_count;
 uniform int direction_lights_count;
 
+uniform int cascade_count;
+uniform float cascade_levels[10];
 uniform vec3 view_pos;
 uniform float bias;
 
@@ -124,12 +127,17 @@ float GeometrySchlickGGX(vec3 n, vec3 v, float roughness);
 float GeometrySmith(vec3 n , vec3 v, vec3 l, float roughness);
 vec3 gamma_correct(vec3 color);
 float linearize_depth(float F_depth, float near, float far);
+float get_depth_view(float F_depth, float near, float far);
 vec2 get_parallax_mapping_texcoord(Material material, vec2 texcoord, vec3 view_dir);
 vec3 get_shading_normal(Material material, vec2 texture_coord);
 
 vec3 cac_point_light(Point_light light, Material material);
+vec3 cac_spot_light(Spot_light light, Material material);
+vec3 cac_direction_light(Direction_light light, Material material, int index);
 
 float cac_point_shadow(Point_light light, vec3 light_dir);
+float cac_spot_shadow(Spot_light light, vec3 light_dir);
+float cac_direction_shadow(Direction_light light, int index);
 
 void main()
 {
@@ -142,6 +150,16 @@ void main()
     {
         ambient += point_lights[i].ambient * point_lights[i].color * (material.use_ambient_map ? vec3(texture(material.ambient_maps[0], fs_in.texture_coord)) : material.ambient_color) / point_lights_count;
         result += cac_point_light(point_lights[i], material);
+    }
+    for(int i = 0; i < direction_lights_count; ++i)
+    {
+        ambient += direction_lights[i].ambient * direction_lights[i].color * (material.use_ambient_map ? vec3(texture(material.ambient_maps[0], fs_in.texture_coord)) : material.ambient_color) / direction_lights_count;
+        result += cac_direction_light(direction_lights[i], material, i);
+    }
+    for(int i = 0; i < spot_lights_count; ++i)
+    {
+        ambient += spot_lights[i].ambient * spot_lights[i].color * (material.use_ambient_map ? vec3(texture(material.ambient_maps[0], fs_in.texture_coord)) : material.ambient_color) / spot_lights_count;
+        result += cac_spot_light(spot_lights[i], material);
     }
     result += ambient;
 
@@ -189,7 +207,8 @@ vec3 cac_point_light(Point_light light, Material material)
 {
     vec3 light_dir = normalize(light.position - vec3(fs_in.frag_pos));
     vec3 view_dir = normalize(view_pos - vec3(fs_in.frag_pos));
-    vec3 normal = get_shading_normal(material, fs_in.texture_coord);
+    vec2 texcoord = get_parallax_mapping_texcoord(material, fs_in.texture_coord, view_dir);
+    vec3 normal = get_shading_normal(material, texcoord);
     if(dot(view_dir, normalize(fs_in.frag_normal)) < 0 || dot(light_dir, normalize(fs_in.frag_normal)) < 0) return vec3(0.f);
 
     float n_dot_l = max(dot(normal, light_dir), 0);  // cosTheta
@@ -198,22 +217,87 @@ vec3 cac_point_light(Point_light light, Material material)
     float F_att = 1.f / (light.kc + light.kl * r + light.kq * r * r);
     vec3 radiance = light.color * F_att * light.intensity;  // Li(p, wi)
 
-    vec3 albedo = material.use_albedo_map ? texture(material.albedo_maps[0], fs_in.texture_coord).rgb : material.albedo_color;
-    float metalic = material.use_metalic_map ? texture(material.metalic_maps[0], fs_in.texture_coord).r : material.metalic;
+    vec3 albedo = material.use_albedo_map ? texture(material.albedo_maps[0], texcoord).rgb : material.albedo_color;
+    float metalic = material.use_metalic_map ? texture(material.metalic_maps[0], texcoord).r : material.metalic;
     vec3 F0 = mix(vec3(0.04f), albedo, metalic);  // surface reflection at zero incidence
     float n_dot_v = max(dot(normal, view_dir), 0.f);
     vec3 F = fresnelSchlick(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f));  // F
     
     vec3 h = normalize(view_dir + light_dir);
-    float roughness = material.use_roughness_map ? texture(material.roughness_maps[0], fs_in.texture_coord).r : material.roughness;
+    float roughness = material.use_roughness_map ? texture(material.roughness_maps[0], texcoord).r : material.roughness;
     float NDF = DistributionGGX(normal, h, roughness);  // N
 
     float G = GeometrySmith(normal, view_dir, light_dir, roughness); // G
     
     vec3 kd = (vec3(1.f) - F) * (1 - metalic);
     vec3 L_oi = (kd * albedo / PI + F * NDF * G / max(4 * n_dot_l * n_dot_v, 0.0001f)) * radiance * n_dot_l;
-    // vec3 L_oi = (F * NDF * G / max(4 * n_dot_l * n_dot_v, 0.0001f)) * radiance * n_dot_l;
-    return L_oi;
+    float in_shadow = cac_point_shadow(light, light_dir);
+    return L_oi * (1.f - in_shadow);
+}
+
+vec3 cac_spot_light(Spot_light light, Material material)
+{
+    vec3 light_dir = normalize(light.position - vec3(fs_in.frag_pos));
+    vec3 view_dir = normalize(view_pos - vec3(fs_in.frag_pos));
+    vec2 texcoord = get_parallax_mapping_texcoord(material, fs_in.texture_coord, view_dir);
+    vec3 normal = get_shading_normal(material, texcoord);
+    if(dot(view_dir, normalize(fs_in.frag_normal)) < 0 || dot(light_dir, normalize(fs_in.frag_normal)) < 0) return vec3(0.f);
+    
+    float n_dot_l = max(dot(normal, light_dir), 0);  // cosTheta
+    
+    float r = length(light.position - vec3(fs_in.frag_pos));
+    float F_att = 1.f / (light.kc + light.kl * r + light.kq * r * r);
+    vec3 radiance = light.color * F_att * light.intensity;  // Li(p, wi)
+
+    vec3 albedo = material.use_albedo_map ? texture(material.albedo_maps[0], texcoord).rgb : material.albedo_color;
+    float metalic = material.use_metalic_map ? texture(material.metalic_maps[0], texcoord).r : material.metalic;
+    vec3 F0 = mix(vec3(0.04f), albedo, metalic);  // surface reflection at zero incidence
+    float n_dot_v = max(dot(normal, view_dir), 0.f);
+    vec3 F = fresnelSchlick(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f));  // F
+    
+    vec3 h = normalize(view_dir + light_dir);
+    float roughness = material.use_roughness_map ? texture(material.roughness_maps[0], texcoord).r : material.roughness;
+    float NDF = DistributionGGX(normal, h, roughness);  // N
+
+    float G = GeometrySmith(normal, view_dir, light_dir, roughness); // G
+    
+    vec3 kd = (vec3(1.f) - F) * (1 - metalic);
+    vec3 L_oi = (kd * albedo / PI + F * NDF * G / max(4 * n_dot_l * n_dot_v, 0.0001f)) * radiance * n_dot_l;
+    float in_shadow = cac_spot_shadow(light, light_dir);
+    
+    float theta = dot(-light_dir, light.direction), epslion = light.cutoff - light.outer_cutoff;
+    float opacity = clamp((theta - light.outer_cutoff) / epslion, 0.f, 1.f);
+    return L_oi * (1.f - in_shadow) * opacity;
+}
+
+vec3 cac_direction_light(Direction_light light, Material material, int index)
+{
+    vec3 light_dir = normalize(vec3(-light.direction));
+    vec3 view_dir = normalize(view_pos - vec3(fs_in.frag_pos));
+    vec2 texcoord = get_parallax_mapping_texcoord(material, fs_in.texture_coord, view_dir);
+    vec3 normal = get_shading_normal(material, texcoord);
+    if(dot(view_dir, normalize(fs_in.frag_normal)) < 0 || dot(light_dir, normalize(fs_in.frag_normal)) < 0) return vec3(0.f);
+
+    float n_dot_l = max(dot(normal, light_dir), 0);  // cosTheta
+
+    vec3 radiance = light.color * light.intensity;  // Li(p, wi)
+
+    vec3 albedo = material.use_albedo_map ? texture(material.albedo_maps[0], texcoord).rgb : material.albedo_color;
+    float metalic = material.use_metalic_map ? texture(material.metalic_maps[0], texcoord).r : material.metalic;
+    vec3 F0 = mix(vec3(0.04f), albedo, metalic);  // surface reflection at zero incidence
+    float n_dot_v = max(dot(normal, view_dir), 0.f);
+    vec3 F = fresnelSchlick(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f));  // F
+    
+    vec3 h = normalize(view_dir + light_dir);
+    float roughness = material.use_roughness_map ? texture(material.roughness_maps[0], texcoord).r : material.roughness;
+    float NDF = DistributionGGX(normal, h, roughness);  // N
+
+    float G = GeometrySmith(normal, view_dir, light_dir, roughness); // G
+    
+    vec3 kd = (vec3(1.f) - F) * (1 - metalic);
+    vec3 L_oi = (kd * albedo / PI + F * NDF * G / max(4 * n_dot_l * n_dot_v, 0.0001f)) * radiance * n_dot_l;
+    float in_shadow = cac_direction_shadow(light, index);
+    return L_oi * (1.f - in_shadow);
 }
 
 vec3 get_shading_normal(Material material, vec2 texture_coord)
@@ -260,10 +344,75 @@ float cac_point_shadow(Point_light light, vec3 light_dir)
 {
     float bias_ = max(bias * (1 - dot(light_dir, normalize(fs_in.frag_normal))), bias * 0.01f);
     float in_shadow = 0.f;
-    
+
+    float radius = (1.f + linearize_depth(gl_FragCoord.z, near, far)) / 75.f;
+    vec3 light2frag = vec3(fs_in.frag_pos) - light.position;
+    float depth_current = length(light2frag);
+
+    float depth_max = length(light2frag) * min(light.far / abs(light2frag.x), min(light.far / abs(light2frag.y), light.far / abs(light2frag.z)));
+    float depth_min = length(light2frag) * min(light.near / abs(light2frag.x), min(light.near / abs(light2frag.y), light.near / abs(light2frag.z)));
     for(int i = 0; i < 20; ++i)
     {
-        
+        float depth_closest = texture(light.depth_cubemap, light2frag + radius * offset_vecs[i]).r;  // [0, 1], z_screen
+        depth_closest = depth_closest * (depth_max - depth_min) + depth_min;  // [depth_min, depth_max]
+        in_shadow += ((depth_closest + bias_) < depth_current) ? 1.f / 20.f : 0.f;
+    }
+
+    return in_shadow;
+}
+
+float cac_direction_shadow(Direction_light light, int index)
+{
+    float in_shadow = 0.f;
+    float bias_ = max(bias * (1.f - dot(normalize(fs_in.frag_normal), normalize(-light.direction))), bias * 0.01f);
+    float z_view = get_depth_view(gl_FragCoord.z, near, far);
+    
+    int shadow_index = cascade_count - 1;
+    for(int i = 0; i < cascade_count - 1; ++i)
+    {
+        if(z_view < cascade_levels[i])
+        {
+            shadow_index = i;
+            break;
+        }
+    }
+    
+    bias_ *= (shadow_index == cascade_count - 1) ? (0.1f / far) : (0.1f / cascade_levels[shadow_index]);
+    vec4 light_space_clip = light_space_mat[index][shadow_index] * fs_in.frag_pos;
+    vec3 light_space_ndc = light_space_clip.xyz / light_space_clip.w;
+    vec3 light_space_screen = light_space_ndc * 0.5f + 0.5f;
+    float depth_current = light_space_screen.z;  // depth value in light screen space, range: [0, 1]
+    if(depth_current >= 1.f) return 0.f;
+    vec2 texel_size = 1.f / textureSize(light.cascade_maps, 0).xy;
+
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float depth_closest = texture(light.cascade_maps, 
+                vec3(light_space_screen.xy + vec2(x, y) * texel_size, shadow_index)).r;  // range: [0, 1]
+            in_shadow += ((depth_closest) < depth_current) ? 1.f / 9.f : 0.f;
+        }
+    }
+    return in_shadow;
+}
+
+float cac_spot_shadow(Spot_light light, vec3 light_dir)
+{
+    float bias_ = max(bias * (1 - dot(light_dir, normalize(fs_in.frag_normal))), bias * 0.01f);
+    float in_shadow = 0.f;
+
+    float radius = (1.f + linearize_depth(gl_FragCoord.z, near, far)) / 75.f;
+    vec3 light2frag = vec3(fs_in.frag_pos) - light.position;
+    float depth_current = length(light2frag);
+
+    float depth_max = length(light2frag) * min(light.far / abs(light2frag.x), min(light.far / abs(light2frag.y), light.far / abs(light2frag.z)));
+    float depth_min = length(light2frag) * min(light.near / abs(light2frag.x), min(light.near / abs(light2frag.y), light.near / abs(light2frag.z)));
+    for(int i = 0; i < 20; ++i)
+    {
+        float depth_closest = texture(light.depth_cubemap, light2frag + radius * offset_vecs[i]).r;  // [0, 1], z_screen
+        depth_closest = depth_closest * (depth_max - depth_min) + depth_min;  // [depth_min, depth_max]
+        in_shadow += ((depth_closest + bias_) < depth_current) ? 1.f / 20.f : 0.f;
     }
 
     return in_shadow;
@@ -273,4 +422,9 @@ float linearize_depth(float F_depth, float near, float far)
 {
     float z_view = (near * far) / (far - F_depth * (far - near));
     return (z_view - near) / (far - near);
+}
+
+float get_depth_view(float F_depth, float near, float far)
+{
+    return (near * far) / (far - F_depth * (far - near));
 }

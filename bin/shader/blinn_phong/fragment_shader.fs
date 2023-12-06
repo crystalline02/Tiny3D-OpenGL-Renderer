@@ -269,6 +269,57 @@ float get_viewdepth(float fdepth, float near, float far)
     return 2 * near * far/ (far + near - z_ndc * (far - near));
 }
 
+// 20 coordinates placed on a cube
+vec3 offset_vecs[20] = vec3[] 
+    (
+        vec3(-1.f, -1.f, -1.f), vec3(-1.f, -1.f, 0.f), vec3(-1.f, -1.f, 1.f), vec3(-1.f, 0.f, -1.f), vec3(-1.f, 0.f, 1.f), vec3(-1.f, 1.f, -1.f), vec3(-1.f, 1.f, 0.f), vec3(-1.f, 1.f, 1.f),
+        vec3(0.f, -1.f, -1.f), vec3(0.f, -1.f, 1.f), vec3(0.f, 1.f, -1.f), vec3(0.f, 1.f, 1.f),
+        vec3(1.f, -1.f, -1.f), vec3(1.f, -1.f, 0.f), vec3(1.f, -1.f, -1.f), vec3(1.f, 0.f, -1.f), vec3(1.f, 0.f, 1.f), vec3(1.f, 1.f, -1.f), vec3(1.f, 1.f, 0.f), vec3(1.f, 1.f, 1.f)
+    );
+
+float calculate_cubemap_shadow(Point_light light, vec3 light_dir)
+{
+    float n_shadow = 0.f;
+    float bias_ = max(bias * (1 - dot(light_dir, normalize(fs_in.frag_normal))), bias * 0.01f);
+    vec3 light2frag = vec3(fs_in.frag_pos) - light.position;
+    float depth_current = length(light2frag);
+    float max_depth = length(light2frag * min(light.far / abs(light2frag.x), min(light.far / abs(light2frag.y), light.far / abs(light2frag.z))));
+    float min_depth = length(light2frag * min(light.near / abs(light2frag.x), min(light.near / abs(light2frag.y), light.near / abs(light2frag.z))));
+    if(depth_current > max_depth) return 1.f;
+    
+    float radius = (1.f + linearize_depth(gl_FragCoord.z, near, far)) / 75.f;
+    for(int i = 0; i < 20; ++i)
+    {
+        float depth_closest = texture(light.depth_cubemap, light2frag + radius * offset_vecs[i]).r;
+        depth_closest = depth_closest * (max_depth - min_depth) + min_depth;
+        n_shadow += (depth_closest + bias_) > depth_current ? 1.f : 0.f;
+    }
+    n_shadow /= 20.f;
+    return n_shadow;
+}
+
+float calculate_cubemap_shadow(Spot_light light, vec3 light_dir)
+{
+    float n_shadow = 0.f;
+    float bias_ = max(bias * (1 - dot(light_dir, normalize(fs_in.frag_normal))), bias * 0.01f);
+    vec3 light2frag = vec3(fs_in.frag_pos) - light.position;
+    float depth_current = length(light2frag);
+    float max_depth = length(light2frag * min(light.far / abs(light2frag.x), min(light.far / abs(light2frag.y), light.far / abs(light2frag.z))));
+    float min_depth = length(light2frag * min(light.near / abs(light2frag.x), min(light.near / abs(light2frag.y), light.near / abs(light2frag.z))));
+    if(depth_current > max_depth) return 1.f;
+
+    // fragment距离视角越远，radius就会越大
+    float radius = (1.f + linearize_depth(gl_FragCoord.z, near, far)) / 75.f;
+    for(int i = 0; i < 20; ++i)
+    {
+        float depth_closest = texture(light.depth_cubemap, light2frag + radius * offset_vecs[i]).r;
+        depth_closest = depth_closest * (max_depth - min_depth) + min_depth;
+        n_shadow += (depth_closest + bias_) > depth_current ? 1.f : 0.f;
+    }
+    n_shadow /= 20.f;
+    return n_shadow;
+}
+
 float calculate_cascade_shadow(Direction_light light, int index)
 {
     float n_shadow = 0.f;
@@ -289,7 +340,7 @@ float calculate_cascade_shadow(Direction_light light, int index)
 
     vec4 frag_pos_light_space = light_space_mat[index][shadow_index] * fs_in.frag_pos;
     vec3 frag_pos_light_ndc = frag_pos_light_space.xyz / frag_pos_light_space.w;
-    vec3 frag_pos_light_screen = frag_pos_light_ndc * 0.5f + 0.5f;
+    vec3 frag_pos_light_screen = frag_pos_light_ndc * 0.5f + 0.5f;  // [0, 1]
     vec2 texel_size = 1.f / vec2(textureSize(light.cascade_maps, 0));
     if(frag_pos_light_screen.z >= 1.f) return 1.f;
     float depth_current = frag_pos_light_screen.z;
@@ -305,55 +356,6 @@ float calculate_cascade_shadow(Direction_light light, int index)
     }
     n_shadow /= 9.f;
     
-    return n_shadow;
-}
-
-// 20 coordinates placed on a cube
-vec3 offset_vecs[20] = vec3[] 
-    (
-        vec3(-1.f, -1.f, -1.f), vec3(-1.f, -1.f, 0.f), vec3(-1.f, -1.f, 1.f), vec3(-1.f, 0.f, -1.f), vec3(-1.f, 0.f, 1.f), vec3(-1.f, 1.f, -1.f), vec3(-1.f, 1.f, 0.f), vec3(-1.f, 1.f, 1.f),
-        vec3(0.f, -1.f, -1.f), vec3(0.f, -1.f, 1.f), vec3(0.f, 1.f, -1.f), vec3(0.f, 1.f, 1.f),
-        vec3(1.f, -1.f, -1.f), vec3(1.f, -1.f, 0.f), vec3(1.f, -1.f, -1.f), vec3(1.f, 0.f, -1.f), vec3(1.f, 0.f, 1.f), vec3(1.f, 1.f, -1.f), vec3(1.f, 1.f, 0.f), vec3(1.f, 1.f, 1.f)
-    );
-
-float calculate_cubemap_shadow(Point_light light, vec3 light_dir)
-{
-    float n_shadow = 0.f;
-    float bias_ = max(bias * (1 - dot(light_dir, normalize(fs_in.frag_normal))), bias * 0.01f);
-    vec3 light2frag = vec3(fs_in.frag_pos) - light.position;
-    float depth_current = length(light2frag);
-    float max_depth = length(light2frag * min(light.far / abs(light2frag.x), min(light.far / abs(light2frag.y), light.far / abs(light2frag.z))));
-    float min_depth = length(light2frag * min(light.near / abs(light2frag.x), min(light.near / abs(light2frag.y), light.near / abs(light2frag.z))));
-    
-    float radius = (1.f + linearize_depth(gl_FragCoord.z, near, far)) / 75.f;
-    for(int i = 0; i < 20; ++i)
-    {
-        float depth_closest = texture(light.depth_cubemap, light2frag + radius * offset_vecs[i]).r;  // 
-        depth_closest = depth_closest * (max_depth - min_depth) + min_depth;
-        n_shadow += (depth_closest + bias_) > depth_current ? 1.f : 0.f;
-    }
-    n_shadow /= 20.f;
-    return n_shadow;
-}
-
-float calculate_cubemap_shadow(Spot_light light, vec3 light_dir)
-{
-    float n_shadow = 0.f;
-    float bias_ = max(bias * (1 - dot(light_dir, normalize(fs_in.frag_normal))), bias * 0.01f);
-    vec3 light2frag = vec3(fs_in.frag_pos) - light.position;
-    float depth_current = length(light2frag);
-    float max_depth = length(light2frag * min(light.far / abs(light2frag.x), min(light.far / abs(light2frag.y), light.far / abs(light2frag.z))));
-    float min_depth = length(light2frag * min(light.near / abs(light2frag.x), min(light.near / abs(light2frag.y), light.near / abs(light2frag.z))));
-
-    // fragment距离视角越远，radius就会越大
-    float radius = (1.f + linearize_depth(gl_FragCoord.z, near, far)) / 75.f;
-    for(int i = 0; i < 20; ++i)
-    {
-        float depth_closest = texture(light.depth_cubemap, light2frag + radius * offset_vecs[i]).r;
-        depth_closest = depth_closest * (max_depth - min_depth) + min_depth;
-        n_shadow += (depth_closest + bias_) > depth_current ? 1.f : 0.f;
-    }
-    n_shadow /= 20.f;
     return n_shadow;
 }
 
