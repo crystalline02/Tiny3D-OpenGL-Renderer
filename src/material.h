@@ -17,7 +17,8 @@ public:
         const glm::vec3& ambient_color = glm::vec3(1.f),
         float opacity = 1.f);
     Material(const std::vector<unsigned int>& diffuse_map_units, 
-        const std::vector<unsigned int>& specular_map_units, 
+        const std::vector<unsigned int>& specular_map_units,
+        const std::vector<unsigned int>& roughness_map_units, 
         const std::vector<unsigned int>& ambient_map_units,
         const std::vector<unsigned int>& opacity_map_units,
         const std::vector<unsigned int>& normal_map_units,
@@ -30,6 +31,7 @@ public:
     inline void set_ambient_color(const glm::vec3& color) { m_ambient_color  = color; }
     inline void set_metalic(const float& metalic) { m_metalic = metalic; }
     inline void set_shinness(float shinness) { m_shinness = shinness; }
+    inline void set_roughness(float roughness) {m_roughness = roughness;}
     inline int shinness() { return m_shinness; }
     inline void set_normal_strength(float strength) { m_normal_stength = strength; }
     inline float normal_strength() { return m_normal_stength; }
@@ -44,9 +46,9 @@ private:
         m_opacity_map_units,
         m_normal_map_units,
         m_displacement_map_units,
-        m_metalic_map_units;
+        m_metalic_map_units,
+        m_roughness_map_units;
     int m_shinness;
     Mat_type m_type;
     float m_opacity, m_normal_stength, m_metalic, m_roughness;
 };
-

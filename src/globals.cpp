@@ -659,7 +659,6 @@ void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, GLuint& depth_cube
     {
         std::cout << "Depth framebuffer incomplete!\n";
         exit(1);
-
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

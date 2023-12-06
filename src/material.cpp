@@ -8,7 +8,7 @@ Material::Material(const glm::vec3& diffuse_color_,
     float opacity):
 m_diffuse_color(diffuse_color_), m_specular_color(specular_color_), m_ambient_color(ambient_color_), 
 m_opacity(opacity), m_diffuse_map_units(), m_specular_map_units(), m_ambient_map_units(), 
-m_opacity_map_units(), m_metalic_map_units(), m_shinness(32), 
+m_opacity_map_units(), m_metalic_map_units(), m_roughness_map_units(), m_shinness(32), m_roughness(0.5f),
 m_normal_stength(1.f), m_type(Mat_type::Blinn_Phong)
 {
     
@@ -16,6 +16,7 @@ m_normal_stength(1.f), m_type(Mat_type::Blinn_Phong)
 
 Material::Material(const std::vector<unsigned int>& diffuse_map_units, 
     const std::vector<unsigned int>& specular_map_units, 
+    const std::vector<unsigned int>& roughness_map_units,
     const std::vector<unsigned int>& ambient_map_units, 
     const std::vector<unsigned int>& opacity_map_units,
     const std::vector<unsigned int>& normal_map_units,
@@ -23,6 +24,7 @@ Material::Material(const std::vector<unsigned int>& diffuse_map_units,
     const std::vector<unsigned int>& metalic_map_units):
 m_diffuse_map_units(diffuse_map_units), 
 m_specular_map_units(specular_map_units), 
+m_roughness_map_units(roughness_map_units),
 m_ambient_map_units(ambient_map_units), 
 m_opacity_map_units(opacity_map_units),
 m_normal_map_units(normal_map_units),
@@ -189,12 +191,12 @@ void Material::set_uniforms(const char* name, GLint program) const
             }
             
             // roughness
-            if(!m_specular_map_units.empty())
+            if(!m_roughness_map_units.empty())
             {
-                for(int i = 0; i < m_specular_map_units.size(); ++i)
+                for(int i = 0; i < m_roughness_map_units.size(); ++i)
                 {
                     std::string roughness_maps = std::string(name) + std::string(".roughness_maps[") + std::to_string(i) + std::string("]");
-                    util::set_int(roughness_maps.c_str(), m_specular_map_units[i], program);
+                    util::set_int(roughness_maps.c_str(), m_roughness_map_units[i], program);
                 }
                 util::set_bool(use_roughness_map.c_str(), true, program);
             }
@@ -245,6 +247,22 @@ void Material::set_uniforms(const char* name, GLint program) const
             {
                 util::set_bool(use_metalic_map.c_str(), false, program);
                 util::set_float(metalic.c_str(), m_metalic, program);
+            }
+
+            // ambient
+            if(!m_ambient_map_units.empty()) 
+            {
+                for(int i = 0; i < m_ambient_map_units.size(); ++i)
+                {
+                    std::string ambient_map = (std::string(name) + std::string(".ambient_maps[") + std::to_string(i) + std::string("]"));
+                    util::set_int(ambient_map.c_str(), m_ambient_map_units[i], program);
+                }
+                util::set_bool(use_ambient_map.c_str(), GL_TRUE, program);
+            }
+            else
+            {
+                util::set_floats(ambient_color.c_str(), m_ambient_color, program);
+                util::set_bool(use_ambient_map.c_str(), GL_FALSE, program);
             }
             break;
         }

@@ -300,6 +300,7 @@ void PBR::set_uniforms(const Material& material, const Camera& camera, const glm
     util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
     util::set_int("direction_lights_count", Light::direction_lights_count(), program_id);
     util::set_floats("view_pos", camera.position(), program_id);
+    util::set_float("bias", util::Globals::shadow_bias, program_id);
     material.set_uniforms("material", program_id);
     Skybox::set_uniforms("skybox", camera, program_id);
 }

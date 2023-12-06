@@ -33,7 +33,7 @@ void main()
         gs_out.frag_pos = gl_in[i].gl_Position;  // world
         gs_out.texture_coord = gs_in[i].texture_coord;  // UV
         gs_out.TBN = mat3(normalize(gs_in[i].tangent), 
-            normalize(cross(normalize(gs_in[i].normal), normalize(gs_in[i].tangent))),
+            normalize(cross(normalize(gs_in[i].tangent), normalize(gs_in[i].normal))),
             normalize(gs_in[i].normal));
         EmitVertex();
     }

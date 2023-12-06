@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "light.h"
 
+#include <glm/glm.hpp>
 #include <chrono>
 #include <iostream>
 #include <filesystem>
@@ -81,21 +82,29 @@ void Model::process_node(aiNode* node, const aiScene* scene)
 Material Model::process_material(aiMaterial* material)
 {
     std::vector<unsigned int> diffuse_maps_units, specular_maps_units, ambient_maps_units, 
-        opacity_maps_units, normal_maps_units, displacement_maps_units, metalic_maps_units;
+        opacity_maps_units, normal_maps_units, displacement_maps_units, metalic_maps_units, roughness_maps_units;
     diffuse_maps_units = retrive_texture_units(material, aiTextureType_DIFFUSE);
     specular_maps_units = retrive_texture_units(material, aiTextureType_SPECULAR);
     ambient_maps_units = retrive_texture_units(material, aiTextureType_AMBIENT);
-    metalic_maps_units = retrive_texture_units(material, aiTextureType_METALNESS);
+    metalic_maps_units = retrive_texture_units(material, aiTextureType_REFLECTION);
+    roughness_maps_units = retrive_texture_units(material, aiTextureType_SHININESS);
     opacity_maps_units = retrive_texture_units(material, aiTextureType_OPACITY);
     normal_maps_units = retrive_texture_units(material, aiTextureType_HEIGHT);
     displacement_maps_units = retrive_texture_units(material, aiTextureType_DISPLACEMENT);
+
+    // illumintaion mode
+    int illum;
+    material->Get(AI_MATKEY_SHADING_MODEL, illum);
+    
     Material ret_mat(diffuse_maps_units,
         specular_maps_units, 
+        roughness_maps_units,
         ambient_maps_units,
         opacity_maps_units,
         normal_maps_units,
         displacement_maps_units,
         metalic_maps_units);
+    
     if(diffuse_maps_units.empty())
     {
         aiColor3D color;
@@ -108,11 +117,22 @@ Material Model::process_material(aiMaterial* material)
         material->Get(AI_MATKEY_COLOR_SPECULAR, color);
         ret_mat.set_specular_color({color.r, color.g, color.b});
     }
+
+    // roughness / shiness
+    {
+        float shiness;
+        material->Get(AI_MATKEY_SHININESS, shiness);
+        float roughness = glm::max(0.f, glm::min(shiness, 1000.f));
+        roughness = 1.f - glm::sqrt(roughness / 1000.f);
+        ret_mat.set_shinness(shiness);
+        ret_mat.set_roughness(roughness);
+    }
+
     if(ambient_maps_units.empty())
     {
-        aiColor3D color;
-        material->Get(AI_MATKEY_COLOR_AMBIENT, color);
-        ret_mat.set_ambient_color({color.r, color.g, color.b});
+        aiColor3D ambient;
+        material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+        ret_mat.set_ambient_color({ambient.r, ambient.g, ambient.b});
     }
     if(opacity_maps_units.empty())
     {
@@ -123,10 +143,20 @@ Material Model::process_material(aiMaterial* material)
     if(metalic_maps_units.empty())
     {
         float metalic;
-        material->Get(AI_MATKEY_METALLIC_FACTOR, metalic);
+        if(illum == 2)
+        {  
+            // Do reflection
+            aiColor3D metalic_color;
+            material->Get(AI_MATKEY_COLOR_AMBIENT, metalic_color);
+            metalic = (metalic_color.r + metalic_color.g + metalic_color.b) / 3.f;
+        }
+        else
+        {
+            // No reflection
+            metalic = 0.f;
+        }
         ret_mat.set_metalic(metalic);
     }
-    
     return ret_mat;
 }
 
@@ -142,8 +172,8 @@ std::vector<unsigned int> Model::retrive_texture_units(aiMaterial* material, aiT
         if(it == loaded_textures.end())  // 没有找到相同贴图
         {
             unsigned int texture_unit = loaded_textures.size();
-            util::create_texture(texture_unit, 
-                texture_path.c_str(), type == aiTextureType_DIFFUSE ? true : false);
+            util::create_texture(texture_unit,
+                texture_path.c_str(), type == aiTextureType_DIFFUSE);
             texture_units.push_back(texture_unit);
         }
         else texture_units.push_back(it->second);

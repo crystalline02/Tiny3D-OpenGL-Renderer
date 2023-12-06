@@ -19,6 +19,7 @@ struct Material
     sampler2D normal_maps[4];
     sampler2D displacement_maps[4];
     sampler2D metalic_maps[4];
+    sampler2D ambient_maps[4];
     
     bool use_albedo_map;
     bool use_opacity_map;
@@ -26,12 +27,14 @@ struct Material
     bool use_normal_map;
     bool use_displacement_map;
     bool use_metalic_map;
+    bool use_ambient_map;
 
     vec3 albedo_color;
     float opacity;
     float roughness;
     float metalic;
     float normal_map_strength;
+    vec3 ambient_color;
 };
 
 struct Point_light
@@ -40,6 +43,7 @@ struct Point_light
     vec3 color;
     float diffuse;
     float specular;
+    float ambient;
     float intensity;
     float kc;
     float kl;
@@ -55,6 +59,7 @@ struct Spot_light
     vec3 color;
     float diffuse;
     float specular;
+    float ambient;
     float intensity;
     float outer_cutoff;
     float cutoff;
@@ -73,6 +78,7 @@ struct Direction_light
     vec3 color;
     float diffuse;
     float specular;
+    float ambient;
     float intensity;
 };
 
@@ -102,6 +108,7 @@ uniform int spot_lights_count;
 uniform int direction_lights_count;
 
 uniform vec3 view_pos;
+uniform float bias;
 
 uniform Material material;
 uniform Skybox skybox;
@@ -115,24 +122,37 @@ vec3 fresnelSchlick(vec3 F0, float cos_theta);
 float DistributionGGX(vec3 n, vec3 h, float roughness);
 float GeometrySchlickGGX(vec3 n, vec3 v, float roughness);
 float GeometrySmith(vec3 n , vec3 v, vec3 l, float roughness);
+vec3 gamma_correct(vec3 color);
+float linearize_depth(float F_depth, float near, float far);
 vec2 get_parallax_mapping_texcoord(Material material, vec2 texcoord, vec3 view_dir);
 vec3 get_shading_normal(Material material, vec2 texture_coord);
+
 vec3 cac_point_light(Point_light light, Material material);
+
+float cac_point_shadow(Point_light light, vec3 light_dir);
 
 void main()
 {
     if((!material.use_opacity_map && material.opacity < 0.0001f) 
         || (material.use_opacity_map && texture(material.opacity_maps[0], fs_in.texture_coord).r < 0.0001f)) discard;
+
     vec3 result = vec3(0.f);
+    vec3 ambient = vec3(0.f);
     for(int i = 0; i < point_lights_count; ++i)
     {
-        
+        ambient += point_lights[i].ambient * point_lights[i].color * (material.use_ambient_map ? vec3(texture(material.ambient_maps[0], fs_in.texture_coord)) : material.ambient_color) / point_lights_count;
+        result += cac_point_light(point_lights[i], material);
     }
+    result += ambient;
+
+    result = gamma_correct(result);
+    float alpha = material.use_opacity_map ? texture(material.opacity_maps[0], fs_in.texture_coord).r : material.opacity;
+    FragColor = vec4(result, alpha);
 }
 
 vec3 fresnelSchlick(vec3 F0, float cos_theta)
 {
-    return F0 + (1 - F0) * pow(1. - cos_theta, 5);
+    return F0 + (1 - F0) * pow(1.f - cos_theta, 5);
 }
 
 float DistributionGGX(vec3 n, vec3 h, float roughness)
@@ -160,27 +180,47 @@ float GeometrySmith(vec3 n , vec3 v, vec3 l, float roughness)
     return GeometrySchlickGGX(n, v, roughness) * GeometrySchlickGGX(n, l, roughness);
 }
 
+vec3 gamma_correct(vec3 color)
+{
+    return pow(color, vec3(1.f / 2.2f));
+}
+
 vec3 cac_point_light(Point_light light, Material material)
 {
     vec3 light_dir = normalize(light.position - vec3(fs_in.frag_pos));
     vec3 view_dir = normalize(view_pos - vec3(fs_in.frag_pos));
-    float r = length(light.position - vec3(fs_in.frag_pos));
-    float F_att = light.kc + light.kl * r + light.kq * r * r;
-    vec3 radiance = light.color * F_att;
     vec3 normal = get_shading_normal(material, fs_in.texture_coord);
+    if(dot(view_dir, normalize(fs_in.frag_normal)) < 0 || dot(light_dir, normalize(fs_in.frag_normal)) < 0) return vec3(0.f);
 
-    vec3 albedo_color = material.use_albedo_map ? texture(material.albedo_maps[0], fs_in.texture_coord).rgb : material.albedo_color;
+    float n_dot_l = max(dot(normal, light_dir), 0);  // cosTheta
+
+    float r = length(light.position - vec3(fs_in.frag_pos));
+    float F_att = 1.f / (light.kc + light.kl * r + light.kq * r * r);
+    vec3 radiance = light.color * F_att * light.intensity;  // Li(p, wi)
+
+    vec3 albedo = material.use_albedo_map ? texture(material.albedo_maps[0], fs_in.texture_coord).rgb : material.albedo_color;
     float metalic = material.use_metalic_map ? texture(material.metalic_maps[0], fs_in.texture_coord).r : material.metalic;
-    vec3 F0 = mix(vec3(0.04f), albedo_color, metalic);  // surface reflection at zero incidence
-    vec3 F = fresnelSchlick(F0, max(dot(view_dir, normal), 0.f));
-    return vec3(0.f);
+    vec3 F0 = mix(vec3(0.04f), albedo, metalic);  // surface reflection at zero incidence
+    float n_dot_v = max(dot(normal, view_dir), 0.f);
+    vec3 F = fresnelSchlick(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f));  // F
+    
+    vec3 h = normalize(view_dir + light_dir);
+    float roughness = material.use_roughness_map ? texture(material.roughness_maps[0], fs_in.texture_coord).r : material.roughness;
+    float NDF = DistributionGGX(normal, h, roughness);  // N
+
+    float G = GeometrySmith(normal, view_dir, light_dir, roughness); // G
+    
+    vec3 kd = (vec3(1.f) - F) * (1 - metalic);
+    vec3 L_oi = (kd * albedo / PI + F * NDF * G / max(4 * n_dot_l * n_dot_v, 0.0001f)) * radiance * n_dot_l;
+    // vec3 L_oi = (F * NDF * G / max(4 * n_dot_l * n_dot_v, 0.0001f)) * radiance * n_dot_l;
+    return L_oi;
 }
 
 vec3 get_shading_normal(Material material, vec2 texture_coord)
 {
     vec3 normal = material.use_normal_map ? normalize(fs_in.TBN * (texture(material.normal_maps[0], texture_coord).rgb * 2 - 1)) : normalize(fs_in.frag_normal);
     if(material.use_normal_map)
-        normal = normalize(mix(fs_in.frag_normal, normal, material.normal_map_strength));
+        normal = normalize(mix(normalize(fs_in.frag_normal), normal, material.normal_map_strength));
     return normal;
 }
 
@@ -207,4 +247,30 @@ vec2 get_parallax_mapping_texcoord(Material material, vec2 texcoord, vec3 view_d
     float depth_before = abs(texture(material.displacement_maps[0], prev_texcoord).r * parallax_map_scale - current_layer_depth + layer_depth);
     float weight = depth_after / (depth_after + depth_before);
     return mix(current_texcoord, prev_texcoord, weight);
+}
+
+vec3 offset_vecs[20] = vec3[] 
+    (
+        vec3(-1.f, -1.f, -1.f), vec3(-1.f, -1.f, 0.f), vec3(-1.f, -1.f, 1.f), vec3(-1.f, 0.f, -1.f), vec3(-1.f, 0.f, 1.f), vec3(-1.f, 1.f, -1.f), vec3(-1.f, 1.f, 0.f), vec3(-1.f, 1.f, 1.f),
+        vec3(0.f, -1.f, -1.f), vec3(0.f, -1.f, 1.f), vec3(0.f, 1.f, -1.f), vec3(0.f, 1.f, 1.f),
+        vec3(1.f, -1.f, -1.f), vec3(1.f, -1.f, 0.f), vec3(1.f, -1.f, -1.f), vec3(1.f, 0.f, -1.f), vec3(1.f, 0.f, 1.f), vec3(1.f, 1.f, -1.f), vec3(1.f, 1.f, 0.f), vec3(1.f, 1.f, 1.f)
+    );
+
+float cac_point_shadow(Point_light light, vec3 light_dir)
+{
+    float bias_ = max(bias * (1 - dot(light_dir, normalize(fs_in.frag_normal))), bias * 0.01f);
+    float in_shadow = 0.f;
+    
+    for(int i = 0; i < 20; ++i)
+    {
+        
+    }
+
+    return in_shadow;
+}
+
+float linearize_depth(float F_depth, float near, float far)
+{
+    float z_view = (near * far) / (far - F_depth * (far - near));
+    return (z_view - near) / (far - near);
 }
