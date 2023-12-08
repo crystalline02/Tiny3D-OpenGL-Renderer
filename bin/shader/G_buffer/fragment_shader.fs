@@ -37,7 +37,6 @@ struct Material
     int shinness;
 };
 
-
 uniform Material material;
 uniform vec3 view_pos;
 

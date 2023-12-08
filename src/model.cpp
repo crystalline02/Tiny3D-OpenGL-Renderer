@@ -86,7 +86,7 @@ Material Model::process_material(aiMaterial* material)
     diffuse_maps_units = retrive_texture_units(material, aiTextureType_DIFFUSE);
     specular_maps_units = retrive_texture_units(material, aiTextureType_SPECULAR);
     ambient_maps_units = retrive_texture_units(material, aiTextureType_AMBIENT);
-    metalic_maps_units = retrive_texture_units(material, aiTextureType_REFLECTION);
+    metalic_maps_units = retrive_texture_units(material, aiTextureType_EMISSIVE);  // ASSIMP cannot load `map_refl`, so I use map_Ke temporally.
     roughness_maps_units = retrive_texture_units(material, aiTextureType_SHININESS);
     opacity_maps_units = retrive_texture_units(material, aiTextureType_OPACITY);
     normal_maps_units = retrive_texture_units(material, aiTextureType_HEIGHT);

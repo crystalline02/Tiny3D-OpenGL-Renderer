@@ -2,8 +2,8 @@
 # www.blender.org
 
 newmtl Material.001
-Ns 1000.000000
-Ka 0.756000 0.756000 0.756000
+Ns 773.954529
+Ka 1.000000 1.000000 1.000000
 Kd 0.037593 0.806498 0.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
@@ -53,7 +53,7 @@ illum 2
 map_Kd MetalCorrodedHeavy001_COL_1K_METALNESS.jpg
 map_Ks MetalCorrodedHeavy001_SPECULAR_1K_METALNESS.jpg
 map_Ns MetalCorrodedHeavy001_ROUGHNESS_1K_METALNESS.jpg
-map_refl MetalCorrodedHeavy001_METALNESS_1K_METALNESS.jpg
+map_Ke MetalCorrodedHeavy001_METALNESS_1K_METALNESS.jpg
 map_Bump -bm 1.000000 MetalCorrodedHeavy001_NRM_1K_METALNESS.jpg
 
 newmtl Material.006
