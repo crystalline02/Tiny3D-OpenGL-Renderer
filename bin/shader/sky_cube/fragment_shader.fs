@@ -4,6 +4,8 @@ in vec3 texture_coords;
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 BrightColor;
 // layout(depth_greater) out float gl_FragDepth;  // 这句话的意思是指定我们接下来赋值的gl_FragDepth的值一定会大于gl_FragCoords.z，并且保证opengl还是会做early depth testing，仅>4.2版本可用
+// layout(depth_less) out float gl_FragDepth;  // 这句话的意思是指定我们接下来赋值的gl_FragDepth的值一定会小于gl_FragCoords.z，并且保证opengl还是会做early depth testing，仅>4.2版本可用
+// 总的来说layout(depth_less/depth_greater)用于控制opengl深度测试的行为
 
 uniform samplerCube skybox;
 uniform float brightness;

@@ -77,7 +77,6 @@ namespace util
         }
     }
 
-    void create_texture(unsigned int texture_unit, const char* path, bool is_SRGB);
 
     inline void set_float(const char* name, float value, GLuint program_id) 
     { 
@@ -121,6 +120,8 @@ namespace util
     }
 
     void gen_FBOs();
+    void create_HDRI(unsigned int unit, const char* path);
+    void create_texture(unsigned int texture_unit, const char* path, bool is_SRGB);
     void create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units);
     void create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint* pingpong_texture_units);
     void create_cascademap_framebuffer(GLuint &depth_fbo, GLuint& depth_map, GLuint texture_unit);

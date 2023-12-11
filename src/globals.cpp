@@ -138,6 +138,35 @@ glm::mat4 util::face_camera_model(const glm::mat4& camera_mat, glm::vec3 light_p
     return model_light;
 }
 
+void create_HDRI(unsigned int unit, const char* path)
+{
+    stbi_set_flip_vertically_on_load(true);
+    int width, height, comp;
+    float* data = stbi_loadf(path, &width, &height, &comp, 0);
+    if(data)
+    {
+        unsigned int hdri_texture;
+        glGenTextures(1, &hdri_texture);
+        glActiveTexture(GL_TEXTURE0 + unit);
+        glBindTexture(GL_TEXTURE_2D, hdri_texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+        
+        // For HDRI, it's OK not to generate mipmap
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glActiveTexture(GL_TEXTURE0);
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Error loading " << path << std::endl;
+        exit(1);
+    }
+}
+
 void util::create_texture(unsigned int texture_unit, const char* path, bool is_SRGB)
 {
     std::cout << "Loading texture form " << path << "......\t";
