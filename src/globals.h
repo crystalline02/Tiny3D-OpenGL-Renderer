@@ -10,8 +10,8 @@
 #include <vector>
 #include <array>
 
+
 class Light;
-class Shader;
 class Camera;
 class Light_vertices;
 class Model;

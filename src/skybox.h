@@ -1,17 +1,20 @@
 #pragma once
 #include <glad/glad.h>
+
 #include <string>
 #include <vector>
 
 class Camera;
-class Skybox;
-class Sky_cube;
+namespace Shader
+{
+    class Sky_cube;
+}
 
 class Skybox
 {
 public:
     Skybox();
-    void draw(const Sky_cube& shader, const Camera& camera, GLuint fbo = 0) const;
+    void draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo = 0) const;
     inline void change_dir(unsigned int id) { m_cur_id = id; }
     inline std::vector<std::string> directories() const { return m_directories; }
     inline unsigned int selected() { return m_cur_id; }

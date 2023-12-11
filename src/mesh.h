@@ -1,22 +1,28 @@
 #pragma once
 #include <string>
 #include <vector>
+
 #include <glm/glm.hpp>
+
 #include "material.h"
 
-class Blinn_phong;
-class Normal;
-class Single_color;
-class Depth_cubemap;
-class Tangent_normal;
-class Cascade_map;
-class Camera;
-class Direction_light;
+namespace Shader
+{
+    class Blinn_phong;
+    class Normal;
+    class Single_color;
+    class Depth_cubemap;
+    class Tangent_normal;
+    class Cascade_map;
+    class Depth_shader;
+    class Object_shader;
+    class G_buffer;
+}
+
 class Point_light;
+class Direction_light;
 class Light;
-class Depth_shader;
-class Object_shader;
-class G_buffer;
+class Camera;
 
 struct Vertex
 {
@@ -31,12 +37,12 @@ class Mesh
 public:
     Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const Material &material);
     ~Mesh();
-    void draw(const Object_shader &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo = 0) const;
-    void draw_gbuffer(const G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const;
-    void draw_normals(const Normal &shader, const Camera &camera, const glm::mat4 &model) const;
-    void draw_tangent(const Tangent_normal &shader, const Camera &camera, const glm::mat4 &model) const;
-    void draw_outline(const Single_color &shader, const Camera &camera, const glm::mat4 &model) const;
-    void draw_depthmap(const Depth_shader &depth_shader, const Light &light, const glm::mat4 &model) const;
+    void draw(const Shader::Object_shader &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo = 0) const;
+    void draw_gbuffer(const Shader::G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const;
+    void draw_normals(const Shader::Normal &shader, const Camera &camera, const glm::mat4 &model) const;
+    void draw_tangent(const Shader::Tangent_normal &shader, const Camera &camera, const glm::mat4 &model) const;
+    void draw_outline(const Shader::Single_color &shader, const Camera &camera, const glm::mat4 &model) const;
+    void draw_depthmap(const Shader::Depth_shader &depth_shader, const Light &light, const glm::mat4 &model) const;
     void clear();
     inline bool is_blend_mesh() const { return m_material.is_blend_mat(); }
     inline glm::vec3 center() const { return m_center; }

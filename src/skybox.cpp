@@ -72,7 +72,7 @@ Skybox* Skybox::get_instance()
     else return singleton;
 }
 
-void Skybox::draw(const Sky_cube& shader, const Camera& camera, GLuint fbo) const
+void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo) const
 {
     assert(shader.shader_dir() == "./shader/sky_cube");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);

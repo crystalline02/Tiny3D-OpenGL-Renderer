@@ -73,14 +73,14 @@ int main(int argc, char** argv)
 	Model model("./model/cubes/cubes.obj");
 
 	// Shaders
-	Blinn_phong bp_shader;
-	PBR pbr_shader;
-	Single_color color_shader;
-	Sky_cube skybox_shader;
-	Normal normal_shader;
-	Cascade_map cascade_shader;
-	Depth_cubemap depth_cube_shader;
-	Tangent_normal tangent_shader;
+	Shader::Blinn_phong bp_shader;
+	Shader::PBR pbr_shader;
+	Shader::Single_color color_shader;
+	Shader::Sky_cube skybox_shader;
+	Shader::Normal normal_shader;
+	Shader::Cascade_map cascade_shader;
+	Shader::Depth_cubemap depth_cube_shader;
+	Shader::Tangent_normal tangent_shader;
 
 	// Lights
 	Point_light light1(glm::vec3(2.f, 1.5f, -2.f), glm::vec3(1.f, .4392f, .3294f), 4.2f);
@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
 		glEnable(GL_MULTISAMPLE); 
-		Shader::update_uniform_blocks(util::Globals::camera);
+		Shader::Shader::update_uniform_blocks(util::Globals::camera);
 		// glm::mat4 model_mat(1.f);
 		// model_mat = glm::rotate(model_mat, glm::radians((float)glfwGetTime() * 15.f), glm::vec3(0.f, 1.f, 0.f));
 		// model.set_model(model_mat);
@@ -130,23 +130,23 @@ int main(int argc, char** argv)
 		// Draw model.If deferred rendering is enabled, we draw on g-buffers,if not we draw objects directly.
 		if(util::Globals::deferred_rendering)
 		{
-			model.gbuffer_pass(*G_buffer::get_instance(), util::Globals::camera, util::Globals::Gbuffer_fbo);
-			Postproc_quad::get_instance()->lighting_pass(*Lighting_pass::get_instance(), util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.gbuffer_pass(*Shader::G_buffer::get_instance(), util::Globals::camera, util::Globals::Gbuffer_fbo);
+			Postproc_quad::get_instance()->lighting_pass(*Shader::Lighting_pass::get_instance(), util::Globals::camera, util::Globals::scene_fbo_ms);
 			if(util::Globals::SSAO)
 			{
-				Postproc_quad::get_instance()->ssao_pass(*SSAO::get_instance(), *SSAO_blur::get_instance(), util::Globals::ssao_fbo, util::Globals::ssao_blur_fbo);
+				Postproc_quad::get_instance()->ssao_pass(*Shader::SSAO::get_instance(), *Shader::SSAO_blur::get_instance(), util::Globals::ssao_fbo, util::Globals::ssao_blur_fbo);
 			}
-			model.forward_tranparent(util::Globals::pbr_mat ? (Object_shader&)pbr_shader : (Object_shader&)bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.forward_tranparent(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 		}
 		else
-			model.draw(util::Globals::pbr_mat ? (Object_shader&)pbr_shader : (Object_shader&)bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.draw(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 
 		// Draw skybox
 		if(util::Globals::skybox) 
 			Skybox::get_instance()->draw(skybox_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
 
 		// Post process
-		Postproc_quad::get_instance()->draw(*Post_proc::get_instance());
+		Postproc_quad::get_instance()->draw(*Shader::Post_proc::get_instance());
 
 		// Draw outline
 		model.draw_outline(color_shader, util::Globals::camera);

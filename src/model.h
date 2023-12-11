@@ -4,37 +4,50 @@
 #include <map>
 #include <unordered_map>
 #include <memory>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "mesh.h"
 
+
+namespace Shader
+{
+    class Blinn_phong;
+    class Normal;
+    class Single_color;
+    class Cascade_map;
+    class Depth_shader;
+    class Cascade_shader;
+    class Object_shader;
+    class Tangent_normal;
+    class Depth_cubemap;
+    class G_buffer;
+    class Lighting_pass;
+}
 class Camera;
-class Blinn_phong;
-class Normal;
-class Single_color;
-class Cascade_map;
-class Depth_shader;
-class Cascade_shader;
-class Tangent_normal;
-class Depth_cubemap;
 class Material;
 class Light;
-class G_buffer;
-class Lighting_pass;
+enum class Mat_type;
 
 class Model
 {
 public:
     Model(const char *path, const glm::mat4& model = glm::mat4(1.f));
-    void draw(const Object_shader &shader, const Camera& camera, GLuint fbo = 0) const;
-    void gbuffer_pass(const G_buffer &shader, const Camera& camera, GLuint fbo);
-    void forward_tranparent(const Object_shader &shader, const Camera& camera, GLuint fbo);
-    void draw_normals(const Normal &shader, const Camera &camera) const;
-    void draw_tangent(const Tangent_normal &shader, const Camera &camera) const;
-    void draw_outline(const Single_color &shader, const Camera &camera) const;
-    void draw_depthmaps(const Cascade_map &shader_cascade, const Depth_cubemap &shader_depthcube) const;
+    void draw(const Shader::Object_shader &shader, const Camera& camera, GLuint fbo = 0) const;
+    void gbuffer_pass(const Shader::G_buffer &shader, const Camera& camera, GLuint fbo);
+    void forward_tranparent(const Shader::Object_shader &shader, const Camera& camera, GLuint fbo);
+    void draw_normals(const Shader::Normal &shader, const Camera &camera) const;
+    void draw_tangent(const Shader::Tangent_normal &shader, const Camera &camera) const;
+    void draw_outline(const Shader::Single_color &shader, const Camera &camera) const;
+    void draw_depthmaps(const Shader::Cascade_map &shader_cascade, const Shader::Depth_cubemap &shader_depthcube) const;
     void reload(const std::string new_path);
     inline void set_model(glm::mat4 model) { m_model_mat = model; }
     static void switch_model(Model &model, unsigned int id);

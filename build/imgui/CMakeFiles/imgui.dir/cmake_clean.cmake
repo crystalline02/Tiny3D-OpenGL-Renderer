@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/lib/libimgui.a"
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.4/lib/libimgui.pdb"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.5/lib/libimgui.a"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.5/lib/libimgui.pdb"
   "CMakeFiles/imgui.dir/imgui.cpp.obj"
   "CMakeFiles/imgui.dir/imgui.cpp.obj.d"
   "CMakeFiles/imgui.dir/imgui_demo.cpp.obj"

@@ -7,7 +7,11 @@
 
 enum class Light_type{ POINT, SUN, SPOT };
 
-class Shader;
+namespace Shader
+{
+    class Shader;
+}
+
 class Camera;
 class Model;
 
@@ -118,7 +122,7 @@ public:
     inline GLuint size_vertices_circle() const { return m_size_vertices_circle; }
     inline GLuint size_verticies_bar() const { return m_size_verticies_bar; }
     inline GLuint size_vertices_radiant() const { return m_size_vertices_radiant; }
-    void draw(const Shader& shader, const Camera& camera);
+    void draw(const Shader::Shader& shader, const Camera& camera);
 private:
     Light_vertices();
     ~Light_vertices();

@@ -11,9 +11,9 @@
 #include "globals.h"
 #include "skybox.h"
 
-GLuint Shader::ubo_matrices = -1, Shader::ubo_fn = -1, Shader::ubo_light_matrices = -1;
+GLuint Shader::Shader::ubo_matrices = -1, Shader::Shader::ubo_fn = -1, Shader::Shader::ubo_light_matrices = -1;
 
-Shader::Shader(std::string dir_path): m_dir(dir_path)
+Shader::Shader::Shader(std::string dir_path): m_dir(dir_path)
 {
     std::string vertex_shader_path = (dir_path + "/vertex_shader.vs"),
     fragment_shader_path = (dir_path + "/fragment_shader.fs"),
@@ -153,24 +153,24 @@ Shader::Shader(std::string dir_path): m_dir(dir_path)
     }
 }
 
-void Shader::set_material(const char* name, const Material& material) const
+void Shader::Shader::set_material(const char* name, const Material& material) const
 {
     material.set_uniforms(name, program_id);
 }
 
-void Shader::set_globals() const
+void Shader::Shader::set_globals() const
 {
     util::set_float("near", util::Globals::camera.near(), program_id);
     util::set_float("far", util::Globals::camera.far(), program_id);
     util::set_float("bias", util::Globals::shadow_bias, program_id);
 }
 
-void Shader::set_single_color(const glm::vec3& color) const
+void Shader::Shader::set_single_color(const glm::vec3& color) const
 {
     util::set_floats("single_color", color, program_id);
 }
 
-void Shader::update_uniform_blocks(const Camera& camera)
+void Shader::Shader::update_uniform_blocks(const Camera& camera)
 {
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_matrices);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera.lookat()));  // Fill buffer for view matrix
@@ -196,32 +196,32 @@ void Shader::update_uniform_blocks(const Camera& camera)
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void Shader::set_model(const glm::mat4& model) const
+void Shader::Shader::set_model(const glm::mat4& model) const
 {
     util::set_mat("model", model, program_id);
 }
 
-void Shader::set_normal_mat(const glm::mat4& model) const
+void Shader::Shader::set_normal_mat(const glm::mat4& model) const
 {
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);  // 要把normal转换到view space下，注意在glm中非常奇怪，矩阵乘法A * B在底层实现实际上是B * A
 }
 
-void Shader::set_viewpos(const glm::vec3& view_pos) const
+void Shader::Shader::set_viewpos(const glm::vec3& view_pos) const
 {
     util::set_floats("view_pos", view_pos, program_id);
 }
 
-Object_shader::Object_shader(std::string dir_path): Shader(dir_path)
+Shader::Object_shader::Object_shader(std::string dir_path): Shader(dir_path)
 {
 
 }
 
-Blinn_phong::Blinn_phong(): Object_shader("./shader/blinn_phong") 
+Shader::Blinn_phong::Blinn_phong(): Object_shader("./shader/blinn_phong") 
 {     
 
 }
 
-void Blinn_phong::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
+void Shader::Blinn_phong::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
 {
     util::set_mat("model", model, program_id);
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);
@@ -263,12 +263,12 @@ void Blinn_phong::set_uniforms(const Material& material, const Camera& camera, c
     Skybox::set_uniforms("skybox", camera, program_id);
 }
 
-PBR::PBR(): Object_shader("./shader/physically_based")
+Shader::PBR::PBR(): Object_shader("./shader/physically_based")
 {
 
 }
 
-void PBR::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
+void Shader::PBR::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
 {
     util::set_mat("model", model, program_id);
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);
@@ -308,56 +308,56 @@ void PBR::set_uniforms(const Material& material, const Camera& camera, const glm
     Skybox::set_uniforms("skybox", camera, program_id);
 }
 
-Single_color::Single_color(): Shader("./shader/single_color") 
+Shader::Single_color::Single_color(): Shader("./shader/single_color") 
 {
     // Bind current shader's Matices uniform block to Binding Point 0
     // glUniformBlockBinding(program_id, glGetUniformBlockIndex(program_id, "Matrices"), 0);
 }
 
-void Single_color::set_uniforms(const glm::mat4& model, const glm::vec3& color) const
+void Shader::Single_color::set_uniforms(const glm::mat4& model, const glm::vec3& color) const
 {
     util::set_mat("model", model, program_id);
 }
 
-Depth_shader::Depth_shader(std::string dir_path): Shader(dir_path)
+Shader::Depth_shader::Depth_shader(std::string dir_path): Shader(dir_path)
 {
     
 }
 
-Cascade_map::Cascade_map(): Depth_shader("./shader/cascade_map")
+Shader::Cascade_map::Cascade_map(): Depth_shader("./shader/cascade_map")
 {
 
 }
 
-void Cascade_map::set_uniforms(const glm::mat4& model, const Light& light) const
+void Shader::Cascade_map::set_uniforms(const glm::mat4& model, const Light& light) const
 {
     util::set_mat("model", model, program_id);
     util::set_int("dir_light_id", light.index(), program_id);
 }
 
-Depth_cubemap::Depth_cubemap(): Depth_shader("./shader/depth_cubemap") 
+Shader::Depth_cubemap::Depth_cubemap(): Depth_shader("./shader/depth_cubemap") 
 {
 
 }
 
-Normal::Normal(): Shader("./shader/normal")
+Shader::Normal::Normal(): Shader("./shader/normal")
 {
     // glUniformBlockBinding(program_id, glGetUniformBlockIndex(program_id, "Matrices"), 0);
 }
 
-void Normal::set_uniforms(const Camera& camera, const glm::mat4& model) const
+void Shader::Normal::set_uniforms(const Camera& camera, const glm::mat4& model) const
 {
     util::set_mat("model", model, program_id);
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);
     util::set_float("magnitude", util::Globals::normal_magnitude, program_id);
 }
 
-Sky_cube::Sky_cube(): Shader("./shader/sky_cube")
+Shader::Sky_cube::Sky_cube(): Shader("./shader/sky_cube")
 {
 
 }
 
-void Sky_cube::set_uniforms(const Camera& camera, float intensity, GLuint texture_unit) const
+void Shader::Sky_cube::set_uniforms(const Camera& camera, float intensity, GLuint texture_unit) const
 {
     util::set_mat("view", glm::transpose(util::Globals::camera.camera_mat()), program_id);
     util::set_mat("projection", camera.projection(), program_id);
@@ -366,7 +366,7 @@ void Sky_cube::set_uniforms(const Camera& camera, float intensity, GLuint textur
     util::set_float("threshold", util::Globals::threshold, program_id);
 }
 
-void Depth_cubemap::set_uniforms(const glm::mat4& model, const Light& light) const
+void Shader::Depth_cubemap::set_uniforms(const glm::mat4& model, const Light& light) const
 {
     const Point_light& p_light = static_cast<const Point_light&>(light); 
     util::set_mat("model", model, program_id);
@@ -378,26 +378,26 @@ void Depth_cubemap::set_uniforms(const glm::mat4& model, const Light& light) con
     util::set_floats("light_pos", light.position(), program_id);
 }
 
-Tangent_normal::Tangent_normal(): Shader("./shader/tangent_normal")
+Shader::Tangent_normal::Tangent_normal(): Shader("./shader/tangent_normal")
 {
 
 }
 
-void Tangent_normal::set_uniforms(const Camera &camera, const glm::mat4 &model) const
+void Shader::Tangent_normal::set_uniforms(const Camera &camera, const glm::mat4 &model) const
 {
     util::set_mat("model", model, program_id);
     util::set_mat("normal_mat", glm::inverse(glm::transpose(glm::mat3(model))), program_id);
     util::set_float("magnitude", util::Globals::tangent_magnitude, program_id);
 }
 
-Post_proc* Post_proc::instance = nullptr;
+Shader::Post_proc* Shader::Post_proc::instance = nullptr;
 
-Post_proc::Post_proc(): Shader("./shader/post_quad")
+Shader::Post_proc::Post_proc(): Shader("./shader/post_quad")
 {
 
 }
 
-void Post_proc::set_uniforms(GLuint image_unit, GLuint blured_image_unit) const
+void Shader::Post_proc::set_uniforms(GLuint image_unit, GLuint blured_image_unit) const
 {
     util::set_int("image", image_unit, program_id);
     util::set_int("blured_brightness", blured_image_unit, program_id);
@@ -406,47 +406,47 @@ void Post_proc::set_uniforms(GLuint image_unit, GLuint blured_image_unit) const
     util::set_float("exposure", util::Globals::exposure, program_id);
 }
 
-Post_proc *Post_proc::get_instance()
+Shader::Post_proc *Shader::Post_proc::get_instance()
 {
     return instance ? instance : new Post_proc();
 }
 
-Bloom_blur* Bloom_blur::instance = nullptr;
+Shader::Bloom_blur* Shader::Bloom_blur::instance = nullptr;
 
-Bloom_blur::Bloom_blur(): Shader("./shader/bloom_blur")
+Shader::Bloom_blur::Bloom_blur(): Shader("./shader/bloom_blur")
 {
 
 }
 
-void Bloom_blur::set_uniforms(GLuint image_unit, bool horizental) const
+void Shader::Bloom_blur::set_uniforms(GLuint image_unit, bool horizental) const
 {
     util::set_int("image", image_unit, program_id);
     util::set_bool("horizental", horizental, program_id);
 }
 
-Bloom_blur *Bloom_blur::get_instance()
+Shader::Bloom_blur *Shader::Bloom_blur::get_instance()
 {
     return instance ? instance : new Bloom_blur();
 }
 
-SSAO_blur* SSAO_blur::instance = nullptr;
+Shader::SSAO_blur* Shader::SSAO_blur::instance = nullptr;
 
-SSAO_blur *SSAO_blur::get_instance()
+Shader::SSAO_blur *Shader::SSAO_blur::get_instance()
 {
     return instance ? instance : new SSAO_blur();
 }
 
-void SSAO_blur::set_uniforms() const
+void Shader::SSAO_blur::set_uniforms() const
 {
     util::set_int("ssao_buffer", util::Globals::ssao_color_unit, program_id);
 }
 
-SSAO_blur::SSAO_blur() : Shader("./shader/ssao_blur")
+Shader::SSAO_blur::SSAO_blur() : Shader("./shader/ssao_blur")
 {
     
 }
 
-void G_buffer::set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const
+void Shader::G_buffer::set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const
 {
     util::set_mat("model", model, program_id);
     util::set_mat("normal_mat", glm::inverse(glm::transpose(glm::mat3(model))), program_id);
@@ -454,19 +454,19 @@ void G_buffer::set_uniforms(const Material &material, const Camera &camera, cons
     util::set_floats("view_pos", camera.position(), program_id);
 }
 
-G_buffer* G_buffer::instance = nullptr;
+Shader::G_buffer* Shader::G_buffer::instance = nullptr;
 
-G_buffer::G_buffer() : Shader("./shader/G_buffer")
+Shader::G_buffer::G_buffer() : Shader("./shader/G_buffer")
 {
     
 }
 
-G_buffer *G_buffer::get_instance()
+Shader::G_buffer *Shader::G_buffer::get_instance()
 {
     return instance ? instance : new G_buffer();
 }
 
-void SSAO::set_uniforms() const
+void Shader::SSAO::set_uniforms() const
 {
     util::set_int("position_buffer", util::Globals::G_color_units[0], program_id);
     util::set_int("surface_normal", util::Globals::G_color_units[2], program_id);
@@ -478,19 +478,19 @@ void SSAO::set_uniforms() const
         util::set_floats(("samples[" + std::to_string(i) + "]").c_str(), samples[i], program_id);
 }
 
-SSAO *SSAO::get_instance()
+Shader::SSAO *Shader::SSAO::get_instance()
 {
     return instance ? instance : new SSAO();
 }
 
-SSAO* SSAO::instance = nullptr;
+Shader::SSAO* Shader::SSAO::instance = nullptr;
 
-SSAO::SSAO() : Shader("./shader/ssao")
+Shader::SSAO::SSAO() : Shader("./shader/ssao")
 {
 
 }
 
-void Lighting_pass::set_uniforms(const Camera &camera) const
+void Shader::Lighting_pass::set_uniforms(const Camera &camera) const
 {
     util::set_int("position_buffer", util::Globals::G_color_units[0], program_id);
     util::set_int("normal_depth", util::Globals::G_color_units[1], program_id);
@@ -535,14 +535,14 @@ void Lighting_pass::set_uniforms(const Camera &camera) const
     util::set_bool("ssao", util::Globals::SSAO, program_id);
 }
 
-Lighting_pass *Lighting_pass::get_instance()
+Shader::Lighting_pass *Shader::Lighting_pass::get_instance()
 {
     return instance ? instance : new Lighting_pass();
 }
 
-Lighting_pass* Lighting_pass::instance = nullptr;
+Shader::Lighting_pass* Shader::Lighting_pass::instance = nullptr;
 
-Lighting_pass::Lighting_pass() : Shader("./shader/lighting_pass")
+Shader::Lighting_pass::Lighting_pass() : Shader("./shader/lighting_pass")
 {
     
 }

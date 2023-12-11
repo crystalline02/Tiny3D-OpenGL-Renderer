@@ -39,12 +39,12 @@ m_model_mat(model)
     }
 }
 
-void Model::draw_normals(const Normal& normal_shader, const Camera& camera) const
+void Model::draw_normals(const Shader::Normal& normal_shader, const Camera& camera) const
 {
     for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_normals(normal_shader, camera, m_model_mat);
 }
 
-void Model::draw_tangent(const Tangent_normal &tangent_shader, const Camera &camera) const
+void Model::draw_tangent(const Shader::Tangent_normal &tangent_shader, const Camera &camera) const
 {
     for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_tangent(tangent_shader, camera, m_model_mat);
 }
@@ -244,7 +244,7 @@ void Model::set_cullface(bool iscull)
     for(std::unique_ptr<Mesh>& mesh: m_meshes) mesh->set_cullface(iscull);
 }
 
-void Model::draw(const Object_shader& model_shader, const Camera& camera, GLuint fbo) const
+void Model::draw(const Shader::Object_shader& model_shader, const Camera& camera, GLuint fbo) const
 {
     // This is not a good ideal to solve blending problem, but temporarily works
     std::map<float, const Mesh*> blend_mesh;
@@ -266,7 +266,7 @@ void Model::draw(const Object_shader& model_shader, const Camera& camera, GLuint
     blend_mesh.clear();
 }
 
-void Model::gbuffer_pass(const G_buffer &shader, const Camera &camera, GLuint fbo)
+void Model::gbuffer_pass(const Shader::G_buffer &shader, const Camera &camera, GLuint fbo)
 {
     for(const std::unique_ptr<Mesh>& mesh: m_meshes)
     {
@@ -277,7 +277,7 @@ void Model::gbuffer_pass(const G_buffer &shader, const Camera &camera, GLuint fb
     }
 }
 
-void Model::forward_tranparent(const Object_shader &shader, const Camera &camera, GLuint fbo)
+void Model::forward_tranparent(const Shader::Object_shader &shader, const Camera &camera, GLuint fbo)
 {
     for(std::map<float, const Mesh*>::const_reverse_iterator it = m_blend_meshes_temp.rbegin(); it != m_blend_meshes_temp.rend(); ++it)
         it->second->draw(shader, camera, m_model_mat, fbo);
@@ -295,7 +295,7 @@ void Model::reload(const std::string new_path)
     std::cout << "Model loaded, time:" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms.\n";
 }
 
-void Model::draw_outline(const Single_color& single_color, const Camera& camera) const
+void Model::draw_outline(const Shader::Single_color& single_color, const Camera& camera) const
 {
     for(const std::unique_ptr<Mesh>& mesh: m_meshes) if(mesh->is_outline()) mesh->draw_outline(single_color, camera, glm::scale(m_model_mat, glm::vec3(1.008f)));
     glClear(GL_STENCIL_BUFFER_BIT);
@@ -307,7 +307,7 @@ void Model::set_outline(bool isoutline)
         mesh->set_outline(isoutline);
 }
 
-void Model::draw_depthmaps(const Cascade_map& cascade_shader, const Depth_cubemap& depth_cube_shader) const
+void Model::draw_depthmaps(const Shader::Cascade_map& cascade_shader, const Shader::Depth_cubemap& depth_cube_shader) const
 {
     assert(cascade_shader.shader_dir() == "./shader/cascade_map");
     assert(depth_cube_shader.shader_dir() == "./shader/depth_cubemap");

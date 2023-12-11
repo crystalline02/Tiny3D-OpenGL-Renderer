@@ -348,7 +348,7 @@ glm::mat4 Light_vertices::get_bar_dir_matrix(glm::vec3 direction, glm::vec3 post
     return model_bar_dir;
 }
 
-void Light_vertices::draw(const Shader& shader, const Camera& camera)
+void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
 {
     assert(shader.shader_dir() == "./shader/single_color");
 
