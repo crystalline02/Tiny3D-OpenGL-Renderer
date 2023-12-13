@@ -14,6 +14,7 @@ namespace Shader
 
 class Camera;
 class Model;
+struct Texture;
 
 class Light
 {
@@ -48,7 +49,8 @@ public:
 public:
     float m_intensity, m_diffuse, m_specular, m_ambient, m_near, m_far;
     glm::vec3 m_color, m_position;
-    GLuint m_depth_fbo, m_depth_map, m_depth_map_unit;
+    GLuint m_depth_fbo;
+    Texture* m_depth_texture;
     unsigned int m_index;
 };
 

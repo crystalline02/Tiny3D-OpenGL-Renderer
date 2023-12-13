@@ -3,11 +3,12 @@
 #include "camera.h"
 #include "globals.h"
 #include "model.h"
+#include "material.h"
 
 #include <filesystem>
 
 
-Skybox::Skybox(): m_intensity(1.f), m_cur_id(0)
+Skybox::Skybox(): m_intensity(1.f), m_cur_id(2)
 {
     float cube_vertices[] = {
         -0.5f, -0.5f, -0.5f,
@@ -54,22 +55,43 @@ Skybox::Skybox(): m_intensity(1.f), m_cur_id(0)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
+    // Load skybox and HDRIs from directory
     for(const std::filesystem::directory_entry& entry: std::filesystem::directory_iterator("./cubemap"))
-        if(std::filesystem::is_directory(entry.path())) m_directories.push_back(entry.path().string());
-    m_texture_unit = Model::num_textures();
-    util::create_cubemap(m_texture_unit, faces_vector(m_directories[m_cur_id]));
+    {
+        if(entry.is_directory()) 
+        {
+            if(entry.path().filename() != "HDRIs") m_directories.push_back(entry.path().string());
+            else
+            {
+                for(const std::filesystem::directory_entry& entry_HDRIs: std::filesystem::directory_iterator(entry.path()))
+                {
+                    if(entry_HDRIs.is_regular_file() && entry_HDRIs.path().extension() == ".hdr")
+                        m_directories.push_back(entry_HDRIs.path().string());
+                }
+            }
+        }
+    }
+
+    if(std::filesystem::is_directory(m_directories[m_cur_id]))
+        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_texture);
 }
 
-void Skybox::set_selected(unsigned int index)
+void Skybox::set_selected(GLuint index)
 {
     m_cur_id = index;
-    util::create_cubemap(m_texture_unit, faces_vector(m_directories[m_cur_id]));
+    Model::rm_texture(*m_texture);
+    util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_texture);
 }
 
 Skybox* Skybox::get_instance()
 {
     if(singleton == nullptr) return singleton = new Skybox();
     else return singleton;
+}
+
+GLuint Skybox::cubmap_unit() const
+{
+    return m_texture->m_texunit;
 }
 
 void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo) const
@@ -81,7 +103,7 @@ void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint f
 
     glBindVertexArray(VAO);
     shader.use();
-    shader.set_uniforms(camera, m_intensity, m_texture_unit);
+    shader.set_uniforms(camera, m_intensity, m_texture->m_texunit);
     glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 

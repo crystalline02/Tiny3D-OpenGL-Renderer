@@ -183,6 +183,7 @@ void main()
         if(brightness > threshold) BrightColor = vec4(result, 1.f);
         else BrightColor = vec4(0.f, 0.f, 0.f, 0.f);
     }
+    else BrightColor = vec4(0.f, 0.f, 0.f, 0.f);
 }
 
 vec3 caculate_point_light(Point_light light, Material material)

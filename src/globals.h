@@ -7,6 +7,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+#include <iomanip>
 #include <vector>
 #include <array>
 
@@ -15,6 +16,7 @@ class Light;
 class Camera;
 class Light_vertices;
 class Model;
+struct Texture;
 
 #define INIT_GLFW() \
 	glfwInit(); \
@@ -46,6 +48,18 @@ namespace util
     void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
     void process_input(GLFWwindow* window);
     glm::mat4 face_camera_model(const glm::mat4& camera_mat, glm::vec3 light_pos);
+
+    inline void print_row(const std::vector<std::string>& texts, int col_width)
+    {
+        std::cout << "|";
+        for(const std::string& s: texts)
+        {
+            int pad_left = (s.size() + col_width) * 0.5f;
+            int pad_right = col_width - pad_left;
+            std::cout << std::setw(pad_left) << s << std::setw(pad_right) << " " << "|";
+        }
+        std::cout << std::endl;
+    }
     
     inline GLuint create_vbo_2_vao(float* data, GLuint size)
     {
@@ -120,15 +134,15 @@ namespace util
     }
 
     void gen_FBOs();
-    void create_HDRI(unsigned int unit, const char* path);
-    void create_texture(unsigned int texture_unit, const char* path, bool is_SRGB);
     void create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units);
     void create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint* pingpong_texture_units);
-    void create_cascademap_framebuffer(GLuint &depth_fbo, GLuint& depth_map, GLuint texture_unit);
-    void create_depthcubemap_framebuffer(GLuint &depth_fbo, GLuint& depth_cubemap, GLuint texture_unit);
+    void create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, const char* tex_name);
+    void create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, const char* tex_name);
     void create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo,
         GLuint &ssao_color_unit, GLuint &ssao_blur_unit, GLuint &ssao_noisetex_unit);
-    void create_cubemap(GLuint texture_unit, const std::vector<std::string>& faces);
+    void create_HDRI(const char* path, Texture& texture);
+    void create_texture(const char* path, bool is_SRGB, Texture& texture);
+    void create_cubemap(const std::vector<std::string>& faces_path, Texture& texture);
     void create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units);
     void imgui_design(Model &model);
     std::array<glm::vec3, 64> get_ssao_samples();

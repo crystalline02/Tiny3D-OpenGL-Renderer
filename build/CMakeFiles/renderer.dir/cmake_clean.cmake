@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.5/bin/librenderer.dll.a"
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.5/bin/renderer.exe"
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.5/bin/renderer.exe.manifest"
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.5/bin/renderer.pdb"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/librenderer.dll.a"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe.manifest"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.pdb"
   "CMakeFiles/renderer.dir/src/camera.cpp.obj"
   "CMakeFiles/renderer.dir/src/camera.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/globals.cpp.obj"

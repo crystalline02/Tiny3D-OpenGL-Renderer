@@ -9,11 +9,15 @@
 #include <glm/glm.hpp>
 #include <chrono>
 #include <iostream>
+#include <iomanip>
 #include <filesystem>
+#include <set>
 
-std::unordered_map<std::string, unsigned int> Model::loaded_textures;
+
+std::unordered_map<std::string, Texture> Model::loaded_textures;
 std::vector<std::string> Model::model_dirs = {};
-unsigned int Model::seleted = 1;
+GLuint Model::selected_ind = 1;
+GLuint Model::new_selected_ind = 1;
 
 Model::Model(const char *path, const glm::mat4& model): 
 m_model_mat(model)
@@ -39,14 +43,34 @@ m_model_mat(model)
     }
 }
 
+Model::~Model()
+{
+    clear_model();
+}
+
+void Model::log_texture_info()
+{
+    int col_width = 60;
+    std::vector<std::string> headers = {"Texname", "Texunit", "Texbuffer"};
+    util::print_row(headers, col_width);
+    std::cout << std::setfill('-') << std::setw(headers.size() * (col_width + 1) + 1) << "" << std::endl;
+    std::cout << std::setfill(' ');
+    for(std::unordered_map<std::string, Texture>::iterator it = loaded_textures.begin(); it != loaded_textures.end(); ++it)
+        util::print_row({std::string(it->second.m_name), 
+            std::to_string(it->second.m_texunit), 
+            std::to_string(it->second.m_texbuffer)}, 
+                col_width);
+    std::cout << std::endl;
+}
+
 void Model::draw_normals(const Shader::Normal& normal_shader, const Camera& camera) const
 {
-    for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_normals(normal_shader, camera, m_model_mat);
+    for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_normals(normal_shader, camera, m_model_mat);
 }
 
 void Model::draw_tangent(const Shader::Tangent_normal &tangent_shader, const Camera &camera) const
 {
-    for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_tangent(tangent_shader, camera, m_model_mat);
+    for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_tangent(tangent_shader, camera, m_model_mat);
 }
 
 void Model::load_model(std::string path)
@@ -71,6 +95,17 @@ void Model::clear_model()
     directory.clear();
 }
 
+void Model::rm_texture(const Texture& texture)
+{
+    auto it = loaded_textures.find(texture.m_name);
+    if(it == loaded_textures.end()) return;
+    
+    loaded_textures.erase(it);
+    glActiveTexture(GL_TEXTURE0 + texture.m_texunit);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDeleteTextures(1, &texture.m_texbuffer);
+}
+
 void Model::process_node(aiNode* node, const aiScene* scene)
 {
     for(int i = 0; i < node->mNumMeshes; ++i)
@@ -79,43 +114,43 @@ void Model::process_node(aiNode* node, const aiScene* scene)
         process_node(node->mChildren[i], scene);
 }
 
-Material Model::process_material(aiMaterial* material)
+Material* Model::process_material(aiMaterial* material)
 {
-    std::vector<unsigned int> diffuse_maps_units, specular_maps_units, ambient_maps_units, 
-        opacity_maps_units, normal_maps_units, displacement_maps_units, metalic_maps_units, roughness_maps_units;
-    diffuse_maps_units = retrive_texture_units(material, aiTextureType_DIFFUSE);
-    specular_maps_units = retrive_texture_units(material, aiTextureType_SPECULAR);
-    ambient_maps_units = retrive_texture_units(material, aiTextureType_AMBIENT);
-    metalic_maps_units = retrive_texture_units(material, aiTextureType_EMISSIVE);  // ASSIMP cannot load `map_refl`, so I use map_Ke temporally.
-    roughness_maps_units = retrive_texture_units(material, aiTextureType_SHININESS);
-    opacity_maps_units = retrive_texture_units(material, aiTextureType_OPACITY);
-    normal_maps_units = retrive_texture_units(material, aiTextureType_HEIGHT);
-    displacement_maps_units = retrive_texture_units(material, aiTextureType_DISPLACEMENT);
+    std::vector<Texture> diffuse_textures, specular_textures, ambient_textures, 
+        opacity_textures, normal_textures, displacement_textures, metalic_textures, roughness_textures;
+    diffuse_textures = retrive_textures(material, aiTextureType_DIFFUSE);
+    specular_textures = retrive_textures(material, aiTextureType_SPECULAR);
+    ambient_textures = retrive_textures(material, aiTextureType_AMBIENT);
+    metalic_textures = retrive_textures(material, aiTextureType_EMISSIVE);  // ASSIMP cannot load `map_refl`, so I use map_Ke temporally.
+    roughness_textures = retrive_textures(material, aiTextureType_SHININESS);
+    opacity_textures = retrive_textures(material, aiTextureType_OPACITY);
+    normal_textures = retrive_textures(material, aiTextureType_HEIGHT);
+    displacement_textures = retrive_textures(material, aiTextureType_DISPLACEMENT);
 
     // illumintaion mode
     int illum;
     material->Get(AI_MATKEY_SHADING_MODEL, illum);
     
-    Material ret_mat(diffuse_maps_units,
-        specular_maps_units, 
-        roughness_maps_units,
-        ambient_maps_units,
-        opacity_maps_units,
-        normal_maps_units,
-        displacement_maps_units,
-        metalic_maps_units);
+    Material* ret_mat = new Material(diffuse_textures,
+        specular_textures, 
+        roughness_textures,
+        ambient_textures,
+        opacity_textures,
+        normal_textures,
+        displacement_textures,
+        metalic_textures);
     
-    if(diffuse_maps_units.empty())
+    if(diffuse_textures.empty())
     {
         aiColor3D color;
         material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-        ret_mat.set_diffuse_color({color.r, color.g, color.b});
+        ret_mat->set_diffuse_color({color.r, color.g, color.b});
     }
-    if(specular_maps_units.empty())
+    if(specular_textures.empty())
     {
         aiColor3D color;
         material->Get(AI_MATKEY_COLOR_SPECULAR, color);
-        ret_mat.set_specular_color({color.r, color.g, color.b});
+        ret_mat->set_specular_color({color.r, color.g, color.b});
     }
 
     // roughness / shiness
@@ -124,23 +159,23 @@ Material Model::process_material(aiMaterial* material)
         material->Get(AI_MATKEY_SHININESS, shiness);
         float roughness = glm::max(0.f, glm::min(shiness, 1000.f));
         roughness = 1.f - glm::sqrt(roughness / 1000.f);
-        ret_mat.set_shinness(shiness);
-        ret_mat.set_roughness(roughness);
+        ret_mat->set_shinness(shiness);
+        ret_mat->set_roughness(roughness);
     }
 
-    if(ambient_maps_units.empty())
+    if(ambient_textures.empty())
     {
         aiColor3D ambient;
         material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-        ret_mat.set_ambient_color({ambient.r, ambient.g, ambient.b});
+        ret_mat->set_ambient_color({ambient.r, ambient.g, ambient.b});
     }
-    if(opacity_maps_units.empty())
+    if(opacity_textures.empty())
     {
         float opacity;
         material->Get(AI_MATKEY_OPACITY, opacity);
-        ret_mat.set_opacity(opacity);
+        ret_mat->set_opacity(opacity);
     }
-    if(metalic_maps_units.empty())
+    if(metalic_textures.empty())
     {
         float metalic;
         if(illum == 2)
@@ -155,30 +190,24 @@ Material Model::process_material(aiMaterial* material)
             // No reflection
             metalic = 0.f;
         }
-        ret_mat.set_metalic(metalic);
+        ret_mat->set_metalic(metalic);
     }
     return ret_mat;
 }
 
-std::vector<unsigned int> Model::retrive_texture_units(aiMaterial* material, aiTextureType type)
+std::vector<Texture> Model::retrive_textures(aiMaterial* material, aiTextureType type)
 {
-    std::vector<unsigned int> texture_units;
+    std::vector<Texture> textures;
     for(int i = 0; i < material->GetTextureCount(type); ++i)
     {
         aiString tex_string;
         material->GetTexture(type, i, &tex_string);
         std::string texture_path = directory + "/" + tex_string.C_Str();
-        std::unordered_map<std::string, unsigned int>::iterator it = loaded_textures.find(texture_path);
-        if(it == loaded_textures.end())  // 没有找到相同贴图
-        {
-            unsigned int texture_unit = loaded_textures.size();
-            util::create_texture(texture_unit,
-                texture_path.c_str(), type == aiTextureType_DIFFUSE);
-            texture_units.push_back(texture_unit);
-        }
-        else texture_units.push_back(it->second);
+        Texture texture;
+        util::create_texture(texture_path.c_str(), type == aiTextureType_DIFFUSE, texture);
+        textures.emplace_back(texture);
     }
-    return texture_units;
+    return textures;
 }
 
 Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
@@ -206,20 +235,45 @@ Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
             indices.push_back(face.mIndices[j]);
     }
 
-    Material material;
+    Material* material = nullptr;
     if(mesh->mMaterialIndex >=0)
         material = process_material(scene->mMaterials[mesh->mMaterialIndex]);
     else
-        material = Material();
+        material = new Material();
 
     return new Mesh(vertices, indices, material);
 }
 
-void Model::switch_model(Model &model, unsigned int id)
+Texture Model::get_texture(const char* texname)
 {
-    if(seleted == id) return;
-    seleted = id;
-    for(const std::filesystem::directory_entry entry : std::filesystem::directory_iterator(model_dirs[seleted]))
+    std::unordered_map<std::string, Texture>::iterator it = loaded_textures.find(texname);
+    if(it == loaded_textures.end()) return Texture("Null texture", -1, -1);
+    else return it->second;
+}
+
+GLuint Model::fatch_new_texunit()
+{
+    if(loaded_textures.empty()) return 0;
+    GLuint texunit = 0;
+    for(auto it = loaded_textures.begin(); it != loaded_textures.end(); ++it)
+    {
+        texunit = glm::max(texunit, it->second.m_texunit);
+    }
+    return ++texunit;
+}
+
+void Model::add_texture(const char* name, const Texture& texture)
+{
+    if(loaded_textures.find(name) != loaded_textures.end())
+       std::cout << "Warnning: texture of " << name << " is replaced\n";
+    loaded_textures[name] = texture;
+}
+
+void Model::switch_model(Model &model)
+{
+    if(selected_ind == new_selected_ind) return;
+    selected_ind = new_selected_ind;
+    for(const std::filesystem::directory_entry entry : std::filesystem::directory_iterator(model_dirs[selected_ind]))
     {
         std::string name = entry.path().string();
         if(!std::filesystem::is_directory(name))
@@ -230,25 +284,25 @@ void Model::switch_model(Model &model, unsigned int id)
 
 void Model::switch_mat_type(Mat_type new_type)
 {
-    for(std::unique_ptr<Mesh>& mesh : m_meshes)
+    for(std::shared_ptr<Mesh>& mesh : m_meshes)
         mesh->switch_mat_type(new_type);
 }
 
 void Model::set_blend(bool isblend)
 {
-    for(std::unique_ptr<Mesh>& mesh: m_meshes) mesh->set_blend(isblend);
+    for(std::shared_ptr<Mesh>& mesh: m_meshes) mesh->set_blend(isblend);
 }
 
 void Model::set_cullface(bool iscull)
 {
-    for(std::unique_ptr<Mesh>& mesh: m_meshes) mesh->set_cullface(iscull);
+    for(std::shared_ptr<Mesh>& mesh: m_meshes) mesh->set_cullface(iscull);
 }
 
 void Model::draw(const Shader::Object_shader& model_shader, const Camera& camera, GLuint fbo) const
 {
     // This is not a good ideal to solve blending problem, but temporarily works
     std::map<float, const Mesh*> blend_mesh;
-    for(const std::unique_ptr<Mesh>& mesh: m_meshes)
+    for(const std::shared_ptr<Mesh>& mesh: m_meshes)
     {
         if(!mesh->is_blend_mesh())
         {
@@ -268,7 +322,7 @@ void Model::draw(const Shader::Object_shader& model_shader, const Camera& camera
 
 void Model::gbuffer_pass(const Shader::G_buffer &shader, const Camera &camera, GLuint fbo)
 {
-    for(const std::unique_ptr<Mesh>& mesh: m_meshes)
+    for(const std::shared_ptr<Mesh>& mesh: m_meshes)
     {
         if(mesh->is_blend_mesh())
             m_blend_meshes_temp[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh->center(), 1.f)) - camera.position())] = mesh.get();
@@ -297,13 +351,13 @@ void Model::reload(const std::string new_path)
 
 void Model::draw_outline(const Shader::Single_color& single_color, const Camera& camera) const
 {
-    for(const std::unique_ptr<Mesh>& mesh: m_meshes) if(mesh->is_outline()) mesh->draw_outline(single_color, camera, glm::scale(m_model_mat, glm::vec3(1.008f)));
+    for(const std::shared_ptr<Mesh>& mesh: m_meshes) if(mesh->is_outline()) mesh->draw_outline(single_color, camera, glm::scale(m_model_mat, glm::vec3(1.008f)));
     glClear(GL_STENCIL_BUFFER_BIT);
 }
 
 void Model::set_outline(bool isoutline)
 {
-    for(std::unique_ptr<Mesh>& mesh: m_meshes)
+    for(std::shared_ptr<Mesh>& mesh: m_meshes)
         mesh->set_outline(isoutline);
 }
 
@@ -327,12 +381,12 @@ void Model::draw_depthmaps(const Shader::Cascade_map& cascade_shader, const Shad
         if(light->type() == Light_type::SUN)
         {
             glViewport(0, 0, util::Globals::cascade_size, util::Globals::cascade_size);
-            for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(cascade_shader, *light, m_model_mat);
+            for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(cascade_shader, *light, m_model_mat);
         }
         else
         {
             glViewport(0, 0, util::Globals::cubemap_size, util::Globals::cubemap_size);
-            for(const std::unique_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(depth_cube_shader, *light, m_model_mat);
+            for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(depth_cube_shader, *light, m_model_mat);
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

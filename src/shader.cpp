@@ -306,6 +306,8 @@ void Shader::PBR::set_uniforms(const Material& material, const Camera& camera, c
     util::set_float("bias", util::Globals::shadow_bias, program_id);
     material.set_uniforms("material", program_id);
     Skybox::set_uniforms("skybox", camera, program_id);
+    util::set_float("bloom", util::Globals::bloom, program_id);
+    util::set_float("threshold", util::Globals::threshold, program_id);
 }
 
 Shader::Single_color::Single_color(): Shader("./shader/single_color") 

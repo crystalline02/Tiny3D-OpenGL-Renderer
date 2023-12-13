@@ -138,19 +138,27 @@ glm::mat4 util::face_camera_model(const glm::mat4& camera_mat, glm::vec3 light_p
     return model_light;
 }
 
-void create_HDRI(unsigned int unit, const char* path)
+void util::create_HDRI(const char* path, Texture& texture)
 {
+    Texture tex_fatch = Model::get_texture(path);
+    if(tex_fatch.m_name != "Null texture")
+    {
+        texture = tex_fatch;
+        return;
+    }
+    
     stbi_set_flip_vertically_on_load(true);
     int width, height, comp;
     float* data = stbi_loadf(path, &width, &height, &comp, 0);
     if(data)
     {
-        unsigned int hdri_texture;
-        glGenTextures(1, &hdri_texture);
-        glActiveTexture(GL_TEXTURE0 + unit);
-        glBindTexture(GL_TEXTURE_2D, hdri_texture);
+        GLuint hdri_buffer, hdri_unit;
+        hdri_unit = Model::fatch_new_texunit();
+        glGenTextures(1, &hdri_buffer);
+        glActiveTexture(GL_TEXTURE0 + hdri_unit);
+        glBindTexture(GL_TEXTURE_2D, hdri_buffer);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
-        
+        Model::add_texture(path, Texture(path, hdri_unit, hdri_buffer));
         // For HDRI, it's OK not to generate mipmap
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -167,12 +175,20 @@ void create_HDRI(unsigned int unit, const char* path)
     }
 }
 
-void util::create_texture(unsigned int texture_unit, const char* path, bool is_SRGB)
+void util::create_texture(const char* path, bool is_SRGB, Texture& texture)
 {
+    Texture tex_fatch = Model::get_texture(path);
+    if(tex_fatch.m_name != "Null texture") 
+    {
+        texture = tex_fatch;
+        return;
+    }
+
     std::cout << "Loading texture form " << path << "......\t";
     auto start = std::chrono::high_resolution_clock::now();
     int width, height, channels;
-    GLuint texture_id;
+    GLuint texture_id, texture_unit;
+    texture_unit = Model::fatch_new_texunit();
     glGenTextures(1, &texture_id);
     glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -208,25 +224,37 @@ void util::create_texture(unsigned int texture_unit, const char* path, bool is_S
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glActiveTexture(GL_TEXTURE0);
-    Model::add_texture(path, texture_unit);
+    texture.m_name = path; 
+    texture.m_texunit = texture_unit;
+    texture.m_texbuffer = texture_id;
+    Model::add_texture(path, texture);
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms\n";
 }
 
-void util::create_cubemap(GLuint texture_unit, const std::vector<std::string>& faces)
+void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& texture)
 {
-    assert(faces.size() == 6);
-    std::cout << "Loading sky box from:" << faces[0].substr(0, faces[0].find_last_of("/")) << "......";
-    auto start = std::chrono::high_resolution_clock::now();
-    GLuint cube_map;
-    glGenTextures(1, &cube_map);
-    // 应当保证glActiveTexture和glBindTexture一起用，要不然纹理就会乱套了
-    glActiveTexture(GL_TEXTURE0 + texture_unit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, cube_map);
-    int width, height, channels;
-    for(GLuint i = 0; i < faces.size(); ++i)
+    assert(faces_path.size() == 6);
+    std::string texname = faces_path[0].substr(0, faces_path[0].find_last_of("\\/"));
+    Texture tex_fatch = Model::get_texture(texname.c_str());
+    if(tex_fatch.m_name != "Null texture")
     {
-        std::string s = faces[i];
+        texture = tex_fatch;
+        return;
+    }
+    
+    std::cout << "Loading sky box from:" << faces_path[0].substr(0, faces_path[0].find_last_of("/")) << "......";
+    auto start = std::chrono::high_resolution_clock::now();
+    GLuint cubemap_buffer, cubemap_unit;
+    cubemap_unit = Model::fatch_new_texunit();
+    glGenTextures(1, &cubemap_buffer);
+    // 应当保证glActiveTexture和glBindTexture一起用，要不然纹理就会乱套了
+    glActiveTexture(GL_TEXTURE0 + cubemap_unit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemap_buffer);
+    int width, height, channels;
+    for(GLuint i = 0; i < faces_path.size(); ++i)
+    {
+        std::string s = faces_path[i];
         unsigned char* data = stbi_load(s.c_str(), &width, &height, &channels, 0);
         if(data) glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         else
@@ -234,9 +262,12 @@ void util::create_cubemap(GLuint texture_unit, const std::vector<std::string>& f
             std::cout << "Loading failded, error: " << stbi_failure_reason() << std::endl;
             exit(1);
         }
-        Model::add_texture(s.c_str(), texture_unit);
         stbi_image_free(data);
     }
+    texture.m_name = texname;
+    texture.m_texunit = cubemap_unit;
+    texture.m_texbuffer = cubemap_buffer;
+    Model::add_texture(texname.c_str(), texture);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -256,8 +287,9 @@ void util::create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units)
     glGenTextures(2, color_attachments);
     for(unsigned int i = 0; i < 2; ++i)
     {
-        scene_units[i] = Model::num_textures();
-        Model::add_texture(("scene fbo color attachments" + std::to_string(i)).c_str(), scene_units[i]);
+        scene_units[i] = Model::fatch_new_texunit();
+        std::string tex_name = "scene fbo color attachments" + std::to_string(i);
+        Model::add_texture(tex_name.c_str(), Texture(tex_name, scene_units[i], color_attachments[i]));
         glActiveTexture(GL_TEXTURE0 + scene_units[i]);
         glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, color_attachments[i]);
         glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F, 
@@ -424,7 +456,7 @@ void util::imgui_design(Model& model)
     {
         for(int i = 0; i < model_dirs.size(); ++i)
             if(ImGui::Selectable(model_dirs[i].c_str()))
-                Model::switch_model(model, i);
+                Model::set_selected(i);
         ImGui::EndCombo();
     }
     ImGui::Checkbox("normal", &Globals::visualize_normal);
@@ -523,8 +555,9 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
 
     GLuint g_position, g_normal_depth, g_surface_normal, g_albedo_specular, g_ambient; 
     glGenTextures(1, &g_position);
-    G_color_units[0] = Model::num_textures();
-    Model::add_texture("G buffer position buffer", G_color_units[0]);
+    G_color_units[0] = Model::fatch_new_texunit();
+    Model::add_texture("G buffer position buffer", Texture("G buffer position buffer", G_color_units[0], 
+        g_position));
     glActiveTexture(GL_TEXTURE0 + G_color_units[0]);
     glBindTexture(GL_TEXTURE_2D, g_position);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
@@ -536,8 +569,9 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, g_position, 0);
     
     glGenTextures(1, &g_normal_depth);
-    G_color_units[1] = Model::num_textures();
-    Model::add_texture("G buffer normal buffer", G_color_units[1]);
+    G_color_units[1] = Model::fatch_new_texunit();
+    Model::add_texture("G buffer normal buffer", Texture("G buffer normal buffer", G_color_units[1], 
+        g_normal_depth));
     glActiveTexture(GL_TEXTURE0 + G_color_units[1]);
     glBindTexture(GL_TEXTURE_2D, g_normal_depth);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
@@ -549,8 +583,9 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, g_normal_depth, 0);
 
     glGenTextures(1, &g_surface_normal);
-    G_color_units[2] = Model::num_textures();
-    Model::add_texture("G buffer surface normal buffer", G_color_units[2]);
+    G_color_units[2] = Model::fatch_new_texunit();
+    Model::add_texture("G buffer surface normal buffer", Texture("G buffer surface normal buffer", 
+        G_color_units[2], g_surface_normal));
     glActiveTexture(GL_TEXTURE0 + G_color_units[2]);
     glBindTexture(GL_TEXTURE_2D, g_surface_normal);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
@@ -562,8 +597,9 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, g_surface_normal, 0);
 
     glGenTextures(1, &g_albedo_specular);
-    G_color_units[3] = Model::num_textures();
-    Model::add_texture("G buffer albedo_specular buffer", G_color_units[3]);
+    G_color_units[3] = Model::fatch_new_texunit();
+    Model::add_texture("G buffer albedo_specular buffer", Texture("G buffer albedo_specular buffer",
+         G_color_units[3], g_albedo_specular));
     glActiveTexture(GL_TEXTURE0 + G_color_units[3]);
     glBindTexture(GL_TEXTURE_2D, g_albedo_specular);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, util::Globals::camera.width(), util::Globals::camera.height(),
@@ -575,8 +611,8 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, g_albedo_specular, 0);
 
     glGenTextures(1, &g_ambient);
-    G_color_units[4] = Model::num_textures();
-    Model::add_texture("G buffer ambient buffer", G_color_units[4]);
+    G_color_units[4] = Model::fatch_new_texunit();
+    Model::add_texture("G buffer ambient buffer", Texture("G buffer ambient buffer", G_color_units[4], g_ambient));
     glActiveTexture(GL_TEXTURE0 + G_color_units[4]);
     glBindTexture(GL_TEXTURE_2D, g_ambient);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, util::Globals::camera.width(), util::Globals::camera.height(),
@@ -615,8 +651,10 @@ void util::create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint *pingpon
     for(int i = 0; i < 2; ++i)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, pingpong_fbos[i]);
-        pingpong_texture_units[i] = Model::num_textures();
-        Model::add_texture(("pingpong color attchment" + std::to_string(i)).c_str(), pingpong_texture_units[i]);
+        pingpong_texture_units[i] = Model::fatch_new_texunit();
+        std::string tex_name = "pingpong color attchment" + std::to_string(i);
+        Model::add_texture(tex_name.c_str(), Texture(tex_name, pingpong_texture_units[i], 
+            pingpong_color_attchments[i]));
         glActiveTexture(GL_TEXTURE0 + pingpong_texture_units[i]);
         glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, pingpong_color_attchments[i]);
         // pingpong fbo的color buffer需要16bit的，这是因为我们主要用pingpong fbo来做blur，初始给pingpong fbo
@@ -639,13 +677,26 @@ void util::create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint *pingpon
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void util::create_cascademap_framebuffer(GLuint &depth_fbo, GLuint &depth_map, GLuint texture_unit)
+void util::create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, const char* tex_name)
 {
+    Texture tex_fatch = Model::get_texture(tex_name);
+    if(tex_fatch.m_name != "Null texture")
+    {
+        texture = tex_fatch;
+        return;
+    }
+
+    GLuint depth_buffer, depth_unit;
+    depth_unit = Model::fatch_new_texunit();
     glGenFramebuffers(1, &depth_fbo);
-    glGenTextures(1, &depth_map);
+    glGenTextures(1, &depth_buffer);
     glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
-    glActiveTexture(GL_TEXTURE0 + texture_unit);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, depth_map);
+    glActiveTexture(GL_TEXTURE0 + depth_unit);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, depth_buffer);
+    texture.m_name = tex_name;
+    texture.m_texbuffer = depth_buffer;
+    texture.m_texunit = depth_unit;
+    Model::add_texture(tex_name, texture);
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F,
         Globals::cascade_size, Globals::cascade_size, Globals::cascade_levels.size() + 1, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -654,7 +705,7 @@ void util::create_cascademap_framebuffer(GLuint &depth_fbo, GLuint &depth_map, G
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
     float border[4] = {1.f, 1.f, 1.f, 1.f};
     glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, border);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_map, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_buffer, 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -666,13 +717,26 @@ void util::create_cascademap_framebuffer(GLuint &depth_fbo, GLuint &depth_map, G
     glActiveTexture(GL_TEXTURE0);
 }
 
-void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, GLuint& depth_cubemap, GLuint texture_unit)
+void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, const char* tex_name)
 {
+    Texture tex_fatch = Model::get_texture(tex_name);
+    if(tex_fatch.m_name != "Null texture")
+    {
+        texture = tex_fatch;
+        return;
+    }
+
+    GLuint depth_cubemap_buffer, depth_cubemap_unit;
+    depth_cubemap_unit = Model::fatch_new_texunit();
     glGenFramebuffers(1, &depth_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
-    glGenTextures(1, &depth_cubemap);
-    glActiveTexture(GL_TEXTURE0 + texture_unit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, depth_cubemap);
+    glGenTextures(1, &depth_cubemap_buffer);
+    glActiveTexture(GL_TEXTURE0 + depth_cubemap_unit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depth_cubemap_buffer);
+    texture.m_name = tex_name;
+    texture.m_texbuffer = depth_cubemap_buffer;
+    texture.m_texunit = depth_cubemap_unit;
+    Model::add_texture(tex_name, texture);
     for(int i = 0; i < 6; ++i)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, 
             util::Globals::cascade_size, util::Globals::cascade_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
@@ -681,7 +745,7 @@ void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, GLuint& depth_cube
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_cubemap, 0);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_cubemap_buffer, 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -706,12 +770,12 @@ void util::create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo, GLui
             0.f);
     }
 
-    GLuint noisetex;
-    glGenTextures(1, &noisetex);
-    ssao_noisetex_unit = Model::num_textures();
-    Model::add_texture("SSAO noisetex", ssao_noisetex_unit);
+    GLuint noise_texid;
+    glGenTextures(1, &noise_texid);
+    ssao_noisetex_unit = Model::fatch_new_texunit();
+    Model::add_texture("SSAO noisetex", Texture("SSAO noisetex", ssao_noisetex_unit, noise_texid));
     glActiveTexture(GL_TEXTURE0 + ssao_noisetex_unit);
-    glBindTexture(GL_TEXTURE_2D, noisetex);
+    glBindTexture(GL_TEXTURE_2D, noise_texid);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &rand_vector[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -723,8 +787,8 @@ void util::create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo, GLui
     glBindFramebuffer(GL_FRAMEBUFFER, ssao_fbo);
     GLuint ssao_color_buffer;
     glGenTextures(1, &ssao_color_buffer);
-    ssao_color_unit = Model::num_textures();
-    Model::add_texture("SSAO color buffer", ssao_color_unit);
+    ssao_color_unit = Model::fatch_new_texunit();
+    Model::add_texture("SSAO color buffer", Texture("SSAO color buffer", ssao_color_unit, ssao_color_buffer));
     glActiveTexture(GL_TEXTURE0 + ssao_color_unit);
     glBindTexture(GL_TEXTURE_2D, ssao_color_buffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, util::Globals::camera.width(), util::Globals::camera.height(),
@@ -738,8 +802,8 @@ void util::create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo, GLui
     glBindFramebuffer(GL_FRAMEBUFFER, ssao_blur_fbo);
     GLuint ssao_blur_buffer;
     glGenTextures(1, &ssao_blur_buffer);
-    ssao_blur_unit = Model::num_textures();
-    Model::add_texture("SSAO blur buffer", ssao_blur_unit);
+    ssao_blur_unit = Model::fatch_new_texunit();
+    Model::add_texture("SSAO blur buffer", Texture("SSAO blur buffer", ssao_blur_unit, ssao_blur_buffer));
     glActiveTexture(GL_TEXTURE0 + ssao_blur_unit);
     glBindTexture(GL_TEXTURE_2D, ssao_blur_buffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, util::Globals::camera.width(), util::Globals::camera.height(), 0,

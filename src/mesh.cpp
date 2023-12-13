@@ -7,7 +7,7 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices, const Material& material):
+Mesh::Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, Material* material):
 m_vertices(vertices), m_indices(indices), m_material(material), m_isblend(false), m_iscullface(false), m_outlined(false)
 {
     m_center = glm::vec3{0.f};
@@ -20,6 +20,7 @@ m_vertices(vertices), m_indices(indices), m_material(material), m_isblend(false)
 Mesh::~Mesh()
 {
     clear();
+    delete m_material;
 }
 
 void Mesh::setup_mesh()
@@ -63,9 +64,9 @@ void Mesh::setup_mesh()
 
 void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const glm::mat4& model, GLuint fbo) const
 {
-    if(m_material.mat_type() == Mat_type::Blinn_Phong)
+    if(m_material->mat_type() == Mat_type::Blinn_Phong)
         assert(shader.shader_dir() == "./shader/blinn_phong");
-    else if(m_material.mat_type() == Mat_type::PBR)
+    else if(m_material->mat_type() == Mat_type::PBR)
         assert(shader.shader_dir() == "./shader/physically_based");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     shader.use();
@@ -78,7 +79,7 @@ void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const
         glStencilMask(0xFF);
     }
     glEnable(GL_DEPTH_TEST);
-    if(m_material.is_blend_mat() && m_isblend)
+    if(m_material->is_blend_mat() && m_isblend)
     {
         glEnable(GL_BLEND);
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
@@ -88,7 +89,7 @@ void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const
 
     glBindVertexArray(VAO);
     for(int i = 0; i < 4; ++i) glEnableVertexAttribArray(i);
-    shader.set_uniforms(m_material, camera, model);
+    shader.set_uniforms(*m_material, camera, model);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 
     // Render settings back to default
@@ -109,13 +110,18 @@ void Mesh::draw_gbuffer(const Shader::G_buffer &shader, const Camera &camera, co
     glBindVertexArray(VAO);
     for(int i = 0; i < 4; ++i) glEnableVertexAttribArray(i);
     shader.use();
-    shader.set_uniforms(m_material, camera, model);
+    shader.set_uniforms(*m_material, camera, model);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, (void*)0);
 
     // Render settings back to default
     glDisable(GL_DEPTH_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindVertexArray(0);
+}
+
+bool Mesh::is_blend_mesh() const
+{
+    return m_material->is_blend_mat();
 }
 
 void Mesh::draw_normals(const Shader::Normal& shader, const Camera& camera, const glm::mat4& model) const
@@ -192,5 +198,5 @@ void Mesh::clear()
 
 void Mesh::switch_mat_type(Mat_type new_type)
 {
-    m_material.switch_mat_type(new_type);
+    m_material->switch_mat_type(new_type);
 }

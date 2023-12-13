@@ -1,7 +1,17 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glad/glad.h>
+#include <string>
 #include <vector>
+
+struct Texture
+{
+    Texture(std::string name = "Null texture", GLuint texuint = 0, GLuint texbuffer = 0): 
+        m_name(name), m_texunit(texuint), m_texbuffer(texbuffer) { }
+    std::string m_name;
+    GLuint m_texunit;
+    GLuint m_texbuffer;
+};
 
 enum class Mat_type
 {
@@ -16,14 +26,15 @@ public:
         const glm::vec3& specular_color = glm::vec3(1.f), 
         const glm::vec3& ambient_color = glm::vec3(1.f),
         float opacity = 1.f);
-    Material(const std::vector<unsigned int>& diffuse_map_units, 
-        const std::vector<unsigned int>& specular_map_units,
-        const std::vector<unsigned int>& roughness_map_units, 
-        const std::vector<unsigned int>& ambient_map_units,
-        const std::vector<unsigned int>& opacity_map_units,
-        const std::vector<unsigned int>& normal_map_units,
-        const std::vector<unsigned int>& displacement_map_units,
-        const std::vector<unsigned int>& metalic_map_units);
+    Material(const std::vector<Texture>& diffuse_textures,
+        const std::vector<Texture>& specular_textures,
+        const std::vector<Texture>& roughness_textures, 
+        const std::vector<Texture>& ambient_textures,
+        const std::vector<Texture>& opacity_textures,
+        const std::vector<Texture>& normal_textures,
+        const std::vector<Texture>& displacement_textures,
+        const std::vector<Texture>& metalic_textures);
+    ~Material();
     void set_uniforms(const char* name, GLint program) const;
     void switch_mat_type(Mat_type new_type);
     inline void set_diffuse_color(const glm::vec3& color) { m_diffuse_color = color; }
@@ -36,18 +47,18 @@ public:
     inline void set_normal_strength(float strength) { m_normal_stength = strength; }
     inline float normal_strength() { return m_normal_stength; }
     inline void set_opacity(float opacity) { m_opacity = opacity; }
-    inline bool is_blend_mat() const { return (!m_opacity_map_units.empty()) || (m_opacity_map_units.empty() && m_opacity < 1.f); }
+    inline bool is_blend_mat() const { return (!m_opacity_textures.empty()) || (m_opacity_textures.empty() && m_opacity < 1.f); }
     inline Mat_type mat_type() const { return m_type; }
 private:
     glm::vec3 m_diffuse_color, m_specular_color, m_ambient_color;
-    std::vector<unsigned int> m_diffuse_map_units, 
-        m_specular_map_units, 
-        m_ambient_map_units, 
-        m_opacity_map_units,
-        m_normal_map_units,
-        m_displacement_map_units,
-        m_metalic_map_units,
-        m_roughness_map_units;
+    std::vector<Texture> m_diffuse_textures, 
+        m_specular_textures, 
+        m_ambient_textures, 
+        m_opacity_textures,
+        m_normal_textures,
+        m_displacement_textures,
+        m_metalic_textures,
+        m_roughness_textures;
     int m_shinness;
     Mat_type m_type;
     float m_opacity, m_normal_stength, m_metalic, m_roughness;

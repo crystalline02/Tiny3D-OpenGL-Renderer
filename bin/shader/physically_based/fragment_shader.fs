@@ -116,6 +116,9 @@ uniform float bias;
 uniform Material material;
 uniform Skybox skybox;
 
+uniform bool bloom;
+uniform float threshold;
+
 const float parallax_map_scale = .028f;
 const float min_layer = 8.f;
 const float max_layer = mix(32.f, 64.f, parallax_map_scale / 0.05f);
@@ -166,6 +169,13 @@ void main()
     result = gamma_correct(result);
     float alpha = material.use_opacity_map ? texture(material.opacity_maps[0], fs_in.texture_coord).r : material.opacity;
     FragColor = vec4(result, alpha);
+    if(bloom)
+    {
+        float brightness = dot(result, vec3(0.2126f, 0.7152f, 0.0722f));
+        if(brightness > threshold) BrightColor = vec4(result, 1.f);
+        else BrightColor = vec4(0.f, 0.f, 0.f, 1.f);
+    }
+    else BrightColor = vec4(0.f, 0.f, 0.f, 1.f);
 }
 
 vec3 fresnelSchlick(vec3 F0, float cos_theta)

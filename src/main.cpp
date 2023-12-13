@@ -130,16 +130,27 @@ int main(int argc, char** argv)
 		// Draw model.If deferred rendering is enabled, we draw on g-buffers,if not we draw objects directly.
 		if(util::Globals::deferred_rendering)
 		{
-			model.gbuffer_pass(*Shader::G_buffer::get_instance(), util::Globals::camera, util::Globals::Gbuffer_fbo);
-			Postproc_quad::get_instance()->lighting_pass(*Shader::Lighting_pass::get_instance(), util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.gbuffer_pass(*Shader::G_buffer::get_instance(), 
+				util::Globals::camera, 
+				util::Globals::Gbuffer_fbo);
+			Postproc_quad::get_instance()->lighting_pass(*Shader::Lighting_pass::get_instance(), 
+				util::Globals::camera, 
+				util::Globals::scene_fbo_ms);
 			if(util::Globals::SSAO)
 			{
-				Postproc_quad::get_instance()->ssao_pass(*Shader::SSAO::get_instance(), *Shader::SSAO_blur::get_instance(), util::Globals::ssao_fbo, util::Globals::ssao_blur_fbo);
+				Postproc_quad::get_instance()->ssao_pass(*Shader::SSAO::get_instance(), 
+					*Shader::SSAO_blur::get_instance(), 
+					util::Globals::ssao_fbo, 
+					util::Globals::ssao_blur_fbo);
 			}
-			model.forward_tranparent(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.forward_tranparent(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, 
+				util::Globals::camera, 
+				util::Globals::scene_fbo_ms);
 		}
 		else
-			model.draw(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			model.draw(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, 
+				util::Globals::camera, 
+				util::Globals::scene_fbo_ms);
 
 		// Draw skybox
 		if(util::Globals::skybox) 
@@ -176,6 +187,10 @@ int main(int argc, char** argv)
 		double current_time = glfwGetTime();
 		util::Globals::delta_time = current_time - util::Globals::last_time;
 		util::Globals::last_time = current_time;
+
+		// During the end of the current frame
+		// Check whether to switch current selected model
+		Model::switch_model(model);
 	}
 	
 	ImGui_ImplOpenGL3_Shutdown();

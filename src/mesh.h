@@ -2,9 +2,13 @@
 #include <string>
 #include <vector>
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 
-#include "material.h"
+class Material;
+enum class Mat_type;
 
 namespace Shader
 {
@@ -35,16 +39,16 @@ struct Vertex
 class Mesh
 {
 public:
-    Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, const Material &material);
+    Mesh(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices, Material* material);
     ~Mesh();
-    void draw(const Shader::Object_shader &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo = 0) const;
+    void draw(const Shader::Object_shader &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const;
     void draw_gbuffer(const Shader::G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const;
     void draw_normals(const Shader::Normal &shader, const Camera &camera, const glm::mat4 &model) const;
     void draw_tangent(const Shader::Tangent_normal &shader, const Camera &camera, const glm::mat4 &model) const;
     void draw_outline(const Shader::Single_color &shader, const Camera &camera, const glm::mat4 &model) const;
     void draw_depthmap(const Shader::Depth_shader &depth_shader, const Light &light, const glm::mat4 &model) const;
     void clear();
-    inline bool is_blend_mesh() const { return m_material.is_blend_mat(); }
+    bool is_blend_mesh() const;
     inline glm::vec3 center() const { return m_center; }
     inline void set_outline(bool isoutline) { m_outlined = isoutline; }
     inline bool is_outline() const { return m_outlined; }
@@ -58,7 +62,7 @@ private:
     std::vector<Vertex> m_vertices;
     glm::vec3 m_center;
     std::vector<unsigned int> m_indices;
-    Material m_material;
+    Material* m_material;
     unsigned int VAO, VBO, EBO, VAO_normal, VAO_tangent;
     bool m_isblend, m_iscullface;
 };
