@@ -25,7 +25,8 @@ public:
     Material(const glm::vec3& diffuse_color = glm::vec3(1.f), 
         const glm::vec3& specular_color = glm::vec3(1.f), 
         const glm::vec3& ambient_color = glm::vec3(1.f),
-        float opacity = 1.f);
+        float opacity = 1.f,
+        Mat_type mat_type = Mat_type::Blinn_Phong);
     Material(const std::vector<Texture>& diffuse_textures,
         const std::vector<Texture>& specular_textures,
         const std::vector<Texture>& roughness_textures, 
@@ -33,7 +34,8 @@ public:
         const std::vector<Texture>& opacity_textures,
         const std::vector<Texture>& normal_textures,
         const std::vector<Texture>& displacement_textures,
-        const std::vector<Texture>& metalic_textures);
+        const std::vector<Texture>& metalic_textures,
+        Mat_type mat_type = Mat_type::Blinn_Phong);
     ~Material();
     void set_uniforms(const char* name, GLint program) const;
     void switch_mat_type(Mat_type new_type);

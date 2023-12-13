@@ -6,11 +6,12 @@
 Material::Material(const glm::vec3& diffuse_color_, 
     const glm::vec3& specular_color_, 
     const glm::vec3& ambient_color_,
-    float opacity):
+    float opacity,
+    Mat_type mat_type):
 m_diffuse_color(diffuse_color_), m_specular_color(specular_color_), m_ambient_color(ambient_color_), 
 m_opacity(opacity), m_diffuse_textures(), m_specular_textures(), m_ambient_textures(), 
 m_opacity_textures(), m_metalic_textures(), m_roughness_textures(), m_shinness(32), m_roughness(0.5f),
-m_normal_stength(1.f), m_type(Mat_type::Blinn_Phong)
+m_normal_stength(1.f), m_type(mat_type)
 {
     
 }
@@ -22,7 +23,8 @@ Material::Material(const std::vector<Texture>& diffuse_maps,
     const std::vector<Texture>& opacity_textures,
     const std::vector<Texture>& normal_textures,
     const std::vector<Texture>& displacement_textures,
-    const std::vector<Texture>& metalic_textures):
+    const std::vector<Texture>& metalic_textures,
+    Mat_type mat_type):
 m_diffuse_textures(diffuse_maps), 
 m_specular_textures(specular_textures), 
 m_roughness_textures(roughness_textures),
@@ -32,7 +34,7 @@ m_normal_textures(normal_textures),
 m_displacement_textures(displacement_textures),
 m_metalic_textures(metalic_textures),
 m_diffuse_color(glm::vec3(1.f)), m_specular_color(glm::vec3(.5f)), m_ambient_color(glm::vec3(0.1f)), 
-m_opacity(1.f), m_shinness(32), m_normal_stength(1.f), m_type(Mat_type::Blinn_Phong)
+m_opacity(1.f), m_shinness(32), m_normal_stength(1.f), m_type(mat_type)
 {
 
 }

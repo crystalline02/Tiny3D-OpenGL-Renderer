@@ -13,6 +13,10 @@
 #include <random>
 #include <imgui.h>
 
+/*
+对于不同的编译单元（即.cpp文件），静态成员的初始化顺序可能会有所不同，这取决于链接器如何排列这些单元。因此，
+最好避免在不同编译单元中的静态初始化代码之间产生依赖关系。
+*/
 bool util::Globals::first_mouse = true,
     util::Globals::blend = false,
     util::Globals::cull_face = false,

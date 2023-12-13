@@ -138,7 +138,8 @@ Material* Model::process_material(aiMaterial* material)
         opacity_textures,
         normal_textures,
         displacement_textures,
-        metalic_textures);
+        metalic_textures,
+        util::Globals::pbr_mat ? Mat_type::PBR : Mat_type::Blinn_Phong);
     
     if(diffuse_textures.empty())
     {
