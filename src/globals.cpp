@@ -151,7 +151,7 @@ void util::create_HDRI(const char* path, Texture& texture)
         return;
     }
 
-    std::cout << "Loading HDRI from" << path << "......"; 
+    std::cout << "Loading HDRI from" << path << "......";
     auto start = std::chrono::high_resolution_clock::now();
     stbi_set_flip_vertically_on_load(true);
     int width, height, comp;
