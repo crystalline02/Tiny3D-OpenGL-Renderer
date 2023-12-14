@@ -18,7 +18,7 @@ void main()
     这个fragment的depth是多少就不知道了，只能等fragment shader运行完才知道depth值，
     再进行depth test，early depth testing就没有用了
     */
-    vec3 result = texture(skybox, texture_coords).rgb * brightness;
+    vec3 result = texture(skybox, texture_coords).rgb * brightness;  // if skybox is RGB16F, the sampled color vaules exceeds the [0, 1] range.
     FragColor = vec4(result, 1.f);
     if(dot(result, vec3(0.2126f, 0.7152f, 0.0722f)) < threshold) BrightColor = vec4(0.f, 0.f, 0.f, 0.f);
     else BrightColor = vec4(result, 1.f);

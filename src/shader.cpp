@@ -5,6 +5,10 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "material.h"
 #include "light.h"
 #include "camera.h"
@@ -544,7 +548,27 @@ Shader::Lighting_pass *Shader::Lighting_pass::get_instance()
 
 Shader::Lighting_pass* Shader::Lighting_pass::instance = nullptr;
 
-Shader::Lighting_pass::Lighting_pass() : Shader("./shader/lighting_pass")
+Shader::Lighting_pass::Lighting_pass(): Shader("./shader/lighting_pass")
 {
     
 }
+
+Shader::HDRI2cubemap* Shader::HDRI2cubemap::instance = nullptr;
+
+Shader::HDRI2cubemap::HDRI2cubemap(): Shader("./shader/HDRI2cubemap")
+{
+
+}
+
+void Shader::HDRI2cubemap::set_uniforms(GLuint HDRI_map_unit, const glm::mat4& view) const
+{
+    util::set_mat("projection", glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1.f), program_id);
+    util::set_mat("view", view, program_id);
+    util::set_int("equirectangularmap", HDRI_map_unit, program_id);
+}
+
+Shader::HDRI2cubemap* Shader::HDRI2cubemap::get_instance()
+{
+    return instance ? instance : new HDRI2cubemap();
+}
+

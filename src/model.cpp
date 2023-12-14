@@ -255,12 +255,14 @@ Texture Model::get_texture(const char* texname)
 GLuint Model::fatch_new_texunit()
 {
     if(loaded_textures.empty()) return 0;
-    GLuint texunit = 0;
+    
+    std::set<GLuint> ordered_unit;
     for(auto it = loaded_textures.begin(); it != loaded_textures.end(); ++it)
-    {
-        texunit = glm::max(texunit, it->second.m_texunit);
-    }
-    return ++texunit;
+        ordered_unit.insert(it->second.m_texunit);
+    GLuint texunit = 0;
+    for(std::set<GLuint>::iterator it = ordered_unit.begin(); it != ordered_unit.end(); ++it)
+        if(texunit == *it) ++texunit;
+    return texunit;
 }
 
 void Model::add_texture(const char* name, const Texture& texture)
@@ -364,8 +366,8 @@ void Model::set_outline(bool isoutline)
 
 void Model::draw_depthmaps(const Shader::Cascade_map& cascade_shader, const Shader::Depth_cubemap& depth_cube_shader) const
 {
-    assert(cascade_shader.shader_dir() == "./shader/cascade_map");
-    assert(depth_cube_shader.shader_dir() == "./shader/depth_cubemap");
+    assert(cascade_shader.shader_name() == "./shader/cascade_map");
+    assert(depth_cube_shader.shader_name() == "./shader/depth_cubemap");
     std::vector<Light*> all_lights = Light::get_lights();
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);

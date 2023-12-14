@@ -8,7 +8,7 @@
 #include <filesystem>
 
 
-Skybox::Skybox(): m_intensity(1.f), m_cur_id(2)
+Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_texture(new Texture())
 {
     float cube_vertices[] = {
         -0.5f, -0.5f, -0.5f,
@@ -74,13 +74,20 @@ Skybox::Skybox(): m_intensity(1.f), m_cur_id(2)
 
     if(std::filesystem::is_directory(m_directories[m_cur_id]))
         util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_texture);
+    else
+        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_texture);
 }
 
 void Skybox::set_selected(GLuint index)
 {
     m_cur_id = index;
     Model::rm_texture(*m_texture);
-    util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_texture);
+    if(std::filesystem::is_directory(m_directories[m_cur_id]))
+        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_texture);
+    else
+        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_texture);
+    
+    // std::cout << m_texture->m_name << ", " << m_texture->m_texunit << ", " << m_texture->m_texbuffer << std::endl;
 }
 
 Skybox* Skybox::get_instance()
@@ -96,7 +103,7 @@ GLuint Skybox::cubmap_unit() const
 
 void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo) const
 {
-    assert(shader.shader_dir() == "./shader/sky_cube");
+    assert(shader.shader_name() == "./shader/sky_cube");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
@@ -111,6 +118,26 @@ void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint f
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+}
+
+void Skybox::draw_equirectangular_on_cubmap(const Shader::HDRI2cubemap& shader, const glm::mat4& view, GLuint hdri_unit, GLuint fbo) const
+{
+    assert(shader.shader_name() == "./shader/HDRI2cubemap");
+    glViewport(0, 0, 1024, 1024);  // Important step!
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  // Draw once only when initializing skybox or swithing skybox, NOT each frame.
+    
+    glBindVertexArray(VAO);
+    glEnableVertexAttribArray(0);
+    shader.use();
+    shader.set_uniforms(hdri_unit, view);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    
+    glBindVertexArray(0);
+    glDisable(GL_DEPTH_TEST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
 }
 
 void Skybox::set_uniforms(const char* name, const Camera& camera, GLuint program)

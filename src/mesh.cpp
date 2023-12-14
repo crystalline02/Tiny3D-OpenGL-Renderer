@@ -65,9 +65,9 @@ void Mesh::setup_mesh()
 void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const glm::mat4& model, GLuint fbo) const
 {
     if(m_material->mat_type() == Mat_type::Blinn_Phong)
-        assert(shader.shader_dir() == "./shader/blinn_phong");
+        assert(shader.shader_name() == "./shader/blinn_phong");
     else if(m_material->mat_type() == Mat_type::PBR)
-        assert(shader.shader_dir() == "./shader/physically_based");
+        assert(shader.shader_name() == "./shader/physically_based");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     shader.use();
     // Render settings
@@ -103,7 +103,7 @@ void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const
 
 void Mesh::draw_gbuffer(const Shader::G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const
 {
-    assert(shader.shader_dir() == "./shader/G_buffer");
+    assert(shader.shader_name() == "./shader/G_buffer");
     assert(fbo != 0);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);
@@ -126,7 +126,7 @@ bool Mesh::is_blend_mesh() const
 
 void Mesh::draw_normals(const Shader::Normal& shader, const Camera& camera, const glm::mat4& model) const
 {
-    assert(shader.shader_dir() == "./shader/normal");
+    assert(shader.shader_name() == "./shader/normal");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(VAO_normal);
@@ -140,7 +140,7 @@ void Mesh::draw_normals(const Shader::Normal& shader, const Camera& camera, cons
 
 void Mesh::draw_tangent(const Shader::Tangent_normal &shader, const Camera &camera, const glm::mat4 &model) const
 {
-    assert(shader.shader_dir() == "./shader/tangent_normal");
+    assert(shader.shader_name() == "./shader/tangent_normal");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(VAO_tangent);
@@ -154,7 +154,7 @@ void Mesh::draw_tangent(const Shader::Tangent_normal &shader, const Camera &came
 
 void Mesh::draw_outline(const Shader::Single_color& shader, const Camera& camera, const glm::mat4& model) const
 {
-    assert(shader.shader_dir() == "./shader/single_color");
+    assert(shader.shader_name() == "./shader/single_color");
     if(!m_outlined) return;
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -174,8 +174,8 @@ void Mesh::draw_outline(const Shader::Single_color& shader, const Camera& camera
 
 void Mesh::draw_depthmap(const Shader::Depth_shader& depth_shader, const Light& light, const glm::mat4& model) const
 {
-    if(light.type() == Light_type::SUN) assert(depth_shader.shader_dir() == "./shader/cascade_map");
-    else if(light.type() == Light_type::POINT) assert(depth_shader.shader_dir() == "./shader/depth_cubemap");
+    if(light.type() == Light_type::SUN) assert(depth_shader.shader_name() == "./shader/cascade_map");
+    else if(light.type() == Light_type::POINT) assert(depth_shader.shader_name() == "./shader/depth_cubemap");
     glEnable(GL_DEPTH_TEST);
     depth_shader.use();
     depth_shader.set_uniforms(model, light);

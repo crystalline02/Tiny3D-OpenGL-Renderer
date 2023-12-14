@@ -45,9 +45,9 @@ public:
     inline void set_metalic(const float& metalic) { m_metalic = metalic; }
     inline void set_shinness(float shinness) { m_shinness = shinness; }
     inline void set_roughness(float roughness) {m_roughness = roughness;}
-    inline int shinness() { return m_shinness; }
+    inline int shinness() const { return m_shinness; }
     inline void set_normal_strength(float strength) { m_normal_stength = strength; }
-    inline float normal_strength() { return m_normal_stength; }
+    inline float normal_strength() const { return m_normal_stength; }
     inline void set_opacity(float opacity) { m_opacity = opacity; }
     inline bool is_blend_mat() const { return (!m_opacity_textures.empty()) || (m_opacity_textures.empty() && m_opacity < 1.f); }
     inline Mat_type mat_type() const { return m_type; }

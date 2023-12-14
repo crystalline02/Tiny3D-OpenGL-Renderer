@@ -143,6 +143,7 @@ namespace util
     void create_HDRI(const char* path, Texture& texture);
     void create_texture(const char* path, bool is_SRGB, Texture& texture);
     void create_cubemap(const std::vector<std::string>& faces_path, Texture& texture);
+    void create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture);
     void create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units);
     void imgui_design(Model &model);
     std::array<glm::vec3, 64> get_ssao_samples();

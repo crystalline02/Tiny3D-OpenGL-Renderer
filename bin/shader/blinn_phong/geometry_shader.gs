@@ -6,7 +6,7 @@ layout (triangle_strip, max_vertices = 3) out;
 /*
 in gl_vertex
 {
-    vec3 gl_Positon;  // 注：geometry shader接收的gl_Poisiton并为经过透视除法
+    vec3 gl_Position;  // 注：geometry shader接收的gl_Poisiton并为经过透视除法
     float gl_PointSize;
     float gl_ClipDistance[];
 } gl_in[];
@@ -38,7 +38,7 @@ layout(std140, Binding = 0) uniform Matrices
 
 void main()
 {
-    // gl_Positon is in world space
+    // gl_Position is in world space
     for(int i = 0; i < 3; ++i)
     {
         gs_out.TBN = mat3(normalize(gs_in[i].tangent), 
@@ -52,7 +52,7 @@ void main()
         我在这里不能先前对gl_Position做透视除法，也就是不能gl_Position = gl_Position / gl_Position.w，这里解释一下为什么
         fragment shader中获得的所有从geometry shader输出的变量，如texture_coord，frag_pos，frag_normal都是通过三角形插值得到的，回想一下透视矫正的插值公式，为：
         I_interpolate = (I[0] * alpha / z[0] + I[1] * beta / z[1] + I[2] * gamma / z[2]) / (alpha / z[0] + beta / z[1] + gamma / z[2])
-        这个公式中用到的z值就是z_view，z_view从何而来？从gl_Position的w分量而来！如果你提前做透视矫正，那么gl_Positon.w = 1.f，这样插值出来的结果就不对了
+        这个公式中用到的z值就是z_view，z_view从何而来？从gl_Position的w分量而来！如果你提前做透视矫正，那么gl_Position.w = 1.f，这样插值出来的结果就不对了
         */
         EmitVertex();
     }

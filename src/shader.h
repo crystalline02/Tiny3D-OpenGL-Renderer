@@ -19,7 +19,7 @@ namespace Shader
         Shader(std::string dir_path);
         inline GLuint program() const { return program_id; }
         inline void use() const { glUseProgram(program_id); }
-        inline std::string shader_dir() const { return m_dir; }
+        inline std::string shader_name() const { return m_dir; }
         static void update_uniform_blocks(const Camera& camera);
         void set_single_color(const glm::vec3& color) const;
         void set_model(const glm::mat4& model) const;
@@ -161,5 +161,15 @@ namespace Shader
     private:
         Lighting_pass();
         static Lighting_pass* instance;
+    };
+
+    class HDRI2cubemap: public Shader
+    {
+    public:
+        void set_uniforms(GLuint HDRI_map_unit, const glm::mat4& view) const;
+        static HDRI2cubemap* get_instance();
+    private:
+        HDRI2cubemap();
+        static HDRI2cubemap* instance;
     };
 }

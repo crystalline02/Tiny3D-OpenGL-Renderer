@@ -1,6 +1,8 @@
 #pragma once
 #include <glad/glad.h>
 
+#include <glm/glm.hpp>
+
 #include <string>
 #include <vector>
 
@@ -8,6 +10,7 @@ class Camera;
 namespace Shader
 {
     class Sky_cube;
+    class HDRI2cubemap;
 }
 struct Texture;
 
@@ -15,6 +18,8 @@ class Skybox
 {
 public:
     void draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo = 0) const;
+    void draw_equirectangular_on_cubmap(const Shader::HDRI2cubemap& shader, const glm::mat4& view, 
+        GLuint hdri_unit, GLuint fbo) const;
     inline void change_dir(unsigned int id) { m_cur_id = id; }
     inline std::vector<std::string> directories() const { return m_directories; }
     inline unsigned int selected() { return m_cur_id; }

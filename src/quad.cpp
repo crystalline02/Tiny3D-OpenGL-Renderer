@@ -13,7 +13,7 @@ Postproc_quad *Postproc_quad::get_instance()
 
 void Postproc_quad::draw(const Shader::Post_proc& shader) const
 {
-    assert(shader.shader_dir() == "./shader/post_quad");
+    assert(shader.shader_name() == "./shader/post_quad");
     if(util::Globals::bloom)
         run_blur(*Shader::Bloom_blur::get_instance(), util::Globals::blur_brightimage_unit);
     
@@ -35,7 +35,7 @@ void Postproc_quad::draw(const Shader::Post_proc& shader) const
 
 void Postproc_quad::lighting_pass(const Shader::Lighting_pass &shader, const Camera &camera, GLuint fbo) const
 {
-    assert(shader.shader_dir() == "./shader/lighting_pass");
+    assert(shader.shader_name() == "./shader/lighting_pass");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glBindVertexArray(quad_VAO);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
@@ -55,8 +55,8 @@ void Postproc_quad::lighting_pass(const Shader::Lighting_pass &shader, const Cam
 
 void Postproc_quad::ssao_pass(const Shader::SSAO &shader, const Shader::SSAO_blur &blur_shader, GLuint ssao_fbo, GLuint ssao_blur_fbo) const
 {
-    assert(shader.shader_dir() == "./shader/ssao");
-    assert(blur_shader.shader_dir() == "./shader/ssao_blur");
+    assert(shader.shader_name() == "./shader/ssao");
+    assert(blur_shader.shader_name() == "./shader/ssao_blur");
     glBindFramebuffer(GL_FRAMEBUFFER, ssao_fbo);
     glBindVertexArray(quad_VAO);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
@@ -75,7 +75,7 @@ void Postproc_quad::ssao_pass(const Shader::SSAO &shader, const Shader::SSAO_blu
 
 void Postproc_quad::run_blur(const Shader::Bloom_blur &shader, GLuint &blur_buffer_unit) const
 {
-    assert(shader.shader_dir() == "./shader/bloom_blur");
+    assert(shader.shader_name() == "./shader/bloom_blur");
     if(!util::Globals::bloom) 
     {
         blur_buffer_unit = -1;
