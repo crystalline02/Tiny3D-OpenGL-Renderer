@@ -55,6 +55,7 @@ struct Skybox
     samplerCube cubemap;
     float intensity;
     bool use;
+    bool affect_scene;
 };
 
 struct Spot_light
@@ -247,6 +248,7 @@ vec3 caculate_direction_light(Direction_light light, Material material, int inde
 vec3 caculate_skybox(Skybox skybox, Material material)
 {
     if(!skybox.use) return vec3(0.f);
+    if(!skybox.affect_scene) return vec3(0.f);
     vec3 eye_dir = normalize(vec3(fs_in.frag_pos) - view_pos);
     vec2 texture_coord = get_parallax_mapping_texturecoord(fs_in.texture_coord, material, -eye_dir);
     vec3 normal = get_shading_normal(material, texture_coord);

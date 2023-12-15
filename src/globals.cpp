@@ -475,7 +475,12 @@ void util::imgui_design(Model& model)
         if(Globals::skybox)
         {
             ImGui::SliderFloat("stength", &Skybox::get_instance()->intensity_ptr(), 0.f, 10.f);
+
             Skybox* skybox = Skybox::get_instance();
+            bool affect_scene = skybox->affect_scene();
+            ImGui::Checkbox("affect", &affect_scene);
+            skybox->set_affect_scene(affect_scene);
+
             std::vector<std::string> cubemaps = skybox->directories();
             if(ImGui::BeginCombo("cubemap", cubemaps[skybox->selected()].c_str()))
             {

@@ -26,6 +26,8 @@ public:
     void set_selected(GLuint index);
     inline float& intensity_ptr() { return m_intensity; }
     inline float intensity() const { return m_intensity; }
+    inline bool affect_scene() const { return m_affect_scene; }
+    inline void set_affect_scene(bool affect) { m_affect_scene = affect; }
     GLuint cubmap_unit() const;
     static Skybox* get_instance();
     static void set_uniforms(const char* name, const Camera& camera, GLuint program);
@@ -37,6 +39,7 @@ private:
 private:
     GLuint VAO, VBO;
     Texture* m_texture;
+    bool m_affect_scene;
     float m_intensity;
     std::vector<std::string> m_directories;
     unsigned int m_cur_id;

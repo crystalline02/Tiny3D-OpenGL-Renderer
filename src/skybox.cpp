@@ -8,7 +8,7 @@
 #include <filesystem>
 
 
-Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_texture(new Texture())
+Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_texture(new Texture()), m_affect_scene(false)
 {
     float cube_vertices[] = {
         -0.5f, -0.5f, -0.5f,
@@ -145,12 +145,14 @@ void Skybox::set_uniforms(const char* name, const Camera& camera, GLuint program
     std::string cubemap = std::string(name) + ".cubemap";
     std::string intensity = std::string(name) + ".intensity";
     std::string use = std::string(name) + ".use";
+    std::string affect_scene = std::string(name) + ".affect_scene";
     if(util::Globals::skybox)
     {
         Skybox* skybox = Skybox::get_instance();
         util::set_int(cubemap.c_str(), skybox->cubmap_unit(), program);
         util::set_float(intensity.c_str(), skybox->intensity(), program);
         util::set_bool(use.c_str(), true, program);
+        util::set_bool(affect_scene.c_str(), skybox->affect_scene(), program);
     }
     else util::set_bool(use.c_str(), false, program);
 }
