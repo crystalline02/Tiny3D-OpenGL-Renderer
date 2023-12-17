@@ -163,7 +163,7 @@ void util::create_HDRI(const char* path, Texture& texture)
         glGenTextures(1, &texture.m_texbuffer);
         glActiveTexture(GL_TEXTURE0 + texture.m_texunit);
         glBindTexture(GL_TEXTURE_2D, texture.m_texbuffer);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
         Model::add_texture(path, texture);
         // For HDRI, it's OK not to generate mipmap
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -241,7 +241,7 @@ void util::create_texture(const char* path, bool is_SRGB, Texture& texture)
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms\n";
 }
 
-void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& cubemap_texture)
+void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& cubemap_texture, Texture& diffuse_irrad_texture)
 {
     assert(faces_path.size() == 6);
     std::string texname = faces_path[0].substr(0, faces_path[0].find_last_of("\\/"));
@@ -265,7 +265,7 @@ void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& c
     {
         std::string s = faces_path[i];
         unsigned char* data = stbi_load(s.c_str(), &width, &height, &channels, 0);
-        if(data) glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        if(data) glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         else
         {
             std::cout << "Loading failded, error: " << stbi_failure_reason() << std::endl;
@@ -285,9 +285,12 @@ void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& c
     glActiveTexture(GL_TEXTURE0);
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << std::endl;
+
+    // create diffuse irradiance map for this cubemap
+    util::create_diffuse_irrad(cubemap_texture, diffuse_irrad_texture);
 }
 
-void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture)
+void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, Texture& diffuse_irrad_texture)
 {
     std::string ext = std::string(hdri_path).substr(std::string(hdri_path).find_last_of('.'), strlen(hdri_path));
     assert(ext == ".hdr");
@@ -312,7 +315,7 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture)
     glActiveTexture(GL_TEXTURE0 + hdri_cubemap_texture.m_texunit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, hdri_cubemap_texture.m_texbuffer);
     for(int i = 0; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, 1024, 1024, 
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, 1024, 1024, 
             0, GL_RGB, GL_FLOAT, nullptr);  // This cubmap stores color vaules sampled from hdir map, which means it's value extends the range of [0, 1]
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -353,7 +356,69 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture)
     glActiveTexture(GL_TEXTURE0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    Model::rm_texture(hdri_texture);
+    Model::rm_texture(hdri_texture);  // hdir texture is no longer needed, remove it from current program
+
+    // create diffuse irradiance map for this hdircubemap
+    util::create_diffuse_irrad(hdri_cubemap_texture, diffuse_irrad_texture);
+    
+}
+
+void util::create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irrad_tex)
+{
+    std::cout << "Generating diffuse irradiance map for current skybox cube map......\t";
+    auto start = std::chrono::high_resolution_clock::now();
+    GLuint cubemap2irradiance_fbo, cubemap2irradiance_rbo;
+    glGenFramebuffers(1, &cubemap2irradiance_fbo);
+    glGenRenderbuffers(1, &cubemap2irradiance_rbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, cubemap2irradiance_fbo);
+    glBindRenderbuffer(GL_RENDERBUFFER, cubemap2irradiance_rbo);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 128, 128);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cubemap2irradiance_rbo);
+
+    {
+        unsigned int loc = cubemap_tex.m_name.find_last_of('.');
+        diffuse_irrad_tex.m_name = cubemap_tex.m_name.substr(0, loc) + "_irradiance" + 
+            cubemap_tex.m_name.substr(loc, cubemap_tex.m_name.size());
+    }
+
+    glGenTextures(1, &diffuse_irrad_tex.m_texbuffer);
+    diffuse_irrad_tex.m_texunit = Model::fatch_new_texunit();
+    
+    Model::add_texture(diffuse_irrad_tex.m_name.c_str(), diffuse_irrad_tex);
+    glActiveTexture(GL_TEXTURE0 + diffuse_irrad_tex.m_texunit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, diffuse_irrad_tex.m_texbuffer);
+    for(int i = 0; i < 6; ++i)
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, 128, 128, 0, GL_RGB, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glm::mat4 views[6] = {
+        glm::lookAt(glm::vec3(0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, -1.f, 0.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f, -1.f, 0.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 1.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(0.f, -1.f, 0.f), glm::vec3(0.f, 0.f, -1.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, -1.f, 0.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(0.f, 0.f, -1.f), glm::vec3(0.f, -1.f, 0.f))
+    };
+    for(int i = 0; i < 6; ++i)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, cubemap2irradiance_fbo);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
+            diffuse_irrad_tex.m_texbuffer, 0);
+        assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+        Skybox::get_instance()->draw_irradiancemap(*Shader::Cubemap2irradiance::get_instance(), views[i], 
+            cubemap_tex.m_texunit, cubemap2irradiance_fbo);
+    }
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glActiveTexture(GL_TEXTURE0);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " ms" << std::endl;
 }
 
 void util::create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units)

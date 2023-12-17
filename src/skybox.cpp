@@ -8,7 +8,8 @@
 #include <filesystem>
 
 
-Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_texture(new Texture()), m_affect_scene(false)
+Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_tex_cubemap(new Texture()), m_tex_diffuseirrad(new Texture()),
+m_affect_scene(false)
 {
     float cube_vertices[] = {
         -0.5f, -0.5f, -0.5f,
@@ -73,19 +74,20 @@ Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_texture(new Texture()), m_aff
     }
 
     if(std::filesystem::is_directory(m_directories[m_cur_id]))
-        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_texture);
+        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_tex_cubemap, *m_tex_diffuseirrad);
     else
-        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_texture);
+        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad);
 }
 
 void Skybox::set_selected(GLuint index)
 {
     m_cur_id = index;
-    Model::rm_texture(*m_texture);
+    Model::rm_texture(*m_tex_cubemap);
+    Model::rm_texture(*m_tex_diffuseirrad);
     if(std::filesystem::is_directory(m_directories[m_cur_id]))
-        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_texture);
+        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_tex_cubemap, *m_tex_diffuseirrad);
     else
-        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_texture);
+        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad);
     
     // std::cout << m_texture->m_name << ", " << m_texture->m_texunit << ", " << m_texture->m_texbuffer << std::endl;
 }
@@ -98,7 +100,12 @@ Skybox* Skybox::get_instance()
 
 GLuint Skybox::cubmap_unit() const
 {
-    return m_texture->m_texunit;
+    return m_tex_cubemap->m_texunit;
+}
+
+GLuint Skybox::irradiancemap_unit() const
+{
+    return m_tex_diffuseirrad->m_texunit;
 }
 
 void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo) const
@@ -110,7 +117,7 @@ void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint f
 
     glBindVertexArray(VAO);
     shader.use();
-    shader.set_uniforms(camera, m_intensity, m_texture->m_texunit);
+    shader.set_uniforms(camera, m_intensity, m_tex_cubemap->m_texunit);
     glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -140,16 +147,37 @@ void Skybox::draw_equirectangular_on_cubmap(const Shader::HDRI2cubemap& shader, 
     glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
 }
 
+void Skybox::draw_irradiancemap(const Shader::Cubemap2irradiance& shader, const glm::mat4& view, GLuint cubemap_unit, GLuint fbo) const
+{
+    assert(shader.shader_name() == "./shader/cubemap2irradiance");
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glViewport(0, 0, 128, 128);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glBindVertexArray(VAO);
+    glEnableVertexAttribArray(0);
+    shader.use();
+    shader.set_uniforms(view, cubemap_unit);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glBindVertexArray(0);
+    glDisable(GL_DEPTH_TEST);
+    glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    
+}
+
 void Skybox::set_uniforms(const char* name, const Camera& camera, GLuint program)
 {
-    std::string cubemap = std::string(name) + ".cubemap";
+    std::string irradiance_cubemap = std::string(name) + ".irradiance_cubemap";
     std::string intensity = std::string(name) + ".intensity";
     std::string use = std::string(name) + ".use";
     std::string affect_scene = std::string(name) + ".affect_scene";
     if(util::Globals::skybox)
     {
         Skybox* skybox = Skybox::get_instance();
-        util::set_int(cubemap.c_str(), skybox->cubmap_unit(), program);
+        util::set_int(irradiance_cubemap.c_str(), skybox->irradiancemap_unit(), program);
         util::set_float(intensity.c_str(), skybox->intensity(), program);
         util::set_bool(use.c_str(), true, program);
         util::set_bool(affect_scene.c_str(), skybox->affect_scene(), program);

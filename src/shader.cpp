@@ -572,3 +572,21 @@ Shader::HDRI2cubemap* Shader::HDRI2cubemap::get_instance()
     return instance ? instance : new HDRI2cubemap();
 }
 
+Shader::Cubemap2irradiance* Shader::Cubemap2irradiance::instance = nullptr;
+
+Shader::Cubemap2irradiance::Cubemap2irradiance(): Shader("./shader/cubemap2irradiance")
+{
+
+}
+
+Shader::Cubemap2irradiance* Shader::Cubemap2irradiance::get_instance()
+{
+    return instance ? instance : new Cubemap2irradiance();
+}
+
+void Shader::Cubemap2irradiance::set_uniforms(const glm::mat4& view, GLuint cubemap_unit) const
+{
+    util::set_mat("view", view, program_id);
+    util::set_mat("projection", glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1.f), program_id);
+    util::set_int("env_map", cubemap_unit, program_id);
+}

@@ -172,4 +172,14 @@ namespace Shader
         HDRI2cubemap();
         static HDRI2cubemap* instance;
     };
+
+    class Cubemap2irradiance: public Shader
+    {
+    public:
+        void set_uniforms(const glm::mat4& view, GLuint cubemap_unit) const;
+        static Cubemap2irradiance* get_instance();
+    private:
+        Cubemap2irradiance();
+        static Cubemap2irradiance* instance;
+    };
 }
