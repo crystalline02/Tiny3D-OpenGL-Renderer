@@ -16,10 +16,10 @@ void main()
     */
     vec3 N = normalize(frag_pos);
 
-    vec3 up = vec3(0.f, 1.f, 0.f);
-    vec3 normal_z = N;
-    vec3 right_x = cross(up, normal_z);
-    vec3 up_y = cross(normal_z, right_x);
+    vec3 up = abs(N.z) < 0.9999f ? vec3(0.f, 1.f, 0.f) : vec3(0.f, 0.f, 1.f);  // 这一步也是很重要的，每次对两个向量做叉积，都要避免两个向量是平行的，虽然这种情况很难出现
+    vec3 normal_z = N;  // 由于我们在tangent space下用vec3(sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta));表示向量，所以这里是把法线方向当z轴了
+    vec3 right_x = normalize(cross(up, normal_z));
+    vec3 up_y = normalize(cross(normal_z, right_x));
 
     mat3 TBN = mat3(right_x, up_y, normal_z);  // tangent->world
     

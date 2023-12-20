@@ -90,7 +90,6 @@ int main(int argc, char** argv)
 
 	// Scene framebuffer for postprocessing
 	util::gen_FBOs();
-
 	while(!glfwWindowShouldClose(window))
 	{
 		// Process input

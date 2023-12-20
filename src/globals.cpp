@@ -29,7 +29,7 @@ bool util::Globals::first_mouse = true,
     util::Globals::deferred_rendering = false,
     util::Globals::SSAO = false,
     util::Globals::pbr_mat = false;
-double util::Globals::last_xpos = 0.f, 
+double util::Globals::last_xpos = 0.f,
     util::Globals::last_ypos = 0.f,
     util::Globals::delta_time = 0.f,
     util::Globals::last_time = 0.f;
@@ -38,12 +38,13 @@ float util::Globals::normal_magnitude = 0.2f,
     util::Globals::shadow_bias = 0.0005f,
     util::Globals::exposure = 1.f,
     util::Globals::threshold = 1.f,
-    util::Globals::ssao_radius = 0.15f;
+    util::Globals::ssao_radius = 0.15f,
+    util::Globals::tmp = 0.f;
 int util::Globals::cascade_size = 1024,
     util::Globals::cubemap_size = 1024;
-GLuint util::Globals::scene_fbo_ms, 
+GLuint util::Globals::scene_fbo_ms,
     util::Globals::scene_unit[2],
-    util::Globals::pingpong_fbos[2], 
+    util::Globals::pingpong_fbos[2],
     util::Globals::pingpong_colorbuffers_units[2],
     util::Globals::blur_brightimage_unit,
     util::Globals::Gbuffer_fbo,
@@ -57,9 +58,9 @@ GLuint util::Globals::scene_fbo_ms,
 // Camera util::Globals::camera(1920, 1080, glm::vec3(0.f, 2.f, 6.f), -90.f, 0.f, 45.f, 0.1f, 100.f, glm::vec3(0.f, 1.f, 0.f));
 Camera util::Globals::camera = Camera(1920, 1080, glm::vec3(0.f), 4.f);
 glm::vec3 util::Globals::bg_color(0.25f);
-std::vector<float> util::Globals::cascade_levels = {util::Globals::camera.far() / 50.f, 
-    util::Globals::camera.far() / 25.f, 
-    util::Globals::camera.far() / 10.f, 
+std::vector<float> util::Globals::cascade_levels = {util::Globals::camera.far() / 50.f,
+    util::Globals::camera.far() / 25.f,
+    util::Globals::camera.far() / 10.f,
     util::Globals::camera.far() / 2.f};
 
 void util::mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -106,7 +107,7 @@ void util::key_callback(GLFWwindow* window, int key, int scancode, int action, i
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
             Globals::camera.switch_mode(ViewMode::SPIN);
         }
-        else if(Globals::camera.mode() == ViewMode::SPIN) 
+        else if(Globals::camera.mode() == ViewMode::SPIN)
         {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
             Globals::camera.switch_mode(ViewMode::FLY);
@@ -130,6 +131,28 @@ void util::process_input(GLFWwindow* window)
 		Globals::camera.reaction_Q(Globals::delta_time);
 	if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		Globals::camera.reaction_E(Globals::delta_time);
+}
+
+GLenum util::checkGLError(const char* message)
+{
+    GLenum errorCode;
+    while ((errorCode = glGetError()) != GL_NO_ERROR)
+    {
+        std::string error;
+        switch (errorCode)
+        {
+            case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
+            case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
+            case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
+            case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
+            case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
+            case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
+            default:                               error = "UNKNOWN_ERROR"; break;
+        }
+        std::cerr << message << " | OpenGL Error: " << error << std::endl;
+    }
+    return errorCode;
 }
 
 glm::mat4 util::face_camera_model(const glm::mat4& camera_mat, glm::vec3 light_pos)
@@ -187,7 +210,7 @@ void util::create_HDRI(const char* path, Texture& texture)
 void util::create_texture(const char* path, bool is_SRGB, Texture& texture)
 {
     Texture tex_fatch = Model::get_texture(path);
-    if(tex_fatch.m_name != "Null texture") 
+    if(tex_fatch.m_name != "Null texture")
     {
         texture = tex_fatch;
         return;
@@ -206,18 +229,18 @@ void util::create_texture(const char* path, bool is_SRGB, Texture& texture)
     if(data)
     {
         GLenum format, interal_format;
-        if(channels == 3) 
+        if(channels == 3)
         {
             // SRGB意味着纹理在被使用时会自动被进行一次gamma re-correct，把SRGB空间的图像转换到linear space
             interal_format = is_SRGB ? GL_SRGB : GL_RGB;
             format = GL_RGB;
         }
-        else if(channels == 4) 
+        else if(channels == 4)
         {
             interal_format =  is_SRGB ? GL_SRGB_ALPHA : GL_RGBA;
             format = GL_RGBA;
         }
-        else 
+        else
             interal_format = format = GL_RED;
         glTexImage2D(GL_TEXTURE_2D, 0, interal_format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -233,7 +256,7 @@ void util::create_texture(const char* path, bool is_SRGB, Texture& texture)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glActiveTexture(GL_TEXTURE0);
-    texture.m_name = path; 
+    texture.m_name = path;
     texture.m_texunit = texture_unit;
     texture.m_texbuffer = texture_id;
     Model::add_texture(path, texture);
@@ -241,7 +264,8 @@ void util::create_texture(const char* path, bool is_SRGB, Texture& texture)
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms\n";
 }
 
-void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& cubemap_texture, Texture& diffuse_irrad_texture)
+void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& cubemap_texture,
+    Texture& diffuse_irrad_texture, Texture& prefilter_envmap_texture)
 {
     assert(faces_path.size() == 6);
     std::string texname = faces_path[0].substr(0, faces_path[0].find_last_of("\\/"));
@@ -251,7 +275,7 @@ void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& c
         cubemap_texture = tex_fatch;
         return;
     }
-    
+
     std::cout << "Loading sky box from:" << faces_path[0].substr(0, faces_path[0].find_last_of("/")) << "......";
     auto start = std::chrono::high_resolution_clock::now();
     GLuint cubemap_buffer, cubemap_unit;
@@ -288,9 +312,13 @@ void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& c
 
     // create diffuse irradiance map for this cubemap
     util::create_diffuse_irrad(cubemap_texture, diffuse_irrad_texture);
+
+    // create prefilter environment map for this cubemap
+    util::create_prefilter_envmap(cubemap_texture, prefilter_envmap_texture);
 }
 
-void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, Texture& diffuse_irrad_texture)
+void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, Texture& diffuse_irrad_texture,
+    Texture& prefilter_envmap_texture)
 {
     std::string ext = std::string(hdri_path).substr(std::string(hdri_path).find_last_of('.'), strlen(hdri_path));
     assert(ext == ".hdr");
@@ -301,13 +329,13 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, 
         hdri_cubemap_texture = tex_fatch;
         return;
     }
-    
+
     Texture hdri_texture;
     util::create_HDRI(hdri_path, hdri_texture);
 
     // create cubemap
-    hdri_cubemap_texture.m_name = std::string(hdri_path).substr(0, std::string(hdri_path).find_last_of(".")) + 
-        "_cubemap" + 
+    hdri_cubemap_texture.m_name = std::string(hdri_path).substr(0, std::string(hdri_path).find_last_of(".")) +
+        "_cubemap" +
         ext;
     glGenTextures(1, &hdri_cubemap_texture.m_texbuffer);
     hdri_cubemap_texture.m_texunit = Model::fatch_new_texunit();
@@ -315,14 +343,14 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, 
     glActiveTexture(GL_TEXTURE0 + hdri_cubemap_texture.m_texunit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, hdri_cubemap_texture.m_texbuffer);
     for(int i = 0; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, 1024, 1024, 
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, 1024, 1024,
             0, GL_RGB, GL_FLOAT, nullptr);  // This cubmap stores color vaules sampled from hdir map, which means it's value extends the range of [0, 1]
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    
+
     // convert equirectangularmap(HDRI texture) to this cubemap
     glm::mat4 views[6] = {
         glm::lookAt(glm::vec3(0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, -1.f, 0.f)),
@@ -342,14 +370,14 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, 
     for(int i = 0; i < 6; ++i)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, hdri2cubemap_fbo);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
             hdri_cubemap_texture.m_texbuffer, 0);
         if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
             std::cout << "hdri2cubemap framebuffer incomplete!\n";
             exit(1);
         }
-        Skybox::get_instance()->draw_equirectangular_on_cubmap(*Shader::HDRI2cubemap::get_instance(), views[i], 
+        Skybox::get_instance()->draw_equirectangular_on_cubmap(*Shader::HDRI2cubemap::get_instance(), views[i],
             hdri_texture.m_texunit, hdri2cubemap_fbo);
     }
     // unbind
@@ -360,7 +388,9 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, 
 
     // create diffuse irradiance map for this hdircubemap
     util::create_diffuse_irrad(hdri_cubemap_texture, diffuse_irrad_texture);
-    
+
+    // create prefilter environment map for this hdricubemap
+    util::create_prefilter_envmap(hdri_cubemap_texture, prefilter_envmap_texture);
 }
 
 void util::create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irrad_tex)
@@ -377,13 +407,13 @@ void util::create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irr
 
     {
         unsigned int loc = cubemap_tex.m_name.find_last_of('.');
-        diffuse_irrad_tex.m_name = cubemap_tex.m_name.substr(0, loc) + "_irradiance" + 
+        diffuse_irrad_tex.m_name = cubemap_tex.m_name.substr(0, loc) + "_irradiance" +
             cubemap_tex.m_name.substr(loc, cubemap_tex.m_name.size());
     }
 
     glGenTextures(1, &diffuse_irrad_tex.m_texbuffer);
     diffuse_irrad_tex.m_texunit = Model::fatch_new_texunit();
-    
+
     Model::add_texture(diffuse_irrad_tex.m_name.c_str(), diffuse_irrad_tex);
     glActiveTexture(GL_TEXTURE0 + diffuse_irrad_tex.m_texunit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, diffuse_irrad_tex.m_texbuffer);
@@ -406,19 +436,91 @@ void util::create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irr
     for(int i = 0; i < 6; ++i)
     {
         glBindFramebuffer(GL_FRAMEBUFFER, cubemap2irradiance_fbo);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
             diffuse_irrad_tex.m_texbuffer, 0);
         assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-        Skybox::get_instance()->draw_irradiancemap(*Shader::Cubemap2irradiance::get_instance(), views[i], 
+        Skybox::get_instance()->draw_irradiancemap(*Shader::Cubemap2irradiance::get_instance(), views[i],
             cubemap_tex.m_texunit, cubemap2irradiance_fbo);
     }
-    
+
+    // Since this framebuffer(to capture diffuse irradiance) is drawed only once during loading a skybox, we
+    // can delete renderbuffer and framebuffer however we like(DO NOT delete texture buffer, because its exactly what we need)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glDeleteFramebuffers(1, &cubemap2irradiance_fbo);
+    glDeleteRenderbuffers(1, &cubemap2irradiance_rbo);
     glActiveTexture(GL_TEXTURE0);
 
     auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << " ms" << std::endl;
+    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms" << std::endl;
+}
+
+
+void util::create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefiltered_envmap)
+{
+    std::cout << "Generating prefiltered enviroment map......\t";
+    auto start = std::chrono::high_resolution_clock::now();
+    GLuint prefilter_fbo, prefilter_rbo;
+    glGenFramebuffers(1, &prefilter_fbo);
+    glGenRenderbuffers(1, &prefilter_rbo);
+    {
+        GLuint loc = cubemap_tex.m_name.find_last_of('.');
+        prefiltered_envmap.m_name = cubemap_tex.m_name.substr(0, loc) + "_prefilter" +
+            cubemap_tex.m_name.substr(loc, cubemap_tex.m_name.size());
+    }
+    glGenTextures(1, &prefiltered_envmap.m_texbuffer);
+    prefiltered_envmap.m_texunit = Model::fatch_new_texunit();
+    Model::add_texture(prefiltered_envmap.m_name.c_str(), prefiltered_envmap);
+    glActiveTexture(GL_TEXTURE0 + prefiltered_envmap.m_texunit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, prefiltered_envmap.m_texbuffer);
+    for(int i = 0; i < 6; ++i)
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+    glm::mat4 views[6] = {
+        glm::lookAt(glm::vec3(0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec3(0.f, -1.f, 0.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(-1.f, 0.f, 0.f), glm::vec3(0.f, -1.f, 0.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.f, 0.f, 1.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(0.f, -1.f, 0.f), glm::vec3(0.f, 0.f, -1.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, -1.f, 0.f)),
+        glm::lookAt(glm::vec3(0.f), glm::vec3(0.f, 0.f, -1.f), glm::vec3(0.f, -1.f, 0.f))
+    };
+
+    int mipmap_levels = 8;
+    for(int mip = 0; mip < mipmap_levels; ++mip)
+    {
+        float roughness = float(mip) / float(mipmap_levels - 1);
+        int mip_width = 512 * glm::pow(0.5, mip);
+        int mip_height = 512 * glm::pow(0.5, mip);
+        glBindRenderbuffer(GL_RENDERBUFFER, prefilter_rbo);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mip_width, mip_height);
+        glBindFramebuffer(GL_FRAMEBUFFER, prefilter_fbo);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, prefilter_rbo);
+        for(int i = 0; i < 6; ++i)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, prefilter_fbo);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                prefiltered_envmap.m_texbuffer, mip);
+            assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+            Skybox::get_instance()->prefilt_cubemap(*Shader::Cubemap_prefilter::get_instance(),
+                views[i],
+                roughness,
+                cubemap_tex.m_texunit,
+                prefilter_fbo, mip_width, mip_height);
+        }
+    }
+    glActiveTexture(GL_TEXTURE0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteRenderbuffers(1, &prefilter_rbo);
+    glDeleteFramebuffers(1, &prefilter_fbo);
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms\n";
 }
 
 void util::create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units)
@@ -435,15 +537,16 @@ void util::create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units)
         Model::add_texture(tex_name.c_str(), Texture(tex_name, scene_units[i], color_attachments[i]));
         glActiveTexture(GL_TEXTURE0 + scene_units[i]);
         glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, color_attachments[i]);
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F, 
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F,
             util::Globals::camera.width(), util::Globals::camera.height(), GL_TRUE);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // It's invalid to set below texture paramerters for GL_TEXTURE_2D_MULTISAMPLE, otherwise GL_INVALID_ENUM error will be raised.
+        // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, color_attachments[i], 0);
     }
-    
+
     GLuint rbo;
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -665,6 +768,7 @@ void util::imgui_design(Model& model)
     ImGui::Checkbox("wireframe", &Globals::wireframe);
 	ImGui::Checkbox("blend", &Globals::blend);
 	ImGui::Checkbox("cull face", &Globals::cull_face);
+    ImGui::SliderFloat("temp", &Globals::tmp, 0.f, 10.f);
 	ImGui::End();
 }
 
@@ -692,7 +796,7 @@ void util::gen_FBOs()
     create_scene_framebuffer_ms(Globals::scene_fbo_ms, Globals::scene_unit);
     create_pingpong_framebuffer_ms(Globals::pingpong_fbos, Globals::pingpong_colorbuffers_units);
     create_G_frambuffer(Globals::Gbuffer_fbo, Globals::G_color_units);
-    create_ssao_framebuffer(Globals::ssao_fbo, Globals::ssao_blur_fbo, 
+    create_ssao_framebuffer(Globals::ssao_fbo, Globals::ssao_blur_fbo,
         Globals::ssao_color_unit, Globals::ssao_blur_unit, Globals::ssao_noisetex_unit);
 }
 
@@ -701,10 +805,10 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
     glGenFramebuffers(1, &G_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, G_fbo);
 
-    GLuint g_position, g_normal_depth, g_surface_normal, g_albedo_specular, g_ambient; 
+    GLuint g_position, g_normal_depth, g_surface_normal, g_albedo_specular, g_ambient;
     glGenTextures(1, &g_position);
     G_color_units[0] = Model::fatch_new_texunit();
-    Model::add_texture("G buffer position buffer", Texture("G buffer position buffer", G_color_units[0], 
+    Model::add_texture("G buffer position buffer", Texture("G buffer position buffer", G_color_units[0],
         g_position));
     glActiveTexture(GL_TEXTURE0 + G_color_units[0]);
     glBindTexture(GL_TEXTURE_2D, g_position);
@@ -715,15 +819,15 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, g_position, 0);
-    
+
     glGenTextures(1, &g_normal_depth);
     G_color_units[1] = Model::fatch_new_texunit();
-    Model::add_texture("G buffer normal buffer", Texture("G buffer normal buffer", G_color_units[1], 
+    Model::add_texture("G buffer normal buffer", Texture("G buffer normal buffer", G_color_units[1],
         g_normal_depth));
     glActiveTexture(GL_TEXTURE0 + G_color_units[1]);
     glBindTexture(GL_TEXTURE_2D, g_normal_depth);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
-        0, GL_RGBA, GL_FLOAT, nullptr); 
+        0, GL_RGBA, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -732,7 +836,7 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
 
     glGenTextures(1, &g_surface_normal);
     G_color_units[2] = Model::fatch_new_texunit();
-    Model::add_texture("G buffer surface normal buffer", Texture("G buffer surface normal buffer", 
+    Model::add_texture("G buffer surface normal buffer", Texture("G buffer surface normal buffer",
         G_color_units[2], g_surface_normal));
     glActiveTexture(GL_TEXTURE0 + G_color_units[2]);
     glBindTexture(GL_TEXTURE_2D, g_surface_normal);
@@ -770,7 +874,7 @@ void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, g_ambient, 0);
-    
+
     unsigned int color_attachments[5] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
     glDrawBuffers(5, color_attachments);
 
@@ -801,18 +905,14 @@ void util::create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint *pingpon
         glBindFramebuffer(GL_FRAMEBUFFER, pingpong_fbos[i]);
         pingpong_texture_units[i] = Model::fatch_new_texunit();
         std::string tex_name = "pingpong color attchment" + std::to_string(i);
-        Model::add_texture(tex_name.c_str(), Texture(tex_name, pingpong_texture_units[i], 
+        Model::add_texture(tex_name.c_str(), Texture(tex_name, pingpong_texture_units[i],
             pingpong_color_attchments[i]));
         glActiveTexture(GL_TEXTURE0 + pingpong_texture_units[i]);
         glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, pingpong_color_attchments[i]);
         // pingpong fbo的color buffer需要16bit的，这是因为我们主要用pingpong fbo来做blur，初始给pingpong fbo
         // 的birghtness image就是16bit的（scene fbo），最终blur的结果也应该是16bit的
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F, 
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F,
             util::Globals::camera.width(), util::Globals::camera.height(), GL_TRUE);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, pingpong_color_attchments[i], 0);
         // No need for depth or stencil attachment as what we only care about is color buffer
         if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -859,7 +959,7 @@ void util::create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, co
     if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     {
         std::cout << "Depth framebuffer incomplete!\n";
-        exit(1);   
+        exit(1);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glActiveTexture(GL_TEXTURE0);
@@ -886,7 +986,7 @@ void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, 
     texture.m_texunit = depth_cubemap_unit;
     Model::add_texture(tex_name, texture);
     for(int i = 0; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, 
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
             util::Globals::cascade_size, util::Globals::cascade_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -904,7 +1004,7 @@ void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void util::create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo, GLuint &ssao_color_unit, 
+void util::create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo, GLuint &ssao_color_unit,
     GLuint &ssao_blur_unit, GLuint &ssao_noisetex_unit)
 {
     // create ssao_noisetex used to generate random vector to generate tiled TBN matrix for placing the ssao samples
@@ -929,7 +1029,7 @@ void util::create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo, GLui
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    
+
     // create ssao framebuffer
     glGenFramebuffers(1, &ssao_fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, ssao_fbo);

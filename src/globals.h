@@ -38,7 +38,7 @@ namespace util
             ssao_blur_fbo, ssao_blur_unit;
         static Camera camera;
         static double delta_time, last_time;
-        static float normal_magnitude, shadow_bias, tangent_magnitude, exposure, threshold, ssao_radius;
+        static float normal_magnitude, shadow_bias, tangent_magnitude, exposure, threshold, ssao_radius, tmp;
         static glm::vec3 bg_color;
         static std::vector<float> cascade_levels;
     };
@@ -133,6 +133,8 @@ namespace util
         if(location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(mat3)); 
     }
 
+
+    GLenum checkGLError(const char* message);
     void gen_FBOs();
     void create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units);
     void create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint* pingpong_texture_units);
@@ -142,9 +144,12 @@ namespace util
         GLuint &ssao_color_unit, GLuint &ssao_blur_unit, GLuint &ssao_noisetex_unit);
     void create_HDRI(const char* path, Texture& texture);
     void create_texture(const char* path, bool is_SRGB, Texture& texture);
-    void create_cubemap(const std::vector<std::string>& faces_path, Texture& texture, Texture& diffuse_irrad_texture);
-    void create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, Texture& diffuse_irrad_texture);
+    void create_cubemap(const std::vector<std::string>& faces_path, Texture& cubemap_texture, 
+        Texture& diffuse_irrad_texture, Texture& prefilter_envmap_texture);
+    void create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, Texture& diffuse_irrad_texture,
+        Texture& prefilter_envmap_texture);
     void create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irrad_tex);
+    void create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefiltered_envmap);
     void create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units);
     void imgui_design(Model &model);
     std::array<glm::vec3, 64> get_ssao_samples();

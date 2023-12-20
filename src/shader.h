@@ -182,4 +182,14 @@ namespace Shader
         Cubemap2irradiance();
         static Cubemap2irradiance* instance;
     };
+
+    class Cubemap_prefilter: public Shader
+    {
+    public:
+        void set_uniforms(const glm::mat4& view, GLuint cubemap_unit, float roughness) const;
+        static Cubemap_prefilter* get_instance();
+    private:
+        Cubemap_prefilter();
+        static Cubemap_prefilter* instance;
+    };
 }

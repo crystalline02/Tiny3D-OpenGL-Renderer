@@ -30,7 +30,7 @@ Shader::Shader::Shader(std::string dir_path): m_dir(dir_path)
     {
         vertex_shader_file.open(vertex_shader_path.c_str());
         fragment_shader_file.open(fragment_shader_path.c_str());
-        if(!vertex_shader_file.is_open()) 
+        if(!vertex_shader_file.is_open())
         { 
             std::cout << vertex_shader_path << " not opened successfully." << std::endl;
             exit(1);
@@ -370,6 +370,7 @@ void Shader::Sky_cube::set_uniforms(const Camera& camera, float intensity, GLuin
     util::set_int("skybox", texture_unit, program_id);
     util::set_float("brightness", intensity, program_id);
     util::set_float("threshold", util::Globals::threshold, program_id);
+    util::set_float("temp", util::Globals::tmp, program_id);
 }
 
 void Shader::Depth_cubemap::set_uniforms(const glm::mat4& model, const Light& light) const
@@ -590,3 +591,24 @@ void Shader::Cubemap2irradiance::set_uniforms(const glm::mat4& view, GLuint cube
     util::set_mat("projection", glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1.f), program_id);
     util::set_int("env_map", cubemap_unit, program_id);
 }
+
+Shader::Cubemap_prefilter* Shader::Cubemap_prefilter::instance = nullptr;
+
+Shader::Cubemap_prefilter::Cubemap_prefilter(): Shader("./shader/cubemap_prefilter")
+{
+
+}
+
+Shader::Cubemap_prefilter* Shader::Cubemap_prefilter::get_instance()
+{
+    return instance ? instance : new Cubemap_prefilter();
+}
+
+void Shader::Cubemap_prefilter::set_uniforms(const glm::mat4& view, GLuint cubemap_unit, float roughness) const
+{
+    glm::mat4 projection = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 10.f);
+    util::set_mat("view", view, program_id);
+    util::set_mat("projection", projection, program_id);
+    util::set_float("roughness", roughness, program_id);
+    util::set_int("enviroment_map", cubemap_unit, program_id);
+}   

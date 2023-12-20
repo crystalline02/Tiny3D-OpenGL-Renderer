@@ -12,6 +12,7 @@ namespace Shader
     class Sky_cube;
     class HDRI2cubemap;
     class Cubemap2irradiance;
+    class Cubemap_prefilter;
 }
 struct Texture;
 
@@ -21,7 +22,10 @@ public:
     void draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo = 0) const;
     void draw_equirectangular_on_cubmap(const Shader::HDRI2cubemap& shader, const glm::mat4& view, 
         GLuint hdri_unit, GLuint fbo) const;
-    void draw_irradiancemap(const Shader::Cubemap2irradiance& shader, const glm::mat4& view, GLuint cubemap_unit, GLuint fbo) const;
+    void draw_irradiancemap(const Shader::Cubemap2irradiance& shader, const glm::mat4& view, 
+        GLuint cubemap_unit, GLuint fbo) const;
+    void prefilt_cubemap(const Shader::Cubemap_prefilter& shader, const glm::mat4& view, float roughness, 
+        GLuint cubemap_unit, GLuint fbo, GLsizei width, GLsizei height) const;
     inline void change_dir(unsigned int id) { m_cur_id = id; }
     inline std::vector<std::string> directories() const { return m_directories; }
     inline unsigned int selected() { return m_cur_id; }
@@ -41,7 +45,7 @@ private:
     }
 private:
     GLuint VAO, VBO;
-    Texture *m_tex_cubemap, *m_tex_diffuseirrad;
+    Texture *m_tex_cubemap, *m_tex_diffuseirrad, *m_tex_prefilter;
     bool m_affect_scene;
     float m_intensity;
     std::vector<std::string> m_directories;

@@ -9,7 +9,7 @@
 
 
 Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_tex_cubemap(new Texture()), m_tex_diffuseirrad(new Texture()),
-m_affect_scene(false)
+m_tex_prefilter(new Texture()), m_affect_scene(false)
 {
     float cube_vertices[] = {
         -0.5f, -0.5f, -0.5f,
@@ -74,9 +74,9 @@ m_affect_scene(false)
     }
 
     if(std::filesystem::is_directory(m_directories[m_cur_id]))
-        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_tex_cubemap, *m_tex_diffuseirrad);
+        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_tex_cubemap, *m_tex_diffuseirrad, *m_tex_prefilter);
     else
-        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad);
+        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad, *m_tex_prefilter);
 }
 
 void Skybox::set_selected(GLuint index)
@@ -85,9 +85,9 @@ void Skybox::set_selected(GLuint index)
     Model::rm_texture(*m_tex_cubemap);
     Model::rm_texture(*m_tex_diffuseirrad);
     if(std::filesystem::is_directory(m_directories[m_cur_id]))
-        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_tex_cubemap, *m_tex_diffuseirrad);
+        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_tex_cubemap, *m_tex_diffuseirrad, *m_tex_prefilter);
     else
-        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad);
+        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad, *m_tex_prefilter);
     
     // std::cout << m_texture->m_name << ", " << m_texture->m_texunit << ", " << m_texture->m_texbuffer << std::endl;
 }
@@ -113,16 +113,18 @@ void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint f
     assert(shader.shader_name() == "./shader/sky_cube");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDepthFunc(GL_LEQUAL);
 
     glBindVertexArray(VAO);
     shader.use();
-    shader.set_uniforms(camera, m_intensity, m_tex_cubemap->m_texunit);
+    shader.set_uniforms(camera, m_intensity, m_tex_prefilter->m_texunit);
     glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDisable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 }
@@ -165,7 +167,27 @@ void Skybox::draw_irradiancemap(const Shader::Cubemap2irradiance& shader, const 
     glDisable(GL_DEPTH_TEST);
     glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Skybox::prefilt_cubemap(const Shader::Cubemap_prefilter& shader, const glm::mat4& view, float roughness, 
+    GLuint cubemap_unit, GLuint fbo, GLsizei width, GLsizei height) const
+{
+    assert(shader.shader_name() == "./shader/cubemap_prefilter");
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glViewport(0, 0, width, height);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    glBindVertexArray(VAO);
+    glEnableVertexAttribArray(0);
+    shader.use();
+    shader.set_uniforms(view, cubemap_unit, roughness);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glDisable(GL_DEPTH_TEST);
+    glBindVertexArray(0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
 }
 
 void Skybox::set_uniforms(const char* name, const Camera& camera, GLuint program)
