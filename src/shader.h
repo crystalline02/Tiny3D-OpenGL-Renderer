@@ -192,4 +192,14 @@ namespace Shader
         Cubemap_prefilter();
         static Cubemap_prefilter* instance;
     };
+
+    class Cubemap_BRDFIntergral: public Shader
+    {
+    public:
+        void set_uniforms() const;
+        static Cubemap_BRDFIntergral* get_instance();
+    private:
+        Cubemap_BRDFIntergral();
+        static Cubemap_BRDFIntergral* instance;
+    };
 }

@@ -86,6 +86,8 @@ struct Direction_light
 struct Skybox
 {
     samplerCube irradiance_cubemap;
+    samplerCube prefiltered_cubemap;
+    sampler2D BRDF_LUT;
     bool use;
     float intensity;
     bool affect_scene;
@@ -126,6 +128,7 @@ const float max_layer = mix(32.f, 64.f, parallax_map_scale / 0.05f);
 const float PI = 3.14159265359;
 
 vec3 fresnelSchlickRoughness(vec3 F0, float cos_theta, float roughness);
+vec3 fresnelSchlick(vec3 F0, float cos_theta);
 float DistributionGGX(vec3 n, vec3 h, float roughness);
 float GeometrySchlickGGX(vec3 n, vec3 v, float roughness);
 float GeometrySmith(vec3 n , vec3 v, vec3 l, float roughness);
@@ -181,6 +184,11 @@ vec3 fresnelSchlickRoughness(vec3 F0, float cos_theta, float roughness)
     return F0 + (max(vec3(1.f - roughness), F0) - F0) * pow(1.f - cos_theta, 5);
 }
 
+vec3 fresnelSchlick(vec3 F0, float cos_theta)
+{
+    return F0 + (vec3(1.f) - F0) * pow(1.f - cos_theta, 5);
+}
+
 float DistributionGGX(vec3 n, vec3 h, float roughness)
 {
     float a = roughness * roughness;
@@ -201,7 +209,7 @@ float GeometrySchlickGGX(vec3 n, vec3 v, float roughness)
     return numerator / denominator;
 }
 
-float GeometrySmith(vec3 n , vec3 v, vec3 l, float roughness)
+float GeometrySmith(vec3 n, vec3 v, vec3 l, float roughness)
 {
     return GeometrySchlickGGX(n, v, roughness) * GeometrySchlickGGX(n, l, roughness);
 }
@@ -231,7 +239,7 @@ vec3 cac_point_light(Point_light light, Material material)
     float metalic = material.use_metalic_map ? texture(material.metalic_maps[0], texcoord).r : material.metalic;
     vec3 F0 = mix(vec3(0.04f), albedo, metalic);  // surface reflection at zero incidence
     float n_dot_v = max(dot(normal, view_dir), 0.f);
-    vec3 F = fresnelSchlickRoughness(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f), roughness);  // F
+    vec3 F = fresnelSchlick(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f));  // F
     
     float NDF = DistributionGGX(normal, h, roughness);  // N
 
@@ -263,7 +271,7 @@ vec3 cac_spot_light(Spot_light light, Material material)
     float metalic = material.use_metalic_map ? texture(material.metalic_maps[0], texcoord).r : material.metalic;
     vec3 F0 = mix(vec3(0.04f), albedo, metalic);  // surface reflection at zero incidence
     float n_dot_v = max(dot(normal, view_dir), 0.f);
-    vec3 F = fresnelSchlickRoughness(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f), roughness);  // F
+    vec3 F = fresnelSchlick(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f));  // F
     
     float NDF = DistributionGGX(normal, h, roughness);  // N
 
@@ -296,7 +304,7 @@ vec3 cac_direction_light(Direction_light light, Material material, int index)
     float metalic = material.use_metalic_map ? texture(material.metalic_maps[0], texcoord).r : material.metalic;
     vec3 F0 = mix(vec3(0.04f), albedo, metalic);  // surface reflection at zero incidence
     float n_dot_v = max(dot(normal, view_dir), 0.f);
-    vec3 F = fresnelSchlickRoughness(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f), roughness);  // F
+    vec3 F = fresnelSchlick(F0, max(dot(normalize(fs_in.frag_normal), view_dir), 0.f));  // F
     
     float NDF = DistributionGGX(normal, h, roughness);  // N
 
@@ -316,7 +324,8 @@ vec3 cac_env_irradiance(Skybox skybox, Material material)
     vec3 view_dir = normalize(view_pos - vec3(fs_in.frag_pos));
     vec2 tex_coord = get_parallax_mapping_texcoord(material, fs_in.texture_coord, view_dir);
     vec3 normal = get_shading_normal(material, tex_coord);
-    vec3 amibent = material.use_ambient_map ? texture(material.ambient_maps[0], tex_coord).rgb : material.ambient_color;
+    vec3 reflect_dir = reflect(-view_dir, normal);
+    vec3 ambient = material.use_ambient_map ? texture(material.ambient_maps[0], tex_coord).rgb : material.ambient_color;
 
     vec3 albedo = material.use_albedo_map ? texture(material.albedo_maps[0], tex_coord).rgb : material.albedo_color;
     float roughness = material.use_roughness_map ? texture(material.roughness_maps[0], tex_coord).r : material.roughness;
@@ -326,8 +335,15 @@ vec3 cac_env_irradiance(Skybox skybox, Material material)
     vec3 F = fresnelSchlickRoughness(F0, max(dot(fs_in.frag_normal, view_dir), 0.f), roughness);
     vec3 kd = (1.f - F) * (1 - metalic);  // nullify diffuse part of metalic surface
     
-    vec3 diffuse_irradiance = texture(skybox.irradiance_cubemap, normal).rgb * albedo * kd * amibent * skybox.intensity;
-    return diffuse_irradiance;
+    vec3 diffuse_irradiance = texture(skybox.irradiance_cubemap, normal).rgb * albedo * kd;
+    
+    const float max_mip_level = 7.0f;
+    vec3 prefilterd_specular = textureLod(skybox.prefiltered_cubemap, reflect_dir, roughness * max_mip_level).rgb;
+    vec2 scale_bias = texture(skybox.BRDF_LUT, vec2(max(dot(normal, view_dir), 0.f), roughness)).rg;
+    vec3 specular_irradiance = prefilterd_specular * (F * scale_bias.x + scale_bias.y);
+
+    vec3 irradiance = (diffuse_irradiance + specular_irradiance) * skybox.intensity * ambient;
+    return irradiance;
 }
 
 vec3 get_shading_normal(Material material, vec2 texture_coord)

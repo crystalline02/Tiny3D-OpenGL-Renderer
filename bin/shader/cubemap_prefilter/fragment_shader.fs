@@ -13,12 +13,20 @@ const uint sample_count = 4096u;
 float Radical_Inverse_vdc(uint bits);
 vec2 Hammersley_points(uint i, uint N);
 vec3 importance_sampling_GGX(vec2 pt, float roughness, vec3 N);
+float DistributionGGX(vec3 n, vec3 h, float roughness);
 
 // cacualating the prefiltered part of specular IBL, that is \int_\Omega L(p, w_i)\,dw_i
+// for each R and roughness, store a precomputed value
 void main()
 {
-    vec3 N = normalize(frag_pos);
+    /*
+    这里frag_pos代表R，意思是，如果我想获得在某一个V和N下的积分\int_\Omega L(p, w_i)\, dw_i，那么只需用
+    R = relfect(-V, N)去采样这个prefilter enviroment map，这个cubemap提供了在这个特定的R下的积分结果。
+    */
+    vec3 R = normalize(frag_pos);
+    vec3 N = R;
     vec3 V = N;
+
     vec3 result = vec3(0.f);
     float total_weight = 0.f;
     for(uint i = 0; i < sample_count; ++i)
@@ -28,8 +36,19 @@ void main()
         vec3 L = normalize(-V + 2 * H * max(dot(V, H), 0.f));
 
         float NdotL = max(dot(N, L), 0.f);
-        result += texture(enviroment_map, L).rgb * NdotL;
-        total_weight += NdotL;  // 当L和N的夹角小，则我们认为这根光线对V方向的specular贡献大（我也不知道为什么这样）
+        float NdotH = max(dot(N, H), 0.f);
+        float HdotL = max(dot(H, L), 0.f);
+        
+        float D = DistributionGGX(N, H, roughness);
+        float pdf = D * NdotH / (4 * HdotL) + 0.000001f;   // 这个pdf可以证明的，见《Notes on Ward BRDF》和上面我的笔记
+        float sa_texel = 4 * PI / (6 * 2048 * 2048);  // 每个texel占多大的立体角
+        float sa_sample = 1.f / (float(sample_count) * pdf + 0.000001f);  // 每个sample的L占多大的立体角
+        float mip_level = roughness == 0.f ? 0.f : 0.5 * log2(sa_sample / sa_texel);  // 0.5 * log2(sa_sample / sa_texel)为准确的要选取的mip level
+
+        // if(NdotL > 0)  // 如果计算得到的采样向量L与N成90度，可以不累加（实际上这里写不写这个判断条件都可以）
+
+        result += texture(enviroment_map, L, mip_level).rgb * NdotL;  // 为什么这里的权重为NdotL，公式推导也可以见知乎文章和上面我的笔记
+        total_weight += NdotL;
     }
     result /= total_weight;
     FragColor = vec4(result, 1.f);
@@ -68,4 +87,15 @@ vec3 importance_sampling_GGX(vec2 pt, float roughness, vec3 N)
     
     vec3 H_world = normalize(TBN * H_tangent);
     return H_world;
+}
+
+float DistributionGGX(vec3 n, vec3 h, float roughness)
+{
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float n_dot_h = max(dot(n, h), 0.f);
+    float n_dot_h2 = n_dot_h * n_dot_h;
+    float denominator = n_dot_h2 * (a2 - 1) + 1;
+    denominator = denominator * denominator * PI;
+    return a2 / denominator;
 }

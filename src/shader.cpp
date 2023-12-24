@@ -13,6 +13,7 @@
 #include "light.h"
 #include "camera.h"
 #include "globals.h"
+#include "model.h"
 #include "skybox.h"
 
 GLuint Shader::Shader::ubo_matrices = -1, Shader::Shader::ubo_fn = -1, Shader::Shader::ubo_light_matrices = -1;
@@ -370,7 +371,6 @@ void Shader::Sky_cube::set_uniforms(const Camera& camera, float intensity, GLuin
     util::set_int("skybox", texture_unit, program_id);
     util::set_float("brightness", intensity, program_id);
     util::set_float("threshold", util::Globals::threshold, program_id);
-    util::set_float("temp", util::Globals::tmp, program_id);
 }
 
 void Shader::Depth_cubemap::set_uniforms(const glm::mat4& model, const Light& light) const
@@ -612,3 +612,21 @@ void Shader::Cubemap_prefilter::set_uniforms(const glm::mat4& view, GLuint cubem
     util::set_float("roughness", roughness, program_id);
     util::set_int("enviroment_map", cubemap_unit, program_id);
 }   
+
+Shader::Cubemap_BRDFIntergral* Shader::Cubemap_BRDFIntergral::instance = nullptr;
+
+Shader::Cubemap_BRDFIntergral::Cubemap_BRDFIntergral(): Shader("./shader/cubemap_BRDFIntergral")
+{
+    
+}
+
+Shader::Cubemap_BRDFIntergral* Shader::Cubemap_BRDFIntergral::get_instance()
+{
+    return instance ? instance : new Cubemap_BRDFIntergral();
+}
+
+
+void Shader::Cubemap_BRDFIntergral::set_uniforms() const
+{
+    // No uniforms to set
+}
