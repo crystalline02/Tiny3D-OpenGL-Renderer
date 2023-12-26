@@ -17,17 +17,16 @@ class Camera;
 class Light_vertices;
 class Model;
 struct Texture;
-namespace Shader
-{
-    class Cubemap_BRDFIntergral;
-}
+
+#define check_glError() util::checkGLError_(__FILE__, __LINE__)
 
 #define INIT_GLFW() \
 	glfwInit(); \
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); \
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6); \
     glfwWindowHint(GLFW_SAMPLES, 4); \
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE)
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); \
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  // Comment this line when releasing the application
 
 namespace util
 {
@@ -46,6 +45,9 @@ namespace util
         static glm::vec3 bg_color;
         static std::vector<float> cascade_levels;
     };
+    GLenum checkGLError_(const char* file, int line);
+    void APIENTRY debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+        const char* message, const void* userParam);
     void mouse_callback(GLFWwindow* window, double xpos, double ypos);
     void scroll_callback(GLFWwindow* window, double delta_x, double delta_y);
     void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -80,7 +82,7 @@ namespace util
         for(int i = 0; i < 4; ++i)
         {
             for(int j = 0; j < 4; ++j)
-                std::cout << mat[i][j] << " ";
+                std::cout << mat[j][i] << " ";
             std::cout << "\n";
         }
     }
@@ -94,7 +96,6 @@ namespace util
             std::cout << "\n";
         }
     }
-
 
     inline void set_float(const char* name, float value, GLuint program_id) 
     { 
@@ -118,7 +119,7 @@ namespace util
         GLint location = glGetUniformLocation(program_id, name);
         if(location != -1) glUniform3f(location, vec3.x, vec3.y, vec3.z); 
     }
-
+    
     inline void set_floats(const char* name, const glm::vec4& vec4, GLuint program_id)
     { 
         GLint location = glGetUniformLocation(program_id, name);
@@ -138,7 +139,6 @@ namespace util
     }
 
 
-    GLenum checkGLError(const char* message);
     void gen_FBOs();
     void create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units);
     void create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint* pingpong_texture_units);

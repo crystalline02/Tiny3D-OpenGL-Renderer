@@ -165,6 +165,30 @@ src/camera.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/camera.cpp.s
 .PHONY : src/camera.cpp.s
 
+src/fbo_debuger.obj: src/fbo_debuger.cpp.obj
+.PHONY : src/fbo_debuger.obj
+
+# target to build an object file
+src/fbo_debuger.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj
+.PHONY : src/fbo_debuger.cpp.obj
+
+src/fbo_debuger.i: src/fbo_debuger.cpp.i
+.PHONY : src/fbo_debuger.i
+
+# target to preprocess a source file
+src/fbo_debuger.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/fbo_debuger.cpp.i
+.PHONY : src/fbo_debuger.cpp.i
+
+src/fbo_debuger.s: src/fbo_debuger.cpp.s
+.PHONY : src/fbo_debuger.s
+
+# target to generate assembly for a file
+src/fbo_debuger.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/fbo_debuger.cpp.s
+.PHONY : src/fbo_debuger.cpp.s
+
 src/globals.obj: src/globals.cpp.obj
 .PHONY : src/globals.obj
 
@@ -394,6 +418,9 @@ help:
 	@echo ... src/camera.obj
 	@echo ... src/camera.i
 	@echo ... src/camera.s
+	@echo ... src/fbo_debuger.obj
+	@echo ... src/fbo_debuger.i
+	@echo ... src/fbo_debuger.s
 	@echo ... src/globals.obj
 	@echo ... src/globals.i
 	@echo ... src/globals.s

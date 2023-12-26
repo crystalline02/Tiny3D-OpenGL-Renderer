@@ -21,6 +21,7 @@
 #include "quad.h"
 #include "skybox.h"
 #include "globals.h"
+#include "fbo_debuger.h"
 
 int main(int argc, char** argv)
 {
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
 		glfwTerminate();
 		return -1;
 	}
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(window);  // Create context
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	
 	// Init glad, loading opengl function
@@ -46,6 +47,17 @@ int main(int argc, char** argv)
 	{
 		std::cout << "Failed to load glad!" << std::endl;
 		return -1;
+	}
+
+	// Code to check whether debug context is enabled.If debug context is enabled, set callback function.
+	int flag;
+	glGetIntegerv(GL_CONTEXT_FLAGS, &flag);
+	if(flag & GL_CONTEXT_FLAG_DEBUG_BIT) 
+	{
+		glEnable(GL_DEBUG_OUTPUT);  // Enable debug output
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);  // Tell opengl to directly call the callback function the moment an error occured.
+		glDebugMessageCallback(util::debug_callback, nullptr);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 	
 	// Viewport transform
@@ -83,10 +95,10 @@ int main(int argc, char** argv)
 	Shader::Tangent_normal tangent_shader;
 
 	// Lights
-	Point_light light1(glm::vec3(2.f, 1.5f, -2.f), glm::vec3(1.f, .4392f, .3294f), 4.2f);
-	Point_light light4(glm::vec3(-2.f, 1.5f, 2.f), glm::vec3(0.3137f, 0.8627f, 0.9961f), 4.2f);
-	Direction_light light5(glm::vec3(-1.f, -1.f, -1.f), glm::vec3(0.f, 1.8f, 0.f), glm::vec3(.9373f, .702f, .4745f), .85f);
-	Spot_light light6(glm::vec3(-2.f, -2.6f, -1.5f), glm::vec3(2.25f, 1.91f, 2.27f), glm::vec3(.5f, .5f, .5f), 5.f);
+	Point_light light1(glm::vec3(2.f, 1.5f, -2.f), glm::vec3(1.f, .4392f, .3294f), 20.0f);
+	Point_light light4(glm::vec3(-2.f, 1.5f, 2.f), glm::vec3(0.3137f, 0.8627f, 0.9961f), 20.0f);
+	Direction_light light5(glm::vec3(-1.f, -1.f, -1.f), glm::vec3(0.f, 1.8f, 0.f), glm::vec3(.9373f, .702f, .4745f), 2.0f);
+	Spot_light light6(glm::vec3(-2.f, -2.6f, -1.5f), glm::vec3(2.25f, 1.91f, 2.27f), glm::vec3(.5f, .5f, .5f), 15.0f);
 
 	// Scene framebuffer for postprocessing
 	util::gen_FBOs();
@@ -172,6 +184,10 @@ int main(int argc, char** argv)
 		if(util::Globals::visualize_tangent) 
 			model.draw_tangent(tangent_shader, util::Globals::camera);
 
+		// Draw frambuffer debuger window
+/* 		FBO_debuger::get_instance(util::Globals::camera.width(), util::Globals::camera.height())
+			->draw(*Shader::FBO_debuger::get_instance(), util::Globals::G_color_units[0]); */
+
 		// Imgui user interface design
 		util::imgui_design(model);
 
@@ -195,6 +211,7 @@ int main(int argc, char** argv)
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;

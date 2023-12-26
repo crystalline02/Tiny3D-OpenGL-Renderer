@@ -462,4 +462,5 @@ CMakeFiles/renderer.dir/src/main.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_conv.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/quoted_string.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/sstream \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/sstream.tcc
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/sstream.tcc \
+ C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\fbo_debuger.h

@@ -202,4 +202,14 @@ namespace Shader
         Cubemap_BRDFIntergral();
         static Cubemap_BRDFIntergral* instance;
     };
+
+    class FBO_debuger: public Shader
+    {
+    public:
+        void set_uniforms(GLuint tex_unit, const glm::mat4& model) const;
+        static FBO_debuger* get_instance();
+    private:
+        FBO_debuger();
+        static FBO_debuger* instance;
+    };
 }

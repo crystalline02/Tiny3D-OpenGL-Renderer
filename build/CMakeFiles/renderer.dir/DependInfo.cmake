@@ -9,6 +9,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/camera.cpp" "CMakeFiles/renderer.dir/src/camera.cpp.obj" "gcc" "CMakeFiles/renderer.dir/src/camera.cpp.obj.d"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/fbo_debuger.cpp" "CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj" "gcc" "CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj.d"
   "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/globals.cpp" "CMakeFiles/renderer.dir/src/globals.cpp.obj" "gcc" "CMakeFiles/renderer.dir/src/globals.cpp.obj.d"
   "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/light.cpp" "CMakeFiles/renderer.dir/src/light.cpp.obj" "gcc" "CMakeFiles/renderer.dir/src/light.cpp.obj.d"
   "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/main.cpp" "CMakeFiles/renderer.dir/src/main.cpp.obj" "gcc" "CMakeFiles/renderer.dir/src/main.cpp.obj.d"

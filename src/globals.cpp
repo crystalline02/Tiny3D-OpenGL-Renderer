@@ -28,7 +28,7 @@ bool util::Globals::first_mouse = true,
     util::Globals::bloom = false,
     util::Globals::deferred_rendering = false,
     util::Globals::SSAO = false,
-    util::Globals::pbr_mat = false;
+    util::Globals::pbr_mat = true;
 double util::Globals::last_xpos = 0.f,
     util::Globals::last_ypos = 0.f,
     util::Globals::delta_time = 0.f,
@@ -132,26 +132,62 @@ void util::process_input(GLFWwindow* window)
 		Globals::camera.reaction_E(Globals::delta_time);
 }
 
-GLenum util::checkGLError(const char* message)
+void APIENTRY util::debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+    const char* message, const void* userParam)
 {
-    GLenum errorCode;
-    while ((errorCode = glGetError()) != GL_NO_ERROR)
+    if(id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+    std::cout << message << "(" << id << ")\n";
+    switch(source)
     {
-        std::string error;
-        switch (errorCode)
-        {
-            case GL_INVALID_ENUM:                  error = "INVALID_ENUM"; break;
-            case GL_INVALID_VALUE:                 error = "INVALID_VALUE"; break;
-            case GL_INVALID_OPERATION:             error = "INVALID_OPERATION"; break;
-            case GL_STACK_OVERFLOW:                error = "STACK_OVERFLOW"; break;
-            case GL_STACK_UNDERFLOW:               error = "STACK_UNDERFLOW"; break;
-            case GL_OUT_OF_MEMORY:                 error = "OUT_OF_MEMORY"; break;
-            case GL_INVALID_FRAMEBUFFER_OPERATION: error = "INVALID_FRAMEBUFFER_OPERATION"; break;
-            default:                               error = "UNKNOWN_ERROR"; break;
-        }
-        std::cerr << message << " | OpenGL Error: " << error << std::endl;
+        case GL_DEBUG_SOURCE_API: std::cout << "Source: API\n"; break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM: std::cout << "Source: WINDOW_SYSTEM\n"; break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cout << "Source: HADER_COMPILER\n"; break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY: std::cout << "Source: THIRD PARTY\n"; break;
+        case GL_DEBUG_SOURCE_APPLICATION: std::cout << "Source: APPLICATION\n"; break;
+        case GL_DEBUG_SOURCE_OTHER: std::cout << "Source: OTHER\n"; break;
     }
-    return errorCode;
+
+    switch(type)
+    {
+        case GL_DEBUG_TYPE_ERROR: std::cout << "Type: ERROR\n"; break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cout << "Type: DEPRECATED_BEHAVIOR\n"; break;
+        case GL_DEBUG_TYPE_MARKER: std::cout << "Type: MARKER\n"; break;
+        case GL_DEBUG_TYPE_OTHER: std::cout << "Type: OTHER\n"; break;
+        case GL_DEBUG_TYPE_PERFORMANCE: std::cout << "Type: PERFORMANCE\n"; break;
+        case GL_DEBUG_TYPE_POP_GROUP: std::cout << "Type: POP_GROUP\n"; break;
+        case GL_DEBUG_TYPE_PUSH_GROUP: std::cout << "Type: PUSH_GROUP\n"; break;
+        case GL_DEBUG_TYPE_PORTABILITY: std::cout << "Type: PORTABILITY\n"; break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: std::cout << "Type: UNDEFINED_BEHAVIOR\n"; break;
+    }
+
+    switch (severity)
+    {
+        case GL_DEBUG_SEVERITY_HIGH: std::cout << "Severity: HIGH\n"; break;
+        case GL_DEBUG_SEVERITY_MEDIUM: std::cout << "Severity: MEDIUM\n"; break;
+        case GL_DEBUG_SEVERITY_LOW: std::cout << "Severity: LOW\n"; break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: NOTIFICATION\n"; break;
+    }
+}
+
+GLenum util::checkGLError_(const char* file, int line)
+{
+    GLenum error_code;
+    while((error_code = glGetError()) != GL_NO_ERROR)
+    {
+        std::string error_str;
+        switch(error_code)
+        {
+            case GL_INVALID_ENUM: error_str = "GL_INVALID_ENUM"; break;
+            case GL_INVALID_VALUE: error_str = "GL_INVALID_VALUE"; break;
+            case GL_INVALID_OPERATION: error_str = "GL_INVALID_OPERATION"; break;
+            case GL_STACK_OVERFLOW: error_str = "GL_INVALID_OPERATION"; break;
+            case GL_STACK_UNDERFLOW: error_str = "GL_STACK_UNDERFLOW"; break;
+            case GL_OUT_OF_MEMORY: error_str = "GL_OUT_OF_MEMORY"; break;
+            case GL_INVALID_FRAMEBUFFER_OPERATION: error_str = "GL_INVALID_FRAMEBUFFER_OPERATION"; break;
+        }
+        std::cout << error_str << " | " << file << " (" << line << ")\n";
+    }
+    return error_code;
 }
 
 glm::mat4 util::face_camera_model(const glm::mat4& camera_mat, glm::vec3 light_pos)
@@ -668,19 +704,19 @@ void util::imgui_design(Model& model)
             {
                 glm::vec3 position = light->position();
                 ImGui::SliderFloat3("position", &position[0], -3.f, 3.f);
-			    ImGui::SliderFloat("intensity", &light->intensity_ptr(), 0.f, 250.f);
+			    ImGui::SliderFloat("intensity", &light->intensity_ptr(), 0.f, 450.f);
                 light->set_positon(position);
                 break;
             }
             case Light_type::SUN:
             {
-                ImGui::SliderFloat("intensity", &light->intensity_ptr(), 0.f, 50.f);
+                ImGui::SliderFloat("intensity", &light->intensity_ptr(), 0.f, 200.f);
                 break;
             }
             case Light_type::SPOT:
             {
                 Spot_light* spot_light = static_cast<Spot_light*>(light);
-                ImGui::SliderFloat("intensity", &light->intensity_ptr(), 0.f, 250.f);
+                ImGui::SliderFloat("intensity", &light->intensity_ptr(), 0.f, 450.f);
                 float inner = glm::degrees(spot_light->cutoff()), outer = glm::degrees(spot_light->outer_cutoff());
                 ImGui::SliderFloat("inner", &inner, .1f, 90.f);
                 if(inner >= outer) outer = inner;

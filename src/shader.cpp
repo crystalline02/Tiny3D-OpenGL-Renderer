@@ -630,3 +630,21 @@ void Shader::Cubemap_BRDFIntergral::set_uniforms() const
 {
     // No uniforms to set
 }
+
+Shader::FBO_debuger* Shader::FBO_debuger::instance = nullptr;
+
+Shader::FBO_debuger::FBO_debuger(): Shader("./shader/FBO_debuger")
+{
+
+}
+
+Shader::FBO_debuger* Shader::FBO_debuger::get_instance()
+{
+    return instance ? instance : new FBO_debuger();
+}
+
+void Shader::FBO_debuger::set_uniforms(GLuint tex_unit, const glm::mat4& model) const
+{
+    util::set_mat("model", model, program_id);
+    util::set_int("fbo_attachment", tex_unit, program_id);
+}

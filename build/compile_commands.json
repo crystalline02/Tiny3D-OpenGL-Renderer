@@ -7,6 +7,12 @@
 },
 {
   "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/build",
+  "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\fbo_debuger.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.7\\src\\fbo_debuger.cpp",
+  "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/fbo_debuger.cpp",
+  "output": "CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj"
+},
+{
+  "directory": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/build",
   "command": "C:\\library_cpp\\MinGW\\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\\bin\\g++.exe  @CMakeFiles/renderer.dir/includes_CXX.rsp -g -o CMakeFiles\\renderer.dir\\src\\globals.cpp.obj -c C:\\Users\\ZhenKou\\OneDrive\\project\\opengl_learn\\renderer_opengl1.7\\src\\globals.cpp",
   "file": "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/globals.cpp",
   "output": "CMakeFiles/renderer.dir/src/globals.cpp.obj"
