@@ -18,14 +18,17 @@ HDR.
 Screen space ambient occulsion.
 
 Bloom.
+
+PBR.
+
+Specular IBL.
 # Sceen shots
-![image](https://github.com/crystalline02/Tiny3D-OpenGL-Renderer/assets/45896894/582e7777-a9d6-4028-8c88-9254840ba793)
-![image](https://github.com/crystalline02/Tiny3D-OpenGL-Renderer/assets/45896894/dcd5979f-a02d-44d4-ac73-b25e82ede22e)
-![QQ截图20231211164045](https://github.com/crystalline02/Tiny3D-OpenGL-Renderer/assets/45896894/ba5effb5-474b-4108-acd3-cd325f8b3fb3)
+<img width="962" alt="Screenshot 2023-12-26 185618" src="https://github.com/crystalline02/Tiny3D-OpenGL-Renderer/assets/45896894/52029295-740c-463a-afcd-29ad0ae07116">
+<img width="963" alt="Screenshot 2023-12-26 185755" src="https://github.com/crystalline02/Tiny3D-OpenGL-Renderer/assets/45896894/0f708b16-d251-42bb-aac6-dc9fc07ce360">
+<img width="963" alt="Screenshot 2023-12-26 190014" src="https://github.com/crystalline02/Tiny3D-OpenGL-Renderer/assets/45896894/e09d46a4-fa8e-4141-817d-d2aafc157799">
 
 
 # Futher features
 Geometry picking.
 Gizmo visualizing.
-PBR.
 Variance shadow mapping.
