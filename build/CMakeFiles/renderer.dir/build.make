@@ -262,7 +262,11 @@ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.e
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/shader.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/skybox.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/build.make
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/lib/libassimp.dll.a
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/lib/libglad.a
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/lib/libglfw3.a
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/lib/libimgui.a
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/lib/libfreetype.dll.a
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/linkLibs.rsp
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/objects1.rsp
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/link.txt
