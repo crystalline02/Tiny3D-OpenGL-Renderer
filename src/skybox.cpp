@@ -112,22 +112,22 @@ Skybox* Skybox::get_instance()
 
 GLuint Skybox::cubemap_unit() const
 {
-    return m_tex_cubemap->m_texunit;
+    return m_tex_cubemap->texunit;
 }
 
 GLuint Skybox::irradiancemap_unit() const
 {
-    return m_tex_diffuseirrad->m_texunit;
+    return m_tex_diffuseirrad->texunit;
 }
 
 GLuint Skybox::prefilteredmap_unit() const
 {
-    return m_tex_prefilter->m_texunit;
+    return m_tex_prefilter->texunit;
 }
 
 GLuint Skybox::BRDF_LUT_unit() const
 {
-    return m_BRDF_LUT->m_texunit;
+    return m_BRDF_LUT->texunit;
 }
 
 void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo) const
@@ -140,7 +140,7 @@ void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint f
 
     glBindVertexArray(VAO);
     shader.use();
-    shader.set_uniforms(camera, m_intensity, m_tex_cubemap->m_texunit);
+    shader.set_uniforms(camera, m_intensity, m_tex_cubemap->texunit);
     glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 

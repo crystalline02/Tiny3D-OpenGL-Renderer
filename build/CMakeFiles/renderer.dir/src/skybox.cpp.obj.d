@@ -380,19 +380,21 @@ CMakeFiles/renderer.dir/src/skybox.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/sstream.tcc \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/array \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/compare \
- C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\model.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/map \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_tree.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/aligned_buffer.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/node_handle.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_map.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_multimap.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/erase_if.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/unordered_map \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unordered_map.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/hashtable.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/hashtable_policy.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ext/aligned_buffer.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/enable_special_members.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/node_handle.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/erase_if.h \
+ C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\character.h \
+ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/GLFW/glfw3.h \
+ C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\model.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/map \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_tree.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_map.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_multimap.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/memory \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_tempbuf.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_raw_storage_iter.h \
@@ -408,7 +410,6 @@ CMakeFiles/renderer.dir/src/skybox.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward/auto_ptr.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/pstl/glue_memory_defs.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/pstl/execution_defs.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/GLFW/glfw3.h \
  C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/assimp/Importer.hpp \
  C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/assimp/types.h \
  C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/assimp/defs.h \

@@ -11,7 +11,9 @@
 
 #include <chrono>
 #include <random>
+
 #include <imgui.h>
+
 
 /*
 对于不同的编译单元（即.cpp文件），静态成员的初始化顺序可能会有所不同，这取决于链接器如何排列这些单元。因此，
@@ -203,7 +205,7 @@ glm::mat4 util::face_camera_model(const glm::mat4& camera_mat, glm::vec3 light_p
 void util::create_HDRI(const char* path, Texture& texture)
 {
     Texture tex_fatch = Model::get_texture(path);
-    if(tex_fatch.m_name != "Null texture")
+    if(tex_fatch.texname != "Null texture")
     {
         texture = tex_fatch;
         return;
@@ -216,11 +218,11 @@ void util::create_HDRI(const char* path, Texture& texture)
     float* data = stbi_loadf(path, &width, &height, &comp, 0);
     if(data)
     {
-        texture.m_name = path;
-        texture.m_texunit = Model::fatch_new_texunit();
-        glGenTextures(1, &texture.m_texbuffer);
-        glActiveTexture(GL_TEXTURE0 + texture.m_texunit);
-        glBindTexture(GL_TEXTURE_2D, texture.m_texbuffer);
+        texture.texname = path;
+        texture.texunit = Model::fatch_new_texunit();
+        glGenTextures(1, &texture.texbuffer);
+        glActiveTexture(GL_TEXTURE0 + texture.texunit);
+        glBindTexture(GL_TEXTURE_2D, texture.texbuffer);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
         Model::add_texture(path, texture);
         // For HDRI, it's OK not to generate mipmap
@@ -245,7 +247,7 @@ void util::create_HDRI(const char* path, Texture& texture)
 void util::create_texture(const char* path, bool is_SRGB, Texture& texture)
 {
     Texture tex_fatch = Model::get_texture(path);
-    if(tex_fatch.m_name != "Null texture")
+    if(tex_fatch.texname != "Null texture")
     {
         texture = tex_fatch;
         return;
@@ -291,9 +293,9 @@ void util::create_texture(const char* path, bool is_SRGB, Texture& texture)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glActiveTexture(GL_TEXTURE0);
-    texture.m_name = path;
-    texture.m_texunit = texture_unit;
-    texture.m_texbuffer = texture_id;
+    texture.texname = path;
+    texture.texunit = texture_unit;
+    texture.texbuffer = texture_id;
     Model::add_texture(path, texture);
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms\n";
@@ -305,7 +307,7 @@ void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& c
     assert(faces_path.size() == 6);
     std::string texname = faces_path[0].substr(0, faces_path[0].find_last_of("\\/"));
     Texture tex_fatch = Model::get_texture(texname.c_str());
-    if(tex_fatch.m_name != "Null texture")
+    if(tex_fatch.texname != "Null texture")
     {
         cubemap_texture = tex_fatch;
         return;
@@ -332,9 +334,9 @@ void util::create_cubemap(const std::vector<std::string>& faces_path, Texture& c
         }
         stbi_image_free(data);
     }
-    cubemap_texture.m_name = texname;
-    cubemap_texture.m_texunit = cubemap_unit;
-    cubemap_texture.m_texbuffer = cubemap_buffer;
+    cubemap_texture.texname = texname;
+    cubemap_texture.texunit = cubemap_unit;
+    cubemap_texture.texbuffer = cubemap_buffer;
     Model::add_texture(texname.c_str(), cubemap_texture);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -362,7 +364,7 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, 
     assert(ext == ".hdr");
 
     Texture tex_fatch = Model::get_texture(hdri_path);
-    if(tex_fatch.m_name != "Null texture")
+    if(tex_fatch.texname != "Null texture")
     {
         hdri_cubemap_texture = tex_fatch;
         return;
@@ -372,14 +374,14 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, 
     util::create_HDRI(hdri_path, hdri_texture);
 
     // create cubemap
-    hdri_cubemap_texture.m_name = std::string(hdri_path).substr(0, std::string(hdri_path).find_last_of(".")) +
+    hdri_cubemap_texture.texname = std::string(hdri_path).substr(0, std::string(hdri_path).find_last_of(".")) +
         "_cubemap" +
         ext;
-    glGenTextures(1, &hdri_cubemap_texture.m_texbuffer);
-    hdri_cubemap_texture.m_texunit = Model::fatch_new_texunit();
-    Model::add_texture(hdri_cubemap_texture.m_name.c_str(), hdri_cubemap_texture);
-    glActiveTexture(GL_TEXTURE0 + hdri_cubemap_texture.m_texunit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, hdri_cubemap_texture.m_texbuffer);
+    glGenTextures(1, &hdri_cubemap_texture.texbuffer);
+    hdri_cubemap_texture.texunit = Model::fatch_new_texunit();
+    Model::add_texture(hdri_cubemap_texture.texname.c_str(), hdri_cubemap_texture);
+    glActiveTexture(GL_TEXTURE0 + hdri_cubemap_texture.texunit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, hdri_cubemap_texture.texbuffer);
     for(int i = 0; i < 6; ++i)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, 2048, 2048,
             0, GL_RGB, GL_FLOAT, nullptr);  // This cubmap stores color vaules sampled from hdir map, which means it's value extends the range of [0, 1]
@@ -409,14 +411,14 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, 
     {
         glBindFramebuffer(GL_FRAMEBUFFER, hdri2cubemap_fbo);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-            hdri_cubemap_texture.m_texbuffer, 0);
+            hdri_cubemap_texture.texbuffer, 0);
         if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
             std::cout << "hdri2cubemap framebuffer incomplete!\n";
             exit(1);
         }
         Skybox::get_instance()->draw_equirectangular_on_cubmap(*Shader::HDRI2cubemap::get_instance(), views[i],
-            hdri_texture.m_texunit, hdri2cubemap_fbo);
+            hdri_texture.texunit, hdri2cubemap_fbo);
     }
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
     
@@ -449,17 +451,17 @@ void util::create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irr
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, cubemap2irradiance_rbo);
 
     {
-        unsigned int loc = cubemap_tex.m_name.find_last_of('.');
-        diffuse_irrad_tex.m_name = cubemap_tex.m_name.substr(0, loc) + "_irradiance" +
-            cubemap_tex.m_name.substr(loc, cubemap_tex.m_name.size());
+        unsigned int loc = cubemap_tex.texname.find_last_of('.');
+        diffuse_irrad_tex.texname = cubemap_tex.texname.substr(0, loc) + "_irradiance" +
+            cubemap_tex.texname.substr(loc, cubemap_tex.texname.size());
     }
 
-    glGenTextures(1, &diffuse_irrad_tex.m_texbuffer);
-    diffuse_irrad_tex.m_texunit = Model::fatch_new_texunit();
+    glGenTextures(1, &diffuse_irrad_tex.texbuffer);
+    diffuse_irrad_tex.texunit = Model::fatch_new_texunit();
 
-    Model::add_texture(diffuse_irrad_tex.m_name.c_str(), diffuse_irrad_tex);
-    glActiveTexture(GL_TEXTURE0 + diffuse_irrad_tex.m_texunit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, diffuse_irrad_tex.m_texbuffer);
+    Model::add_texture(diffuse_irrad_tex.texname.c_str(), diffuse_irrad_tex);
+    glActiveTexture(GL_TEXTURE0 + diffuse_irrad_tex.texunit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, diffuse_irrad_tex.texbuffer);
     for(int i = 0; i < 6; ++i)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, 128, 128, 0, GL_RGB, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -480,10 +482,10 @@ void util::create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irr
     {
         glBindFramebuffer(GL_FRAMEBUFFER, cubemap2irradiance_fbo);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-            diffuse_irrad_tex.m_texbuffer, 0);
+            diffuse_irrad_tex.texbuffer, 0);
         assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
         Skybox::get_instance()->draw_irradiancemap(*Shader::Cubemap2irradiance::get_instance(), views[i],
-            cubemap_tex.m_texunit, cubemap2irradiance_fbo);
+            cubemap_tex.texunit, cubemap2irradiance_fbo);
     }
 
     // Since this framebuffer(to capture diffuse irradiance) is drawed only once during loading a skybox, we
@@ -507,15 +509,15 @@ void util::create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefilte
     glGenFramebuffers(1, &prefilter_fbo);
     glGenRenderbuffers(1, &prefilter_rbo);
     {
-        GLuint loc = cubemap_tex.m_name.find_last_of('.');
-        prefiltered_envmap.m_name = cubemap_tex.m_name.substr(0, loc) + "_prefilter" +
-            cubemap_tex.m_name.substr(loc, cubemap_tex.m_name.size());
+        GLuint loc = cubemap_tex.texname.find_last_of('.');
+        prefiltered_envmap.texname = cubemap_tex.texname.substr(0, loc) + "_prefilter" +
+            cubemap_tex.texname.substr(loc, cubemap_tex.texname.size());
     }
-    glGenTextures(1, &prefiltered_envmap.m_texbuffer);
-    prefiltered_envmap.m_texunit = Model::fatch_new_texunit();
-    Model::add_texture(prefiltered_envmap.m_name.c_str(), prefiltered_envmap);
-    glActiveTexture(GL_TEXTURE0 + prefiltered_envmap.m_texunit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, prefiltered_envmap.m_texbuffer);
+    glGenTextures(1, &prefiltered_envmap.texbuffer);
+    prefiltered_envmap.texunit = Model::fatch_new_texunit();
+    Model::add_texture(prefiltered_envmap.texname.c_str(), prefiltered_envmap);
+    glActiveTexture(GL_TEXTURE0 + prefiltered_envmap.texunit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, prefiltered_envmap.texbuffer);
     for(int i = 0; i < 6; ++i)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB32F, 512, 512, 0, GL_RGB, GL_FLOAT, nullptr);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -548,12 +550,12 @@ void util::create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefilte
         {
             glBindFramebuffer(GL_FRAMEBUFFER, prefilter_fbo);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                prefiltered_envmap.m_texbuffer, mip);
+                prefiltered_envmap.texbuffer, mip);
             assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
             Skybox::get_instance()->prefilt_cubemap(*Shader::Cubemap_prefilter::get_instance(),
                 views[i],
                 roughness,
-                cubemap_tex.m_texunit,
+                cubemap_tex.texunit,
                 prefilter_fbo, mip_width, mip_height);
         }
     }
@@ -581,20 +583,20 @@ void util::create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT)
     
     // create BRDF_LUT
     Texture texture_temp = Model::get_texture("BRDF LUT");
-    if(texture_temp.m_name != "Null texture") 
+    if(texture_temp.texname != "Null texture") 
     {
         BRDF_LUT = texture_temp;
-        glActiveTexture(GL_TEXTURE0 + BRDF_LUT.m_texunit);
-        glBindTexture(GL_TEXTURE_2D, BRDF_LUT.m_texbuffer);
+        glActiveTexture(GL_TEXTURE0 + BRDF_LUT.texunit);
+        glBindTexture(GL_TEXTURE_2D, BRDF_LUT.texbuffer);
     }
     else
     {
-        BRDF_LUT.m_name = "BRDF LUT";
-        glGenTextures(1, &BRDF_LUT.m_texbuffer);
-        BRDF_LUT.m_texunit = Model::fatch_new_texunit();
-        Model::add_texture(BRDF_LUT.m_name.c_str(), BRDF_LUT);
-        glActiveTexture(GL_TEXTURE0 + BRDF_LUT.m_texunit);
-        glBindTexture(GL_TEXTURE_2D, BRDF_LUT.m_texbuffer);
+        BRDF_LUT.texname = "BRDF LUT";
+        glGenTextures(1, &BRDF_LUT.texbuffer);
+        BRDF_LUT.texunit = Model::fatch_new_texunit();
+        Model::add_texture(BRDF_LUT.texname.c_str(), BRDF_LUT);
+        glActiveTexture(GL_TEXTURE0 + BRDF_LUT.texunit);
+        glBindTexture(GL_TEXTURE_2D, BRDF_LUT.texbuffer);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, nullptr);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -602,7 +604,7 @@ void util::create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     }
 
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BRDF_LUT.m_texbuffer, 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BRDF_LUT.texbuffer, 0);
     assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
     Skybox::get_instance()->BRDF_LUT_intergral(*Shader::Cubemap_BRDFIntergral::get_instance(), 
@@ -663,7 +665,7 @@ void util::create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void util::imgui_design(Model& model)
+void util::imgui_design(Model& model, const Character_Render& text_renderer)
 {
     ImGui::Begin("Settings");
 	ImGui::ColorEdit3("Backgroud", glm::value_ptr(Globals::bg_color));
@@ -864,6 +866,15 @@ void util::imgui_design(Model& model)
 	ImGui::Checkbox("blend", &Globals::blend);
 	ImGui::Checkbox("cull face", &Globals::cull_face);
 	ImGui::End();
+
+    Shader::Text_shader* text_shader = Shader::Text_shader::get_instance();
+    static int fps = 0;
+    double current_time = glfwGetTime();
+    if(std::abs(current_time - std::round(current_time)) < 0.01)
+        fps = (1.0 / Globals::delta_time);
+    text_renderer.render_text(*text_shader, "FPS: " + std::to_string(fps), 
+        Globals::camera.width() - 135, 
+        Globals::camera.height() - 40, .65f, {0.f, 1.f, 0.05f});
 }
 
 std::array<glm::vec3, 64> util::get_ssao_samples()
@@ -1022,7 +1033,7 @@ void util::create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint *pingpon
 void util::create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, const char* tex_name)
 {
     Texture tex_fatch = Model::get_texture(tex_name);
-    if(tex_fatch.m_name != "Null texture")
+    if(tex_fatch.texname != "Null texture")
     {
         texture = tex_fatch;
         return;
@@ -1035,9 +1046,9 @@ void util::create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, co
     glBindFramebuffer(GL_FRAMEBUFFER, depth_fbo);
     glActiveTexture(GL_TEXTURE0 + depth_unit);
     glBindTexture(GL_TEXTURE_2D_ARRAY, depth_buffer);
-    texture.m_name = tex_name;
-    texture.m_texbuffer = depth_buffer;
-    texture.m_texunit = depth_unit;
+    texture.texname = tex_name;
+    texture.texbuffer = depth_buffer;
+    texture.texunit = depth_unit;
     Model::add_texture(tex_name, texture);
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32F,
         Globals::cascade_size, Globals::cascade_size, Globals::cascade_levels.size() + 1, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
@@ -1062,7 +1073,7 @@ void util::create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, co
 void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, const char* tex_name)
 {
     Texture tex_fatch = Model::get_texture(tex_name);
-    if(tex_fatch.m_name != "Null texture")
+    if(tex_fatch.texname != "Null texture")
     {
         texture = tex_fatch;
         return;
@@ -1075,9 +1086,9 @@ void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, 
     glGenTextures(1, &depth_cubemap_buffer);
     glActiveTexture(GL_TEXTURE0 + depth_cubemap_unit);
     glBindTexture(GL_TEXTURE_CUBE_MAP, depth_cubemap_buffer);
-    texture.m_name = tex_name;
-    texture.m_texbuffer = depth_cubemap_buffer;
-    texture.m_texunit = depth_cubemap_unit;
+    texture.texname = tex_name;
+    texture.texbuffer = depth_cubemap_buffer;
+    texture.texunit = depth_cubemap_unit;
     Model::add_texture(tex_name, texture);
     for(int i = 0; i < 6; ++i)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,

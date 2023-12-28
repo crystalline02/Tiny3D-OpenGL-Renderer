@@ -268,27 +268,6 @@ CMakeFiles/renderer.dir/src/main.cpp.obj: \
  C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/glm/ext/vector_uint1_sized.hpp \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cstring \
  C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/glm/gtc/type_ptr.inl \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/ft2build.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/config/ftheader.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/freetype.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/config/ftconfig.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/config/ftoption.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/config/ftstdlib.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/stdio.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/corecrt_stdio_config.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/_mingw_off_t.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/swprintf.inl \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/sec_api/stdio_s.h \
- C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/setjmp.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/config/integer-types.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/config/public-macros.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/config/mac-support.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/fttypes.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/ftsystem.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/ftimage.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/fterrors.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/ftmoderr.h \
- C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/freetype/fterrdef.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/iostream \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ostream \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ios \
@@ -298,7 +277,10 @@ CMakeFiles/renderer.dir/src/main.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/postypes.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cwchar \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/wchar.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/corecrt_stdio_config.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/_mingw_off_t.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/_mingw_stat64.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/swprintf.inl \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/sec_api/wchar_s.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/exception \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/exception.h \
@@ -313,6 +295,8 @@ CMakeFiles/renderer.dir/src/main.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/c++locale.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/clocale \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/locale.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/stdio.h \
+ C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/sec_api/stdio_s.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cctype \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/x86_64-w64-mingw32/include/ctype.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/ios_base.h \
@@ -479,4 +463,5 @@ CMakeFiles/renderer.dir/src/main.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/quoted_string.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/sstream \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/sstream.tcc \
+ C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\character.h \
  C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\fbo_debuger.h

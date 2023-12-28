@@ -10,6 +10,9 @@
 #include <iomanip>
 #include <vector>
 #include <array>
+#include <unordered_map>
+
+#include "character.h"
 
 
 class Light;
@@ -27,6 +30,7 @@ struct Texture;
     glfwWindowHint(GLFW_SAMPLES, 4); \
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); \
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  // Comment this line when releasing the application
+
 
 namespace util
 {
@@ -138,7 +142,6 @@ namespace util
         if(location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(mat3)); 
     }
 
-
     void gen_FBOs();
     void create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units);
     void create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint* pingpong_texture_units);
@@ -162,7 +165,7 @@ namespace util
     void create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefiltered_envmap);
     void create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT);
     void create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units);
-    void imgui_design(Model &model);
+    void imgui_design(Model &model, const Character_Render& text_renderer);
     std::array<glm::vec3, 64> get_ssao_samples();
     std::array<glm::vec3, 8> get_frustum_corner_world(const Camera& camera, float near, float far);
 }

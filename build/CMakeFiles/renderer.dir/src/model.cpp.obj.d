@@ -454,6 +454,7 @@ CMakeFiles/renderer.dir/src/model.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/sstream.tcc \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/array \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/compare \
+ C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\character.h \
  C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\light.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/chrono \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/chrono.h \

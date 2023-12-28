@@ -648,3 +648,22 @@ void Shader::FBO_debuger::set_uniforms(GLuint tex_unit, const glm::mat4& model) 
     util::set_mat("model", model, program_id);
     util::set_int("fbo_attachment", tex_unit, program_id);
 }
+
+Shader::Text_shader* Shader::Text_shader::instance = nullptr;
+
+Shader::Text_shader::Text_shader(): Shader("./shader/text_shader")
+{
+
+}
+
+Shader::Text_shader* Shader::Text_shader::get_instance()
+{
+    return instance ? instance : new Text_shader();
+}
+
+void Shader::Text_shader::set_uniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const
+{
+    util::set_mat("projection", projection, program_id);
+    util::set_int("bitmap", bitmap_unit, program_id);
+    util::set_floats("color", color, program_id);
+}

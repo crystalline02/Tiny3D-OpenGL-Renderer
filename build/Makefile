@@ -165,6 +165,30 @@ src/camera.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/camera.cpp.s
 .PHONY : src/camera.cpp.s
 
+src/character.obj: src/character.cpp.obj
+.PHONY : src/character.obj
+
+# target to build an object file
+src/character.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/character.cpp.obj
+.PHONY : src/character.cpp.obj
+
+src/character.i: src/character.cpp.i
+.PHONY : src/character.i
+
+# target to preprocess a source file
+src/character.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/character.cpp.i
+.PHONY : src/character.cpp.i
+
+src/character.s: src/character.cpp.s
+.PHONY : src/character.s
+
+# target to generate assembly for a file
+src/character.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/character.cpp.s
+.PHONY : src/character.cpp.s
+
 src/fbo_debuger.obj: src/fbo_debuger.cpp.obj
 .PHONY : src/fbo_debuger.obj
 
@@ -418,6 +442,9 @@ help:
 	@echo ... src/camera.obj
 	@echo ... src/camera.i
 	@echo ... src/camera.s
+	@echo ... src/character.obj
+	@echo ... src/character.i
+	@echo ... src/character.s
 	@echo ... src/fbo_debuger.obj
 	@echo ... src/fbo_debuger.i
 	@echo ... src/fbo_debuger.s

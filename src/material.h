@@ -7,10 +7,10 @@
 struct Texture
 {
     Texture(std::string name = "Null texture", GLuint texuint = 0, GLuint texbuffer = 0): 
-        m_name(name), m_texunit(texuint), m_texbuffer(texbuffer) { }
-    std::string m_name;
-    GLuint m_texunit;
-    GLuint m_texbuffer;
+        texname(name), texunit(texuint), texbuffer(texbuffer) { }
+    std::string texname;
+    GLuint texunit;
+    GLuint texbuffer;
 };
 
 enum class Mat_type

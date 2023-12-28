@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.pdb"
   "CMakeFiles/renderer.dir/src/camera.cpp.obj"
   "CMakeFiles/renderer.dir/src/camera.cpp.obj.d"
+  "CMakeFiles/renderer.dir/src/character.cpp.obj"
+  "CMakeFiles/renderer.dir/src/character.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj"
   "CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/globals.cpp.obj"

@@ -97,12 +97,12 @@ imgui/clean: imgui/CMakeFiles/imgui.dir/clean
 CMakeFiles/renderer.dir/all: imgui/CMakeFiles/imgui.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=10,11,12,13,14,15,16,17,18,19,20,21 "Built target renderer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=10,11,12,13,14,15,16,17,18,19,20,21,22 "Built target renderer"
 .PHONY : CMakeFiles/renderer.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/renderer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles 21
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles 22
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/renderer.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles 0
 .PHONY : CMakeFiles/renderer.dir/rule

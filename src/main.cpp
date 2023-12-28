@@ -11,9 +11,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
-
 #include <iostream>
 
 #include "shader.h"
@@ -85,19 +82,7 @@ int main(int argc, char** argv)
 	ImGui::GetStyle().ScaleAllSizes(ImGui::GetFrameHeight() * .3f);
 
 	// Init font
-	FT_Library ft;
-	if(FT_Init_FreeType(&ft))
-	{
-		std::cout << "ERROR::FREETYPE: Could not init FreeType Library.\n";
-		exit(1);
-	}
-	FT_Face face;
-	if(FT_New_Face(ft, "./Fonts/arial.ttf", 0, &face))
-	{
-		std::cout << "ERROR:FREETYPE: Could not load font from './Fonts/arial.ttf'.\n";
-		exit(1);
-	}
-	FT_Set_Pixel_Sizes(face, 0, 48);
+	Character_Render cr("./fonts/arial.ttf");
 
 	// Model
 	Model model("./model/cubes/cubes.obj");
@@ -207,7 +192,7 @@ int main(int argc, char** argv)
 			->draw(*Shader::FBO_debuger::get_instance(), util::Globals::G_color_units[0]); */
 
 		// Imgui user interface design
-		util::imgui_design(model);
+		util::imgui_design(model, cr);
 
 		// End of imgui
 		ImGui::Render();

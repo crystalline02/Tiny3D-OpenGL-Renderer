@@ -56,9 +56,9 @@ void Model::log_texture_info()
     std::cout << std::setfill('-') << std::setw(headers.size() * (col_width + 1) + 1) << "" << std::endl;
     std::cout << std::setfill(' ');
     for(std::unordered_map<std::string, Texture>::iterator it = loaded_textures.begin(); it != loaded_textures.end(); ++it)
-        util::print_row({std::string(it->second.m_name), 
-            std::to_string(it->second.m_texunit), 
-            std::to_string(it->second.m_texbuffer)}, 
+        util::print_row({std::string(it->second.texname), 
+            std::to_string(it->second.texunit), 
+            std::to_string(it->second.texbuffer)}, 
                 col_width);
     std::cout << std::endl;
 }
@@ -97,13 +97,13 @@ void Model::clear_model()
 
 void Model::rm_texture(const Texture& texture)
 {
-    auto it = loaded_textures.find(texture.m_name);
+    auto it = loaded_textures.find(texture.texname);
     if(it == loaded_textures.end()) return;
     
     loaded_textures.erase(it);
-    glActiveTexture(GL_TEXTURE0 + texture.m_texunit);
+    glActiveTexture(GL_TEXTURE0 + texture.texunit);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glDeleteTextures(1, &texture.m_texbuffer);
+    glDeleteTextures(1, &texture.texbuffer);
 }
 
 void Model::process_node(aiNode* node, const aiScene* scene)
@@ -258,7 +258,7 @@ GLuint Model::fatch_new_texunit()
     
     std::set<GLuint> ordered_unit;
     for(auto it = loaded_textures.begin(); it != loaded_textures.end(); ++it)
-        ordered_unit.insert(it->second.m_texunit);
+        ordered_unit.insert(it->second.texunit);
     GLuint texunit = 0;
     for(std::set<GLuint>::iterator it = ordered_unit.begin(); it != ordered_unit.end(); ++it)
         if(texunit == *it) ++texunit;

@@ -212,4 +212,14 @@ namespace Shader
         FBO_debuger();
         static FBO_debuger* instance;
     };
+
+    class Text_shader: public Shader
+    {
+    public:
+        void set_uniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const;
+        static Text_shader* get_instance();
+    private:
+        Text_shader();
+        static Text_shader* instance;
+    };
 }

@@ -90,7 +90,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_diffuse_textures.size(); ++i) 
                 {
                     std::string diffuse_map = (std::string(name) + std::string(".diffuse_maps[") + std::to_string(i) + std::string("]"));
-                    util::set_int(diffuse_map.c_str(), m_diffuse_textures[i].m_texunit, program);
+                    util::set_int(diffuse_map.c_str(), m_diffuse_textures[i].texunit, program);
                 }
                 util::set_bool(use_diffuse_map.c_str(), GL_TRUE, program);
             }
@@ -106,7 +106,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_specular_textures.size(); ++i)
                 {
                     std::string specular_map = (std::string(name) + std::string(".specular_maps[") + std::to_string(i) + std::string("]"));
-                    util::set_int(specular_map.c_str(), m_specular_textures[i].m_texunit, program);
+                    util::set_int(specular_map.c_str(), m_specular_textures[i].texunit, program);
                 }
                 util::set_bool(use_specular_map.c_str(), GL_TRUE, program);
             }
@@ -122,7 +122,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_ambient_textures.size(); ++i)
                 {
                     std::string ambient_map = (std::string(name) + std::string(".ambient_maps[") + std::to_string(i) + std::string("]"));
-                    util::set_int(ambient_map.c_str(), m_ambient_textures[i].m_texunit, program);
+                    util::set_int(ambient_map.c_str(), m_ambient_textures[i].texunit, program);
                 }
                 util::set_bool(use_ambient_map.c_str(), GL_TRUE, program);
             }
@@ -138,7 +138,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_opacity_textures.size(); ++i)
                 {
                     std::string opacity_map = (std::string(name) + std::string(".opacity_maps[") + std::to_string(i) + std::string("]"));
-                    util::set_int(opacity_map.c_str(), m_opacity_textures[i].m_texunit, program);
+                    util::set_int(opacity_map.c_str(), m_opacity_textures[i].texunit, program);
                 }
                 util::set_bool(use_opacity_map.c_str(), GL_TRUE, program);
             }
@@ -154,7 +154,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_normal_textures.size(); ++i)
                 {
                     std::string normal_map = std::string(name) + ".normal_maps[" + std::to_string(i) + "]";
-                    util::set_int(normal_map.c_str(), m_normal_textures[i].m_texunit, program);
+                    util::set_int(normal_map.c_str(), m_normal_textures[i].texunit, program);
                 }
                 util::set_bool(use_normal_map.c_str(), GL_TRUE, program);
                 util::set_float(normal_map_strength.c_str(), m_normal_stength, program);
@@ -168,7 +168,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_displacement_textures.size(); ++i)
                 {
                     std::string displacement_map = std::string(name) + ".displacement_maps[" + std::to_string(i) + "]";
-                    util::set_int(displacement_map.c_str(), m_displacement_textures[i].m_texunit, program);
+                    util::set_int(displacement_map.c_str(), m_displacement_textures[i].texunit, program);
                 }
                 util::set_bool(use_displacement_map.c_str(), GL_TRUE, program);
             }
@@ -187,7 +187,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_diffuse_textures.size(); ++i)
                 {
                     std::string albedo_maps = std::string(name) + std::string(".albedo_maps[") + std::to_string(i) + std::string("]");
-                    util::set_int(albedo_maps.c_str(), m_diffuse_textures[i].m_texunit, program);
+                    util::set_int(albedo_maps.c_str(), m_diffuse_textures[i].texunit, program);
                 }
                 util::set_bool(use_albedo_map.c_str(), true, program);
             }
@@ -203,7 +203,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_opacity_textures.size(); ++i)
                 {
                     std::string opacity_maps = std::string(name) + std::string(".opacity_maps[") + std::to_string(i) + std::string("]");
-                    util::set_int(opacity_maps.c_str(), m_opacity_textures[i].m_texunit, program);
+                    util::set_int(opacity_maps.c_str(), m_opacity_textures[i].texunit, program);
                 }
                 util::set_bool(use_opacity_map.c_str(), true, program);
             }
@@ -219,7 +219,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_roughness_textures.size(); ++i)
                 {
                     std::string roughness_maps = std::string(name) + std::string(".roughness_maps[") + std::to_string(i) + std::string("]");
-                    util::set_int(roughness_maps.c_str(), m_roughness_textures[i].m_texunit, program);
+                    util::set_int(roughness_maps.c_str(), m_roughness_textures[i].texunit, program);
                 }
                 util::set_bool(use_roughness_map.c_str(), true, program);
             }
@@ -235,7 +235,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_normal_textures.size(); ++i)
                 {
                     std::string normal_maps = std::string(name) + std::string(".normal_maps[") + std::to_string(i) + std::string("]");
-                    util::set_int(normal_maps.c_str(), m_normal_textures[i].m_texunit, program);
+                    util::set_int(normal_maps.c_str(), m_normal_textures[i].texunit, program);
                 }
                 util::set_bool(use_normal_map.c_str(), true, program);
                 util::set_float(normal_map_strength.c_str(), m_normal_stength, program);
@@ -249,7 +249,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_displacement_textures.size(); ++i)
                 {
                     std::string displacement_maps = std::string(name) + std::string(".displacement_maps[") + std::to_string(i) + std::string("]");
-                    util::set_int(displacement_maps.c_str(), m_displacement_textures[i].m_texunit, program);
+                    util::set_int(displacement_maps.c_str(), m_displacement_textures[i].texunit, program);
                 }
                 util::set_bool(use_displacement_map.c_str(), true, program);
             }
@@ -262,7 +262,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_metalic_textures.size(); ++i)
                 {
                     std::string metalic_maps = std::string(name) + std::string(".metalic_maps[") + std::to_string(i) + std::string("]");
-                    util::set_int(metalic_maps.c_str(), m_metalic_textures[i].m_texunit, program);
+                    util::set_int(metalic_maps.c_str(), m_metalic_textures[i].texunit, program);
                 }
                 util::set_bool(use_metalic_map.c_str(), true, program);
             }
@@ -278,7 +278,7 @@ void Material::set_uniforms(const char* name, GLint program) const
                 for(int i = 0; i < m_ambient_textures.size(); ++i)
                 {
                     std::string ambient_map = (std::string(name) + std::string(".ambient_maps[") + std::to_string(i) + std::string("]"));
-                    util::set_int(ambient_map.c_str(), m_ambient_textures[i].m_texunit, program);
+                    util::set_int(ambient_map.c_str(), m_ambient_textures[i].texunit, program);
                 }
                 util::set_bool(use_ambient_map.c_str(), GL_TRUE, program);
             }
