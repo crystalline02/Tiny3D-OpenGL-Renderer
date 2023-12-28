@@ -165,7 +165,7 @@ namespace util
     void create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefiltered_envmap);
     void create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT);
     void create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units);
-    void imgui_design(Model &model, const Character_Render& text_renderer);
+    void imgui_design(Model &model);
     std::array<glm::vec3, 64> get_ssao_samples();
     std::array<glm::vec3, 8> get_frustum_corner_world(const Camera& camera, float near, float far);
 }

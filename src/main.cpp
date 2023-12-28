@@ -82,7 +82,8 @@ int main(int argc, char** argv)
 	ImGui::GetStyle().ScaleAllSizes(ImGui::GetFrameHeight() * .3f);
 
 	// Init font
-	Character_Render cr("./fonts/arial.ttf");
+	Character_Render* cr = Character_Render::get_instance();
+	cr->init_fonts("./fonts/arial.ttf");
 
 	// Model
 	Model model("./model/cubes/cubes.obj");
@@ -192,7 +193,7 @@ int main(int argc, char** argv)
 			->draw(*Shader::FBO_debuger::get_instance(), util::Globals::G_color_units[0]); */
 
 		// Imgui user interface design
-		util::imgui_design(model, cr);
+		util::imgui_design(model);
 
 		// End of imgui
 		ImGui::Render();

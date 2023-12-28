@@ -97,6 +97,8 @@ void util::framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
     util::Globals::camera.set_width(width);
     util::Globals::camera.set_height(height);
+
+    Character_Render::get_instance()->set_projection(width, height);
 }
 
 void util::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -665,7 +667,7 @@ void util::create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void util::imgui_design(Model& model, const Character_Render& text_renderer)
+void util::imgui_design(Model& model)
 {
     ImGui::Begin("Settings");
 	ImGui::ColorEdit3("Backgroud", glm::value_ptr(Globals::bg_color));
@@ -867,12 +869,14 @@ void util::imgui_design(Model& model, const Character_Render& text_renderer)
 	ImGui::Checkbox("cull face", &Globals::cull_face);
 	ImGui::End();
 
+    // render text onto the screen
     Shader::Text_shader* text_shader = Shader::Text_shader::get_instance();
+    Character_Render* rc = Character_Render::get_instance();
     static int fps = 0;
     double current_time = glfwGetTime();
     if(std::abs(current_time - std::round(current_time)) < 0.01)
         fps = (1.0 / Globals::delta_time);
-    text_renderer.render_text(*text_shader, "FPS: " + std::to_string(fps), 
+    rc->render_text(*text_shader, "FPS: " + std::to_string(fps), 
         Globals::camera.width() - 135, 
         Globals::camera.height() - 40, .65f, {0.f, 1.f, 0.05f});
 }

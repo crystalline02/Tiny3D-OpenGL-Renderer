@@ -54,7 +54,7 @@ FBO_debuger::FBO_debuger(int width, int height)
 
 FBO_debuger* FBO_debuger::get_instance(int width, int height)
 {
-    return instance ? instance : new FBO_debuger(width, height);
+    return instance ? instance : (instance = new FBO_debuger(width, height));
 }
 
 void FBO_debuger::draw(const Shader::FBO_debuger& shader, GLuint texture_unit)

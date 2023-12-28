@@ -415,7 +415,7 @@ void Shader::Post_proc::set_uniforms(GLuint image_unit, GLuint blured_image_unit
 
 Shader::Post_proc *Shader::Post_proc::get_instance()
 {
-    return instance ? instance : new Post_proc();
+    return instance ? instance : (instance = new Post_proc());
 }
 
 Shader::Bloom_blur* Shader::Bloom_blur::instance = nullptr;
@@ -433,14 +433,14 @@ void Shader::Bloom_blur::set_uniforms(GLuint image_unit, bool horizental) const
 
 Shader::Bloom_blur *Shader::Bloom_blur::get_instance()
 {
-    return instance ? instance : new Bloom_blur();
+    return instance ? instance : (instance = new Bloom_blur());
 }
 
 Shader::SSAO_blur* Shader::SSAO_blur::instance = nullptr;
 
 Shader::SSAO_blur *Shader::SSAO_blur::get_instance()
 {
-    return instance ? instance : new SSAO_blur();
+    return instance ? instance : (instance = new SSAO_blur());
 }
 
 void Shader::SSAO_blur::set_uniforms() const
@@ -470,7 +470,7 @@ Shader::G_buffer::G_buffer() : Shader("./shader/G_buffer")
 
 Shader::G_buffer *Shader::G_buffer::get_instance()
 {
-    return instance ? instance : new G_buffer();
+    return instance ? instance : (instance = new G_buffer());
 }
 
 void Shader::SSAO::set_uniforms() const
@@ -487,7 +487,7 @@ void Shader::SSAO::set_uniforms() const
 
 Shader::SSAO *Shader::SSAO::get_instance()
 {
-    return instance ? instance : new SSAO();
+    return instance ? instance : (instance = new SSAO());
 }
 
 Shader::SSAO* Shader::SSAO::instance = nullptr;
@@ -544,7 +544,7 @@ void Shader::Lighting_pass::set_uniforms(const Camera &camera) const
 
 Shader::Lighting_pass *Shader::Lighting_pass::get_instance()
 {
-    return instance ? instance : new Lighting_pass();
+    return instance ? instance : (instance = new Lighting_pass());
 }
 
 Shader::Lighting_pass* Shader::Lighting_pass::instance = nullptr;
@@ -570,7 +570,7 @@ void Shader::HDRI2cubemap::set_uniforms(GLuint HDRI_map_unit, const glm::mat4& v
 
 Shader::HDRI2cubemap* Shader::HDRI2cubemap::get_instance()
 {
-    return instance ? instance : new HDRI2cubemap();
+    return instance ? instance : (instance = new HDRI2cubemap());
 }
 
 Shader::Cubemap2irradiance* Shader::Cubemap2irradiance::instance = nullptr;
@@ -582,7 +582,7 @@ Shader::Cubemap2irradiance::Cubemap2irradiance(): Shader("./shader/cubemap2irrad
 
 Shader::Cubemap2irradiance* Shader::Cubemap2irradiance::get_instance()
 {
-    return instance ? instance : new Cubemap2irradiance();
+    return instance ? instance : (instance = new Cubemap2irradiance());
 }
 
 void Shader::Cubemap2irradiance::set_uniforms(const glm::mat4& view, GLuint cubemap_unit) const
@@ -601,7 +601,7 @@ Shader::Cubemap_prefilter::Cubemap_prefilter(): Shader("./shader/cubemap_prefilt
 
 Shader::Cubemap_prefilter* Shader::Cubemap_prefilter::get_instance()
 {
-    return instance ? instance : new Cubemap_prefilter();
+    return instance ? instance : (instance = new Cubemap_prefilter());
 }
 
 void Shader::Cubemap_prefilter::set_uniforms(const glm::mat4& view, GLuint cubemap_unit, float roughness) const
@@ -622,7 +622,7 @@ Shader::Cubemap_BRDFIntergral::Cubemap_BRDFIntergral(): Shader("./shader/cubemap
 
 Shader::Cubemap_BRDFIntergral* Shader::Cubemap_BRDFIntergral::get_instance()
 {
-    return instance ? instance : new Cubemap_BRDFIntergral();
+    return instance ? instance : (instance = new Cubemap_BRDFIntergral());
 }
 
 
@@ -640,7 +640,7 @@ Shader::FBO_debuger::FBO_debuger(): Shader("./shader/FBO_debuger")
 
 Shader::FBO_debuger* Shader::FBO_debuger::get_instance()
 {
-    return instance ? instance : new FBO_debuger();
+    return instance ? instance : (instance = new FBO_debuger());
 }
 
 void Shader::FBO_debuger::set_uniforms(GLuint tex_unit, const glm::mat4& model) const
@@ -658,7 +658,7 @@ Shader::Text_shader::Text_shader(): Shader("./shader/text_shader")
 
 Shader::Text_shader* Shader::Text_shader::get_instance()
 {
-    return instance ? instance : new Text_shader();
+    return instance ? instance : (instance = new Text_shader());
 }
 
 void Shader::Text_shader::set_uniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const

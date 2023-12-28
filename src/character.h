@@ -27,12 +27,17 @@ struct Character
 class Character_Render
 {
 public:
-    Character_Render(const char* font);
     void render_text(const Shader::Text_shader& shader, std::string texts, float x, float y, float scale, 
         const glm::vec3& color) const;
+    void set_projection(int window_w, int window_h);
+    void init_fonts(const char* font);
+    
+    static Character_Render* get_instance();
 private:
+    Character_Render();
     glm::mat4 m_projection;
     GLuint VAO, VBO;
     std::unordered_map<char, Character> m_characters;
-    void init_fonts(const char* font);
+
+    static Character_Render* instance;
 };

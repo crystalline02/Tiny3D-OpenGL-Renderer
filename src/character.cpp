@@ -11,16 +11,28 @@
 #include "globals.h"
 #include "camera.h"
 
-Character_Render::Character_Render(const char* font)
+Character_Render* Character_Render::instance = nullptr;
+
+Character_Render* Character_Render::get_instance()
 {
-    init_fonts(font);
+    return instance ? instance : (instance = new Character_Render());
+}
+
+Character_Render::Character_Render()
+{
     m_projection = glm::ortho<float>(0.f, util::Globals::camera.width(), 0.f, util::Globals::camera.height());
+}
+
+void Character_Render::set_projection(int window_w, int window_h)
+{
+    m_projection = glm::ortho(0.f, (float)window_w, 0.f, (float)window_h);
 }
 
 void Character_Render::render_text(const Shader::Text_shader& shader, std::string texts, float x, float y, 
     float scale, const glm::vec3& color) const
 {
-    assert(shader.shader_name() == "./shader/text_shader"); 
+    assert(shader.shader_name() == "./shader/text_shader");
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindVertexArray(VAO);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
