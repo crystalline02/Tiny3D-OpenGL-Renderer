@@ -57,7 +57,7 @@ void Character_Render::render_text(const Shader::Text_shader& shader, std::strin
         };
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 6 * 4, data);
         glEnableVertexAttribArray(0);
-        shader.set_uniforms(m_projection, color, ch.texture->texunit);
+        shader.set_uniforms(m_projection, color, ch.texture.texunit);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         x += (ch.advance >> 6) * scale;
     }
@@ -92,13 +92,13 @@ void Character_Render::init_fonts(const char* font)
             std::cout << "ERROR::FREETYPE: Could not load character " << c << ".\n";
             exit(1);
         }
-        Texture* character_tex = new Texture();
-        glGenTextures(1, &character_tex->texbuffer);
-        character_tex->texname = c;
-        character_tex->texunit = Model::fatch_new_texunit();
-        glActiveTexture(GL_TEXTURE0 + character_tex->texunit);
-        glBindTexture(GL_TEXTURE_2D, character_tex->texbuffer);
-        Model::add_texture(character_tex->texname.c_str(), *character_tex);
+        Texture character_tex;;
+        glGenTextures(1, &character_tex.texbuffer);
+        character_tex.texname = c;
+        character_tex.texunit = Model::fatch_new_texunit();
+        glActiveTexture(GL_TEXTURE0 + character_tex.texunit);
+        glBindTexture(GL_TEXTURE_2D, character_tex.texbuffer);
+        Model::add_texture(character_tex.texname.c_str(), character_tex);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows,
             0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -106,7 +106,7 @@ void Character_Render::init_fonts(const char* font)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        character.texture = new Texture(*character_tex);
+        character.texture = character_tex;
         character.size = {face->glyph->bitmap.width, face->glyph->bitmap.rows};
         character.bearing = {face->glyph->bitmap_left, face->glyph->bitmap_top};
         character.advance = face->glyph->advance.x;

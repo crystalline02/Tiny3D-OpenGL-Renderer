@@ -22,6 +22,7 @@
 #include "skybox.h"
 #include "globals.h"
 #include "fbo_debuger.h"
+#include "fbo_manager.h"
 
 int main(int argc, char** argv)
 {
@@ -105,7 +106,7 @@ int main(int argc, char** argv)
 	Spot_light light6(glm::vec3(-2.f, -2.6f, -1.5f), glm::vec3(2.25f, 1.91f, 2.27f), glm::vec3(.5f, .5f, .5f), 15.0f);
 
 	// Scene framebuffer for postprocessing
-	util::gen_FBOs();
+	FBO_Manager::gen_window_FBOs();
 	while(!glfwWindowShouldClose(window))
 	{
 		// Process input
@@ -117,20 +118,7 @@ int main(int argc, char** argv)
 		ImGui::NewFrame();
 
 		// Rendering preperation, mainly clearing framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);  // 设置ClearColor的值
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);  // 使用ClearColor的值来clearGL_COLOR_BUFFER_BIT,GL_DEPTH_BUFFER_BIT默认为1.f，GL_STENCIL_BUFFER_BIT默认为0
-		glBindFramebuffer(GL_FRAMEBUFFER, util::Globals::scene_fbo_ms);
-		glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		if(util::Globals::deferred_rendering)
-		{
-			glBindFramebuffer(GL_FRAMEBUFFER, util::Globals::Gbuffer_fbo);
-			glClearColor(util::Globals::bg_color.x, util::Globals::bg_color.y, util::Globals::bg_color.z, 0.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
+		FBO_Manager::clear_buffers();
 		glEnable(GL_MULTISAMPLE); 
 		Shader::Shader::update_uniform_blocks(util::Globals::camera);
 		// glm::mat4 model_mat(1.f);
@@ -147,29 +135,30 @@ int main(int argc, char** argv)
 		{
 			model.gbuffer_pass(*Shader::G_buffer::get_instance(), 
 				util::Globals::camera, 
-				util::Globals::Gbuffer_fbo);
+				FBO_Manager::FBO_Data::windows_sized_fbos["Gemometry fbo"].fbo);
 			Postproc_quad::get_instance()->lighting_pass(*Shader::Lighting_pass::get_instance(), 
-				util::Globals::camera, 
-				util::Globals::scene_fbo_ms);
+				util::Globals::camera,
+				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
 			if(util::Globals::SSAO)
 			{
 				Postproc_quad::get_instance()->ssao_pass(*Shader::SSAO::get_instance(), 
 					*Shader::SSAO_blur::get_instance(), 
-					util::Globals::ssao_fbo, 
-					util::Globals::ssao_blur_fbo);
+					FBO_Manager::FBO_Data::windows_sized_fbos["SSAO fbo"].fbo, 
+					FBO_Manager::FBO_Data::windows_sized_fbos["SSAO blur fbo"].fbo);
 			}
 			model.forward_tranparent(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, 
 				util::Globals::camera, 
-				util::Globals::scene_fbo_ms);
+				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
 		}
 		else
 			model.draw(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, 
 				util::Globals::camera, 
-				util::Globals::scene_fbo_ms);
+				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
 
 		// Draw skybox
 		if(util::Globals::skybox) 
-			Skybox::get_instance()->draw(skybox_shader, util::Globals::camera, util::Globals::scene_fbo_ms);
+			Skybox::get_instance()->draw(skybox_shader, util::Globals::camera, 
+				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
 
 		// Post process
 		Postproc_quad::get_instance()->draw(*Shader::Post_proc::get_instance());
@@ -189,8 +178,8 @@ int main(int argc, char** argv)
 			model.draw_tangent(tangent_shader, util::Globals::camera);
 
 		// Draw frambuffer debuger window
-/* 		FBO_debuger::get_instance(util::Globals::camera.width(), util::Globals::camera.height())
-			->draw(*Shader::FBO_debuger::get_instance(), util::Globals::G_color_units[0]); */
+		/* FBO_debuger::get_instance(util::Globals::camera.width(), util::Globals::camera.height())
+			->draw(*Shader::FBO_debuger::get_instance(), Model::get_texture("scene fbo color attachments[0]").texunit); */
 
 		// Imgui user interface design
 		util::imgui_design(model);

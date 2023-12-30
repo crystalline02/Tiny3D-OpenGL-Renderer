@@ -9,6 +9,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/renderer.dir/src/character.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj"
   "CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj.d"
+  "CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj"
+  "CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/globals.cpp.obj"
   "CMakeFiles/renderer.dir/src/globals.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/light.cpp.obj"
@@ -27,6 +29,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/renderer.dir/src/shader.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/skybox.cpp.obj"
   "CMakeFiles/renderer.dir/src/skybox.cpp.obj.d"
+  "CMakeFiles/renderer.dir/src/texture.cpp.obj"
+  "CMakeFiles/renderer.dir/src/texture.cpp.obj.d"
 )
 
 # Per-language clean rules from dependency scanning.

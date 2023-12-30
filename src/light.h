@@ -5,6 +5,8 @@
 #include <vector>
 #include <array>
 
+#include "texture.h"
+
 enum class Light_type{ POINT, SUN, SPOT };
 
 namespace Shader
@@ -50,7 +52,7 @@ public:
     float m_intensity, m_diffuse, m_specular, m_ambient, m_near, m_far;
     glm::vec3 m_color, m_position;
     GLuint m_depth_fbo;
-    Texture* m_depth_texture;
+    Texture m_depth_texture;
     unsigned int m_index;
 };
 

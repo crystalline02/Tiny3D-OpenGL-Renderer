@@ -213,6 +213,30 @@ src/fbo_debuger.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/fbo_debuger.cpp.s
 .PHONY : src/fbo_debuger.cpp.s
 
+src/fbo_manager.obj: src/fbo_manager.cpp.obj
+.PHONY : src/fbo_manager.obj
+
+# target to build an object file
+src/fbo_manager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj
+.PHONY : src/fbo_manager.cpp.obj
+
+src/fbo_manager.i: src/fbo_manager.cpp.i
+.PHONY : src/fbo_manager.i
+
+# target to preprocess a source file
+src/fbo_manager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/fbo_manager.cpp.i
+.PHONY : src/fbo_manager.cpp.i
+
+src/fbo_manager.s: src/fbo_manager.cpp.s
+.PHONY : src/fbo_manager.s
+
+# target to generate assembly for a file
+src/fbo_manager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/fbo_manager.cpp.s
+.PHONY : src/fbo_manager.cpp.s
+
 src/globals.obj: src/globals.cpp.obj
 .PHONY : src/globals.obj
 
@@ -429,6 +453,30 @@ src/skybox.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/skybox.cpp.s
 .PHONY : src/skybox.cpp.s
 
+src/texture.obj: src/texture.cpp.obj
+.PHONY : src/texture.obj
+
+# target to build an object file
+src/texture.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/texture.cpp.obj
+.PHONY : src/texture.cpp.obj
+
+src/texture.i: src/texture.cpp.i
+.PHONY : src/texture.i
+
+# target to preprocess a source file
+src/texture.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/texture.cpp.i
+.PHONY : src/texture.cpp.i
+
+src/texture.s: src/texture.cpp.s
+.PHONY : src/texture.s
+
+# target to generate assembly for a file
+src/texture.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\renderer.dir\build.make CMakeFiles/renderer.dir/src/texture.cpp.s
+.PHONY : src/texture.cpp.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -448,6 +496,9 @@ help:
 	@echo ... src/fbo_debuger.obj
 	@echo ... src/fbo_debuger.i
 	@echo ... src/fbo_debuger.s
+	@echo ... src/fbo_manager.obj
+	@echo ... src/fbo_manager.i
+	@echo ... src/fbo_manager.s
 	@echo ... src/globals.obj
 	@echo ... src/globals.i
 	@echo ... src/globals.s
@@ -475,6 +526,9 @@ help:
 	@echo ... src/skybox.obj
 	@echo ... src/skybox.i
 	@echo ... src/skybox.s
+	@echo ... src/texture.obj
+	@echo ... src/texture.i
+	@echo ... src/texture.s
 .PHONY : help
 
 

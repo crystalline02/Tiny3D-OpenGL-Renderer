@@ -9,8 +9,8 @@
 #include <unordered_map>
 #include <string>
 
+#include "texture.h"
 
-struct Texture;
 namespace Shader
 {
     class Text_shader;
@@ -18,7 +18,7 @@ namespace Shader
 
 struct Character
 {
-    Texture* texture;
+    Texture texture;
     glm::ivec2 size;
     glm::ivec2 bearing;
     unsigned int advance;

@@ -16,7 +16,7 @@ Light::Light(const glm::vec3& positon,
     float specular,
     float ambient):
 m_intensity(intensity), m_diffuse(diffuse), m_specular(specular), m_ambient(ambient), m_color(color), m_position(positon),
-m_near(.1f), m_far(10.f), m_depth_fbo(-1), m_depth_texture(new Texture())
+m_near(.1f), m_far(10.f), m_depth_fbo(-1), m_depth_texture()
 {
     get_lights().emplace_back(this);
 }
@@ -77,7 +77,7 @@ Light(positon, color, intensity, diffuse, specular), kc(1.0f), kl(0.35f), kq(0.4
     {
         unsigned int& c = Light::point_lights_count();
         m_index = c++;
-        util::create_depthcubemap_framebuffer(m_depth_fbo, *m_depth_texture, 
+        util::create_depthcubemap_framebuffer(m_depth_fbo, m_depth_texture, 
             ("light_depth_map" + std::to_string(Light::lights_count())).c_str());
     }
 }
@@ -99,13 +99,13 @@ void Point_light::set_uniforms(const char* name, GLuint program) const
     util::set_float(light_kq.c_str(), kq, program);
     util::set_float(light_near.c_str(), m_near, program);
     util::set_float(light_far.c_str(), m_far, program);
-    util::set_int(light_depthcubemap.c_str(), m_depth_texture->texunit, program);
+    util::set_int(light_depthcubemap.c_str(), m_depth_texture.texunit, program);
 }
 
 void Point_light::resize_depthmap(int shadow_size) const
 {
-    glActiveTexture(GL_TEXTURE0 + m_depth_texture->texunit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_depth_texture->texbuffer);
+    glActiveTexture(GL_TEXTURE0 + m_depth_texture.texunit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_depth_texture.texbuffer);
     for(unsigned int i = 0; i < 6; ++i)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, util::Globals::cubemap_size, 
             util::Globals::cubemap_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
@@ -136,7 +136,7 @@ Light(positon, color, intensity, diffuse, specular), m_direction(glm::normalize(
     unsigned int& c = Light::direction_lights_count();
     m_index = c++;
     // Bind depth map, create depth framebuffer
-    util::create_cascademap_framebuffer(m_depth_fbo, *m_depth_texture, 
+    util::create_cascademap_framebuffer(m_depth_fbo, m_depth_texture, 
         ("light_depth_map" + std::to_string(Light::lights_count())).c_str());
 }
 
@@ -147,7 +147,7 @@ void Direction_light::set_uniforms(const char* name, GLuint program) const
     std::string light_direction = (prefix + std::string("direction"));
     std::string light_cascade_maps = (prefix + std::string("cascade_maps"));
     util::set_floats(light_direction.c_str(), m_direction, program);
-    util::set_int(light_cascade_maps.c_str(), m_depth_texture->texunit, program);
+    util::set_int(light_cascade_maps.c_str(), m_depth_texture.texunit, program);
 }
 
 std::vector<glm::mat4> Direction_light::light_space_mat(const Camera& camera) const
@@ -197,8 +197,8 @@ std::vector<glm::mat4> Direction_light::light_space_mat(const Camera& camera) co
 
 void Direction_light::resize_depthmap(int shadow_size) const
 {
-    glActiveTexture(GL_TEXTURE0 + m_depth_texture->texunit);
-    glBindTexture(GL_TEXTURE_2D, m_depth_texture->texbuffer);
+    glActiveTexture(GL_TEXTURE0 + m_depth_texture.texunit);
+    glBindTexture(GL_TEXTURE_2D, m_depth_texture.texbuffer);
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32, util::Globals::cascade_size, util::Globals::cascade_size,
         util::Globals::cascade_levels.size() + 1, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     glActiveTexture(GL_TEXTURE0);
@@ -217,7 +217,7 @@ m_outer(glm::radians(35.5f))
 {
     unsigned int& c = Light::spot_lights_count();
     m_index = c++;
-    util::create_depthcubemap_framebuffer(m_depth_fbo, *m_depth_texture, 
+    util::create_depthcubemap_framebuffer(m_depth_fbo, m_depth_texture, 
         ("light_depth_map" + std::to_string(Light::lights_count())).c_str());
 }
 

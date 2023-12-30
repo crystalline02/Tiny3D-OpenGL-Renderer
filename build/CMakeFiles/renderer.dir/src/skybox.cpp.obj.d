@@ -390,6 +390,7 @@ CMakeFiles/renderer.dir/src/skybox.cpp.obj: \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/erase_if.h \
  C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\character.h \
  C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/include/GLFW/glfw3.h \
+ C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\texture.h \
  C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\model.h \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/map \
  C:/library_cpp/MinGW/x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_tree.h \

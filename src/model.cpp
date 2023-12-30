@@ -248,7 +248,7 @@ Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
 Texture Model::get_texture(const char* texname)
 {
     std::unordered_map<std::string, Texture>::iterator it = loaded_textures.find(texname);
-    if(it == loaded_textures.end()) return Texture("Null texture", -1, -1);
+    if(it == loaded_textures.end()) return Texture("Null texture", 0, 0);
     else return it->second;
 }
 

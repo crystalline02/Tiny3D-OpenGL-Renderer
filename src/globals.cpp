@@ -8,9 +8,10 @@
 #include "skybox.h"
 #include "quad.h"
 #include "material.h"
+#include "fbo_manager.h"
 
 #include <chrono>
-#include <random>
+#include <memory>
 
 #include <imgui.h>
 
@@ -43,18 +44,7 @@ float util::Globals::normal_magnitude = 0.2f,
     util::Globals::ssao_radius = 0.15f;
 int util::Globals::cascade_size = 1024,
     util::Globals::cubemap_size = 1024;
-GLuint util::Globals::scene_fbo_ms,
-    util::Globals::scene_unit[2],
-    util::Globals::pingpong_fbos[2],
-    util::Globals::pingpong_colorbuffers_units[2],
-    util::Globals::blur_brightimage_unit,
-    util::Globals::Gbuffer_fbo,
-    util::Globals::G_color_units[5],
-    util::Globals::ssao_fbo,
-    util::Globals::ssao_color_unit,
-    util::Globals::ssao_noisetex_unit,
-    util::Globals::ssao_blur_fbo,
-    util::Globals::ssao_blur_unit;
+GLuint util::Globals::blur_brightimage_unit;
 
 // Camera util::Globals::camera(1920, 1080, glm::vec3(0.f, 2.f, 6.f), -90.f, 0.f, 45.f, 0.1f, 100.f, glm::vec3(0.f, 1.f, 0.f));
 Camera util::Globals::camera = Camera(1920, 1080, glm::vec3(0.f), 4.f);
@@ -99,6 +89,7 @@ void util::framebuffer_size_callback(GLFWwindow* window, int width, int height)
     util::Globals::camera.set_height(height);
 
     Character_Render::get_instance()->set_projection(width, height);
+    FBO_Manager::regen_window_FBOs();
 }
 
 void util::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -622,51 +613,6 @@ void util::create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT)
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms\n";
 }
 
-void util::create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units)
-{
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-    GLuint color_attachments[2];
-    glGenTextures(2, color_attachments);
-    for(unsigned int i = 0; i < 2; ++i)
-    {
-        scene_units[i] = Model::fatch_new_texunit();
-        std::string tex_name = "scene fbo color attachments" + std::to_string(i);
-        Model::add_texture(tex_name.c_str(), Texture(tex_name, scene_units[i], color_attachments[i]));
-        glActiveTexture(GL_TEXTURE0 + scene_units[i]);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, color_attachments[i]);
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F,
-            util::Globals::camera.width(), util::Globals::camera.height(), GL_TRUE);
-        // It's invalid to set below texture paramerters for GL_TEXTURE_2D_MULTISAMPLE, otherwise GL_INVALID_ENUM error will be raised.
-        // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        // glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D_MULTISAMPLE, color_attachments[i], 0);
-    }
-
-    GLuint rbo;
-    glGenRenderbuffers(1, &rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8,
-        util::Globals::camera.width(), util::Globals::camera.height());
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-    // Announcing that we will draw on 2 color attachments
-    unsigned int draw_buffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-    glDrawBuffers(2, draw_buffers);
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "Model framebuffer incomplete!\n";
-        exit(1);
-    }
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 void util::imgui_design(Model& model)
 {
     ImGui::Begin("Settings");
@@ -900,140 +846,6 @@ std::array<glm::vec3, 64> util::get_ssao_samples()
     return samples;
 }
 
-void util::gen_FBOs()
-{
-    create_scene_framebuffer_ms(Globals::scene_fbo_ms, Globals::scene_unit);
-    create_pingpong_framebuffer_ms(Globals::pingpong_fbos, Globals::pingpong_colorbuffers_units);
-    create_G_frambuffer(Globals::Gbuffer_fbo, Globals::G_color_units);
-    create_ssao_framebuffer(Globals::ssao_fbo, Globals::ssao_blur_fbo,
-        Globals::ssao_color_unit, Globals::ssao_blur_unit, Globals::ssao_noisetex_unit);
-}
-
-void util::create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units)
-{
-    glGenFramebuffers(1, &G_fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, G_fbo);
-
-    GLuint g_position, g_normal_depth, g_surface_normal, g_albedo_specular, g_ambient;
-    glGenTextures(1, &g_position);
-    G_color_units[0] = Model::fatch_new_texunit();
-    Model::add_texture("G buffer position buffer", Texture("G buffer position buffer", G_color_units[0],
-        g_position));
-    glActiveTexture(GL_TEXTURE0 + G_color_units[0]);
-    glBindTexture(GL_TEXTURE_2D, g_position);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
-        0, GL_RGBA, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, g_position, 0);
-
-    glGenTextures(1, &g_normal_depth);
-    G_color_units[1] = Model::fatch_new_texunit();
-    Model::add_texture("G buffer normal buffer", Texture("G buffer normal buffer", G_color_units[1],
-        g_normal_depth));
-    glActiveTexture(GL_TEXTURE0 + G_color_units[1]);
-    glBindTexture(GL_TEXTURE_2D, g_normal_depth);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
-        0, GL_RGBA, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, g_normal_depth, 0);
-
-    glGenTextures(1, &g_surface_normal);
-    G_color_units[2] = Model::fatch_new_texunit();
-    Model::add_texture("G buffer surface normal buffer", Texture("G buffer surface normal buffer",
-        G_color_units[2], g_surface_normal));
-    glActiveTexture(GL_TEXTURE0 + G_color_units[2]);
-    glBindTexture(GL_TEXTURE_2D, g_surface_normal);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, util::Globals::camera.width(), util::Globals::camera.height(),
-        0, GL_RGBA, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, g_surface_normal, 0);
-
-    glGenTextures(1, &g_albedo_specular);
-    G_color_units[3] = Model::fatch_new_texunit();
-    Model::add_texture("G buffer albedo_specular buffer", Texture("G buffer albedo_specular buffer",
-         G_color_units[3], g_albedo_specular));
-    glActiveTexture(GL_TEXTURE0 + G_color_units[3]);
-    glBindTexture(GL_TEXTURE_2D, g_albedo_specular);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, util::Globals::camera.width(), util::Globals::camera.height(),
-        0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, g_albedo_specular, 0);
-
-    glGenTextures(1, &g_ambient);
-    G_color_units[4] = Model::fatch_new_texunit();
-    Model::add_texture("G buffer ambient buffer", Texture("G buffer ambient buffer", G_color_units[4], g_ambient));
-    glActiveTexture(GL_TEXTURE0 + G_color_units[4]);
-    glBindTexture(GL_TEXTURE_2D, g_ambient);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, util::Globals::camera.width(), util::Globals::camera.height(),
-        0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, g_ambient, 0);
-
-    unsigned int color_attachments[5] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-    glDrawBuffers(5, color_attachments);
-
-    GLuint g_rbo;
-    glGenRenderbuffers(1, &g_rbo);
-    glBindRenderbuffer(GL_RENDERBUFFER, g_rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, util::Globals::camera.width(), util::Globals::camera.height());
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, g_rbo);
-
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "G framebuffer incomplete!\n";
-        exit(1);
-    }
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void util::create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint *pingpong_texture_units)
-{
-    GLuint pingpong_color_attchments[2];
-    glGenFramebuffers(2, pingpong_fbos);
-    glGenTextures(2, pingpong_color_attchments);
-    for(int i = 0; i < 2; ++i)
-    {
-        glBindFramebuffer(GL_FRAMEBUFFER, pingpong_fbos[i]);
-        pingpong_texture_units[i] = Model::fatch_new_texunit();
-        std::string tex_name = "pingpong color attchment" + std::to_string(i);
-        Model::add_texture(tex_name.c_str(), Texture(tex_name, pingpong_texture_units[i],
-            pingpong_color_attchments[i]));
-        glActiveTexture(GL_TEXTURE0 + pingpong_texture_units[i]);
-        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, pingpong_color_attchments[i]);
-        // pingpong fbo的color buffer需要16bit的，这是因为我们主要用pingpong fbo来做blur，初始给pingpong fbo
-        // 的birghtness image就是16bit的（scene fbo），最终blur的结果也应该是16bit的
-        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA16F,
-            util::Globals::camera.width(), util::Globals::camera.height(), GL_TRUE);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, pingpong_color_attchments[i], 0);
-        // No need for depth or stencil attachment as what we only care about is color buffer
-        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::cout << "Pingpong frame buffer incomplete!\n";
-            exit(1);
-        }
-    }
-    glActiveTexture(GL_TEXTURE0);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 void util::create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, const char* tex_name)
 {
     Texture tex_fatch = Model::get_texture(tex_name);
@@ -1110,66 +922,6 @@ void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, 
         std::cout << "Depth framebuffer incomplete!\n";
         exit(1);
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void util::create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo, GLuint &ssao_color_unit,
-    GLuint &ssao_blur_unit, GLuint &ssao_noisetex_unit)
-{
-    // create ssao_noisetex used to generate random vector to generate tiled TBN matrix for placing the ssao samples
-    std::array<glm::vec3, 16> rand_vector;
-    std::uniform_real_distribution<float> rand(0.f, 1.f);
-    std::default_random_engine generator;
-    for(int i = 0; i < 16; ++i)
-    {
-        rand_vector[i] = glm::vec3(rand(generator) * 2.f - 1.f,
-            rand(generator) * 2.f - 1.f,
-            0.f);
-    }
-
-    GLuint noise_texid;
-    glGenTextures(1, &noise_texid);
-    ssao_noisetex_unit = Model::fatch_new_texunit();
-    Model::add_texture("SSAO noisetex", Texture("SSAO noisetex", ssao_noisetex_unit, noise_texid));
-    glActiveTexture(GL_TEXTURE0 + ssao_noisetex_unit);
-    glBindTexture(GL_TEXTURE_2D, noise_texid);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &rand_vector[0]);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-    // create ssao framebuffer
-    glGenFramebuffers(1, &ssao_fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, ssao_fbo);
-    GLuint ssao_color_buffer;
-    glGenTextures(1, &ssao_color_buffer);
-    ssao_color_unit = Model::fatch_new_texunit();
-    Model::add_texture("SSAO color buffer", Texture("SSAO color buffer", ssao_color_unit, ssao_color_buffer));
-    glActiveTexture(GL_TEXTURE0 + ssao_color_unit);
-    glBindTexture(GL_TEXTURE_2D, ssao_color_buffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, util::Globals::camera.width(), util::Globals::camera.height(),
-        0, GL_RED, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssao_color_buffer, 0);
-
-    // create ssao_blur framebuffer
-    glGenFramebuffers(1, &ssao_blur_fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, ssao_blur_fbo);
-    GLuint ssao_blur_buffer;
-    glGenTextures(1, &ssao_blur_buffer);
-    ssao_blur_unit = Model::fatch_new_texunit();
-    Model::add_texture("SSAO blur buffer", Texture("SSAO blur buffer", ssao_blur_unit, ssao_blur_buffer));
-    glActiveTexture(GL_TEXTURE0 + ssao_blur_unit);
-    glBindTexture(GL_TEXTURE_2D, ssao_blur_buffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, util::Globals::camera.width(), util::Globals::camera.height(), 0,
-        GL_RED, GL_FLOAT, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssao_blur_buffer, 0);
-
-    glActiveTexture(GL_TEXTURE0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

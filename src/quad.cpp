@@ -1,7 +1,11 @@
 #include "quad.h"
+
 #include "globals.h"
 #include "camera.h"
 #include "shader.h"
+#include "model.h"
+#include "fbo_manager.h"
+#include "material.h"
 
 Postproc_quad* Postproc_quad::instance = nullptr;
 
@@ -19,13 +23,13 @@ void Postproc_quad::draw(const Shader::Post_proc& shader) const
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     shader.use();
-    shader.set_uniforms(util::Globals::scene_unit[0], util::Globals::blur_brightimage_unit);
+    shader.set_uniforms(Model::get_texture("scene fbo color attachments[0]").texunit, util::Globals::blur_brightimage_unit);
     glBindVertexArray(quad_VAO);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // Dump depth information from scene fbo to default fbo
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, util::Globals::scene_fbo_ms);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBlitFramebuffer(0, 0, util::Globals::camera.width(), util::Globals::camera.height(),
         0, 0, util::Globals::camera.width(), util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
@@ -44,7 +48,7 @@ void Postproc_quad::lighting_pass(const Shader::Lighting_pass &shader, const Cam
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // Dump depth information from GBuffer fbo to current light_pass fbo
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, util::Globals::Gbuffer_fbo);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO_Manager::FBO_Data::windows_sized_fbos["Gemometry fbo"].fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
     glBlitFramebuffer(0, 0, util::Globals::camera.width(), util::Globals::camera.height(),
         0, 0, util::Globals::camera.width(), util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
@@ -87,16 +91,18 @@ void Postproc_quad::run_blur(const Shader::Bloom_blur &shader, GLuint &blur_buff
     for(int i = 0; i < amount; ++i)
     {
         // 现在要blur的结果要存在哪个fbo的color attachment中
-        glBindFramebuffer(GL_FRAMEBUFFER, util::Globals::pingpong_fbos[horizental]);
+        glBindFramebuffer(GL_FRAMEBUFFER, 
+            FBO_Manager::FBO_Data::windows_sized_fbos["pingpng fbo[" + std::to_string(int(horizental)) + "]"].fbo);
         glBindVertexArray(quad_VAO);
         for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
         shader.use();
         // 现在要blur哪个fbo的color attachment
-        shader.set_uniforms(i == 0 ? util::Globals::scene_unit[1] : util::Globals::pingpong_colorbuffers_units[!horizental], horizental);
+        shader.set_uniforms(i == 0 ? Model::get_texture("scene fbo color attachments[1]").texunit : 
+            Model::get_texture(("pingpong color attchment[" + std::to_string(int(!horizental)) + "]").c_str()).texunit, horizental);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         horizental = !horizental;
     }
-    blur_buffer_unit = util::Globals::pingpong_colorbuffers_units[0];
+    blur_buffer_unit = Model::get_texture("pingpong color attchment[0]").texunit;
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindVertexArray(0);

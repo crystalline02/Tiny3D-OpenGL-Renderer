@@ -113,11 +113,26 @@ CMakeFiles/renderer.dir/src/fbo_debuger.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/renderer.dir/src/fbo_debuger.cpp.s"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\fbo_debuger.cpp -o CMakeFiles\renderer.dir\src\fbo_debuger.cpp.s
 
+CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj: CMakeFiles/renderer.dir/flags.make
+CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
+CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/fbo_manager.cpp
+CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj"
+	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj -MF CMakeFiles\renderer.dir\src\fbo_manager.cpp.obj.d -o CMakeFiles\renderer.dir\src\fbo_manager.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\fbo_manager.cpp
+
+CMakeFiles/renderer.dir/src/fbo_manager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/renderer.dir/src/fbo_manager.cpp.i"
+	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\fbo_manager.cpp > CMakeFiles\renderer.dir\src\fbo_manager.cpp.i
+
+CMakeFiles/renderer.dir/src/fbo_manager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/renderer.dir/src/fbo_manager.cpp.s"
+	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\fbo_manager.cpp -o CMakeFiles\renderer.dir\src\fbo_manager.cpp.s
+
 CMakeFiles/renderer.dir/src/globals.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/globals.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/globals.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/globals.cpp
 CMakeFiles/renderer.dir/src/globals.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/renderer.dir/src/globals.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/renderer.dir/src/globals.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/globals.cpp.obj -MF CMakeFiles\renderer.dir\src\globals.cpp.obj.d -o CMakeFiles\renderer.dir\src\globals.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\globals.cpp
 
 CMakeFiles/renderer.dir/src/globals.cpp.i: cmake_force
@@ -132,7 +147,7 @@ CMakeFiles/renderer.dir/src/light.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/light.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/light.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/light.cpp
 CMakeFiles/renderer.dir/src/light.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/renderer.dir/src/light.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/renderer.dir/src/light.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/light.cpp.obj -MF CMakeFiles\renderer.dir\src\light.cpp.obj.d -o CMakeFiles\renderer.dir\src\light.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\light.cpp
 
 CMakeFiles/renderer.dir/src/light.cpp.i: cmake_force
@@ -147,7 +162,7 @@ CMakeFiles/renderer.dir/src/main.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/main.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/main.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/main.cpp
 CMakeFiles/renderer.dir/src/main.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/renderer.dir/src/main.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/renderer.dir/src/main.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/main.cpp.obj -MF CMakeFiles\renderer.dir\src\main.cpp.obj.d -o CMakeFiles\renderer.dir\src\main.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\main.cpp
 
 CMakeFiles/renderer.dir/src/main.cpp.i: cmake_force
@@ -162,7 +177,7 @@ CMakeFiles/renderer.dir/src/material.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/material.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/material.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/material.cpp
 CMakeFiles/renderer.dir/src/material.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/renderer.dir/src/material.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/renderer.dir/src/material.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/material.cpp.obj -MF CMakeFiles\renderer.dir\src\material.cpp.obj.d -o CMakeFiles\renderer.dir\src\material.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\material.cpp
 
 CMakeFiles/renderer.dir/src/material.cpp.i: cmake_force
@@ -177,7 +192,7 @@ CMakeFiles/renderer.dir/src/mesh.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/mesh.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/mesh.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/mesh.cpp
 CMakeFiles/renderer.dir/src/mesh.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/renderer.dir/src/mesh.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/renderer.dir/src/mesh.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/mesh.cpp.obj -MF CMakeFiles\renderer.dir\src\mesh.cpp.obj.d -o CMakeFiles\renderer.dir\src\mesh.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\mesh.cpp
 
 CMakeFiles/renderer.dir/src/mesh.cpp.i: cmake_force
@@ -192,7 +207,7 @@ CMakeFiles/renderer.dir/src/model.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/model.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/model.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/model.cpp
 CMakeFiles/renderer.dir/src/model.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/renderer.dir/src/model.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/renderer.dir/src/model.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/model.cpp.obj -MF CMakeFiles\renderer.dir\src\model.cpp.obj.d -o CMakeFiles\renderer.dir\src\model.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\model.cpp
 
 CMakeFiles/renderer.dir/src/model.cpp.i: cmake_force
@@ -207,7 +222,7 @@ CMakeFiles/renderer.dir/src/quad.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/quad.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/quad.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/quad.cpp
 CMakeFiles/renderer.dir/src/quad.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/renderer.dir/src/quad.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/renderer.dir/src/quad.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/quad.cpp.obj -MF CMakeFiles\renderer.dir\src\quad.cpp.obj.d -o CMakeFiles\renderer.dir\src\quad.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\quad.cpp
 
 CMakeFiles/renderer.dir/src/quad.cpp.i: cmake_force
@@ -222,7 +237,7 @@ CMakeFiles/renderer.dir/src/shader.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/shader.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/shader.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/shader.cpp
 CMakeFiles/renderer.dir/src/shader.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/renderer.dir/src/shader.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/renderer.dir/src/shader.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/shader.cpp.obj -MF CMakeFiles\renderer.dir\src\shader.cpp.obj.d -o CMakeFiles\renderer.dir\src\shader.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\shader.cpp
 
 CMakeFiles/renderer.dir/src/shader.cpp.i: cmake_force
@@ -237,7 +252,7 @@ CMakeFiles/renderer.dir/src/skybox.cpp.obj: CMakeFiles/renderer.dir/flags.make
 CMakeFiles/renderer.dir/src/skybox.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
 CMakeFiles/renderer.dir/src/skybox.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/skybox.cpp
 CMakeFiles/renderer.dir/src/skybox.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/renderer.dir/src/skybox.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/renderer.dir/src/skybox.cpp.obj"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/skybox.cpp.obj -MF CMakeFiles\renderer.dir\src\skybox.cpp.obj.d -o CMakeFiles\renderer.dir\src\skybox.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\skybox.cpp
 
 CMakeFiles/renderer.dir/src/skybox.cpp.i: cmake_force
@@ -248,11 +263,27 @@ CMakeFiles/renderer.dir/src/skybox.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/renderer.dir/src/skybox.cpp.s"
 	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\skybox.cpp -o CMakeFiles\renderer.dir\src\skybox.cpp.s
 
+CMakeFiles/renderer.dir/src/texture.cpp.obj: CMakeFiles/renderer.dir/flags.make
+CMakeFiles/renderer.dir/src/texture.cpp.obj: CMakeFiles/renderer.dir/includes_CXX.rsp
+CMakeFiles/renderer.dir/src/texture.cpp.obj: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/src/texture.cpp
+CMakeFiles/renderer.dir/src/texture.cpp.obj: CMakeFiles/renderer.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/renderer.dir/src/texture.cpp.obj"
+	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/renderer.dir/src/texture.cpp.obj -MF CMakeFiles\renderer.dir\src\texture.cpp.obj.d -o CMakeFiles\renderer.dir\src\texture.cpp.obj -c C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\texture.cpp
+
+CMakeFiles/renderer.dir/src/texture.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/renderer.dir/src/texture.cpp.i"
+	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\texture.cpp > CMakeFiles\renderer.dir\src\texture.cpp.i
+
+CMakeFiles/renderer.dir/src/texture.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/renderer.dir/src/texture.cpp.s"
+	C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\src\texture.cpp -o CMakeFiles\renderer.dir\src\texture.cpp.s
+
 # Object files for target renderer
 renderer_OBJECTS = \
 "CMakeFiles/renderer.dir/src/camera.cpp.obj" \
 "CMakeFiles/renderer.dir/src/character.cpp.obj" \
 "CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj" \
+"CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj" \
 "CMakeFiles/renderer.dir/src/globals.cpp.obj" \
 "CMakeFiles/renderer.dir/src/light.cpp.obj" \
 "CMakeFiles/renderer.dir/src/main.cpp.obj" \
@@ -261,7 +292,8 @@ renderer_OBJECTS = \
 "CMakeFiles/renderer.dir/src/model.cpp.obj" \
 "CMakeFiles/renderer.dir/src/quad.cpp.obj" \
 "CMakeFiles/renderer.dir/src/shader.cpp.obj" \
-"CMakeFiles/renderer.dir/src/skybox.cpp.obj"
+"CMakeFiles/renderer.dir/src/skybox.cpp.obj" \
+"CMakeFiles/renderer.dir/src/texture.cpp.obj"
 
 # External object files for target renderer
 renderer_EXTERNAL_OBJECTS =
@@ -269,6 +301,7 @@ renderer_EXTERNAL_OBJECTS =
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/camera.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/character.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/fbo_debuger.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/fbo_manager.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/globals.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/light.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/main.cpp.obj
@@ -278,6 +311,7 @@ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.e
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/quad.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/shader.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/skybox.cpp.obj
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/src/texture.cpp.obj
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/build.make
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/lib/libassimp.dll.a
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/lib/libglad.a
@@ -287,7 +321,7 @@ C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.e
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/linkLibs.rsp
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/objects1.rsp
 C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe: CMakeFiles/renderer.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\bin\renderer.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable C:\Users\ZhenKou\OneDrive\project\opengl_learn\renderer_opengl1.7\bin\renderer.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\renderer.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

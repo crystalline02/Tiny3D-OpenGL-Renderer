@@ -445,7 +445,7 @@ Shader::SSAO_blur *Shader::SSAO_blur::get_instance()
 
 void Shader::SSAO_blur::set_uniforms() const
 {
-    util::set_int("ssao_buffer", util::Globals::ssao_color_unit, program_id);
+    util::set_int("ssao_buffer", Model::get_texture("SSAO color buffer").texunit, program_id);
 }
 
 Shader::SSAO_blur::SSAO_blur() : Shader("./shader/ssao_blur")
@@ -475,9 +475,9 @@ Shader::G_buffer *Shader::G_buffer::get_instance()
 
 void Shader::SSAO::set_uniforms() const
 {
-    util::set_int("position_buffer", util::Globals::G_color_units[0], program_id);
-    util::set_int("surface_normal", util::Globals::G_color_units[2], program_id);
-    util::set_int("noise_tex", util::Globals::ssao_noisetex_unit, program_id);
+    util::set_int("position_buffer", Model::get_texture("G buffer position buffer").texunit, program_id);
+    util::set_int("surface_normal", Model::get_texture("G buffer surface normal buffer").texunit, program_id);
+    util::set_int("noise_tex", Model::get_texture("SSAO noisetex").texunit, program_id);
     util::set_float("radius", util::Globals::ssao_radius, program_id);
     // Here I take samples when assigning uniforms, which means smaples differs per rendering frame per fragment
     std::array<glm::vec3, 64> samples = util::get_ssao_samples();
@@ -499,12 +499,12 @@ Shader::SSAO::SSAO() : Shader("./shader/ssao")
 
 void Shader::Lighting_pass::set_uniforms(const Camera &camera) const
 {
-    util::set_int("position_buffer", util::Globals::G_color_units[0], program_id);
-    util::set_int("normal_depth", util::Globals::G_color_units[1], program_id);
-    util::set_int("surface_normal", util::Globals::G_color_units[2], program_id);
-    util::set_int("albedo_specular", util::Globals::G_color_units[3], program_id);
-    util::set_int("ambient_buffer", util::Globals::G_color_units[4], program_id);
-    util::set_int("ssao_buffer", util::Globals::ssao_blur_unit, program_id);
+    util::set_int("position_buffer", Model::get_texture("G buffer position buffer").texunit, program_id);
+    util::set_int("normal_depth", Model::get_texture("G buffer normal_depth buffer").texunit, program_id);
+    util::set_int("surface_normal", Model::get_texture("G buffer surface normal buffer").texunit, program_id);
+    util::set_int("albedo_specular", Model::get_texture("G buffer albedo_specular buffer").texunit, program_id);
+    util::set_int("ambient_buffer", Model::get_texture("G buffer ambient buffer").texunit, program_id);
+    util::set_int("ssao_buffer", Model::get_texture("SSAO color buffer").texunit, program_id);
     util::set_int("point_lights_count", Light::point_lights_count(), program_id);
     util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
     util::set_int("direction_lights_count", Light::direction_lights_count(), program_id);

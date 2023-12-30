@@ -40,9 +40,7 @@ namespace util
             hdr, bloom, deferred_rendering, SSAO, pbr_mat;
         static double last_xpos, last_ypos;
         static int cascade_size, cubemap_size;
-        static GLuint scene_fbo_ms, scene_unit[2], pingpong_fbos[2], pingpong_colorbuffers_units[2], 
-            blur_brightimage_unit, Gbuffer_fbo, G_color_units[5], ssao_fbo, ssao_color_unit, ssao_noisetex_unit,
-            ssao_blur_fbo, ssao_blur_unit;
+        static GLuint blur_brightimage_unit;
         static Camera camera;
         static double delta_time, last_time;
         static float normal_magnitude, shadow_bias, tangent_magnitude, exposure, threshold, ssao_radius;
@@ -96,7 +94,7 @@ namespace util
         for(int i = 0; i < 3; ++i)
         {
             for(int j = 0; j < 3; ++j)
-                std::cout << mat[i][j] << " ";
+                std::cout << mat[j][i] << " ";
             std::cout << "\n";
         }
     }
@@ -142,13 +140,8 @@ namespace util
         if(location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(mat3)); 
     }
 
-    void gen_FBOs();
-    void create_G_frambuffer(GLuint &G_fbo, GLuint *G_color_units);
-    void create_pingpong_framebuffer_ms(GLuint *pingpong_fbos, GLuint* pingpong_texture_units);
     void create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, const char* tex_name);
     void create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, const char* tex_name);
-    void create_ssao_framebuffer(GLuint &ssao_fbo, GLuint &ssao_blur_fbo,
-        GLuint &ssao_color_unit, GLuint &ssao_blur_unit, GLuint &ssao_noisetex_unit);
     void create_HDRI(const char* path, Texture& texture);
     void create_texture(const char* path, bool is_SRGB, Texture& texture);
     void create_cubemap(const std::vector<std::string>& faces_path,
@@ -164,7 +157,6 @@ namespace util
     void create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irrad_tex);
     void create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefiltered_envmap);
     void create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT);
-    void create_scene_framebuffer_ms(GLuint& fbo, GLuint* scene_units);
     void imgui_design(Model &model);
     std::array<glm::vec3, 64> get_ssao_samples();
     std::array<glm::vec3, 8> get_frustum_corner_world(const Camera& camera, float near, float far);
