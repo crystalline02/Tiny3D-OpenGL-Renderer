@@ -95,7 +95,7 @@ void FBO_Manager::create_G_frambuffer()
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, albedo_specular_tex.texbuffer, 0);
     fbo_struct.textures.push_back(albedo_specular_tex);
 
-    ambient_tex.texname = "G buffer ambient buffer";
+    ambient_tex.texname = "G buffer ambient_metalic buffer";
     glGenTextures(1, &ambient_tex.texbuffer);
     ambient_tex.texunit = Model::fatch_new_texunit();
     Model::add_texture(ambient_tex.texname.c_str(), ambient_tex);

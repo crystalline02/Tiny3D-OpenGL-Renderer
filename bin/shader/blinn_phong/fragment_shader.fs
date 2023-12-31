@@ -50,14 +50,6 @@ struct Point_light
     samplerCube depth_cubemap;  // sub common
 };
 
-struct Skybox
-{
-    samplerCube cubemap;
-    float intensity;
-    bool use;
-    bool affect_scene;
-};
-
 struct Spot_light
 {
     vec3 position;  // sub common
@@ -102,7 +94,6 @@ layout(std140, Binding = 2) uniform Light_matrices
 uniform bool bloom;
 uniform float threshold;
 uniform float bias;
-uniform Skybox skybox;
 uniform vec3 view_pos;
 uniform Material material;
 
@@ -125,7 +116,6 @@ vec3 caculate_point_light(Point_light light, Material material);
 vec3 caculate_spot_light(Spot_light light, Material material);
 vec3 caculate_direction_light(Direction_light light, Material material, int index);
 
-vec3 caculate_skybox(Skybox skybox, Material material);
 float linearize_depth(float fdepth, float near, float far);
 float get_viewdepth(float fdepth, float near, float far);
 vec3 get_shading_normal(Material material, vec2 texture_coord);
@@ -170,7 +160,6 @@ void main()
         result += caculate_spot_light(spot_lights[i], material);
     }
     result += ambient;
-    result += caculate_skybox(skybox, material);
     
     float alpha = material.use_opacity_map ? texture(material.opacity_maps[0], fs_in.texture_coord).r : material.opacity;
     result = gamma_correct(result);
@@ -243,20 +232,6 @@ vec3 caculate_direction_light(Direction_light light, Material material, int inde
     vec3 diffuse = kd * light.intensity * max(dot(light_dir, normal), 0.f) * light.color * light.diffuse;
     vec3 specular = ks * light.intensity * pow(max(dot(h, normal), 0.f), 32) * light.color * light.specular;
     return (diffuse + specular) * n_shadow;
-}
-
-vec3 caculate_skybox(Skybox skybox, Material material)
-{
-    if(!skybox.use) return vec3(0.f);
-    if(!skybox.affect_scene) return vec3(0.f);
-    vec3 eye_dir = normalize(vec3(fs_in.frag_pos) - view_pos);
-    vec2 texture_coord = get_parallax_mapping_texturecoord(fs_in.texture_coord, material, -eye_dir);
-    vec3 normal = get_shading_normal(material, texture_coord);
-    vec3 relfect_dir = reflect(eye_dir, normal);
-    
-    vec3 kd = material.use_diffuse_map ? vec3(texture(material.diffuse_maps[0], texture_coord)) : material.diffuse_color;
-    float coffi = max(dot(-eye_dir, fs_in.frag_normal), 0);
-    return vec3(texture(skybox.cubemap, relfect_dir)) * kd * skybox.intensity * coffi;
 }
 
 float linearize_depth(float fdepth, float near, float far)

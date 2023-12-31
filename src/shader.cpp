@@ -231,6 +231,7 @@ void Shader::Blinn_phong::set_uniforms(const Material& material, const Camera& c
     util::set_mat("model", model, program_id);
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);
     util::set_floats("view_pos", camera.position(), program_id);
+    material.set_uniforms("material", program_id);
     util::set_float("bias", util::Globals::shadow_bias, program_id);
     std::vector<Light*> all_lights = Light::get_lights();
     for(Light*& light : all_lights)
@@ -264,8 +265,6 @@ void Shader::Blinn_phong::set_uniforms(const Material& material, const Camera& c
     for(int i = 0; i < util::Globals::cascade_levels.size(); ++i)
         util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], program_id);
     util::set_int("cascade_count", int(util::Globals::cascade_levels.size()) + 1, program_id);
-    material.set_uniforms("material", program_id);
-    Skybox::set_uniforms("skybox", camera, program_id);
 }
 
 Shader::PBR::PBR(): Object_shader("./shader/physically_based")
@@ -461,16 +460,32 @@ void Shader::G_buffer::set_uniforms(const Material &material, const Camera &came
     util::set_floats("view_pos", camera.position(), program_id);
 }
 
-Shader::G_buffer* Shader::G_buffer::instance = nullptr;
-
-Shader::G_buffer::G_buffer() : Shader("./shader/G_buffer")
+Shader::G_buffer::G_buffer(std::string dir_path): Shader(dir_path)
 {
     
 }
 
-Shader::G_buffer *Shader::G_buffer::get_instance()
+Shader::G_buffer_BP* Shader::G_buffer_BP::instance = nullptr;
+
+Shader::G_buffer_BP::G_buffer_BP(): G_buffer("./shader/G_buffer_BP")
 {
-    return instance ? instance : (instance = new G_buffer());
+    
+}
+
+Shader::G_buffer_BP* Shader::G_buffer_BP::get_instance()
+{
+    return instance ? instance : (instance = new G_buffer_BP()); 
+}
+Shader::G_buffer_PBR* Shader::G_buffer_PBR::instance = nullptr;
+
+Shader::G_buffer_PBR::G_buffer_PBR(): G_buffer("./shader/G_buffer_PBR")
+{
+
+}
+
+Shader::G_buffer_PBR *Shader::G_buffer_PBR::get_instance()
+{
+    return instance ? instance : (instance = new G_buffer_PBR());
 }
 
 void Shader::SSAO::set_uniforms() const
@@ -503,7 +518,7 @@ void Shader::Lighting_pass::set_uniforms(const Camera &camera) const
     util::set_int("normal_depth", Model::get_texture("G buffer normal_depth buffer").texunit, program_id);
     util::set_int("surface_normal", Model::get_texture("G buffer surface normal buffer").texunit, program_id);
     util::set_int("albedo_specular", Model::get_texture("G buffer albedo_specular buffer").texunit, program_id);
-    util::set_int("ambient_buffer", Model::get_texture("G buffer ambient buffer").texunit, program_id);
+    util::set_int("ambient_metalic", Model::get_texture("G buffer ambient_metalic buffer").texunit, program_id);
     util::set_int("ssao_buffer", Model::get_texture("SSAO color buffer").texunit, program_id);
     util::set_int("point_lights_count", Light::point_lights_count(), program_id);
     util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
@@ -542,16 +557,33 @@ void Shader::Lighting_pass::set_uniforms(const Camera &camera) const
     util::set_bool("ssao", util::Globals::SSAO, program_id);
 }
 
-Shader::Lighting_pass *Shader::Lighting_pass::get_instance()
-{
-    return instance ? instance : (instance = new Lighting_pass());
-}
-
-Shader::Lighting_pass* Shader::Lighting_pass::instance = nullptr;
-
-Shader::Lighting_pass::Lighting_pass(): Shader("./shader/lighting_pass")
+Shader::Lighting_pass::Lighting_pass(std::string dir_path): Shader(dir_path)
 {
     
+}
+
+Shader::Lighting_pass_BP* Shader::Lighting_pass_BP::instance = nullptr;
+
+Shader::Lighting_pass_BP* Shader::Lighting_pass_BP::get_instance()
+{
+    return instance ? instance : (instance = new Lighting_pass_BP());
+}
+
+Shader::Lighting_pass_BP::Lighting_pass_BP(): Lighting_pass("./shader/lighting_pass_BP")
+{
+
+}
+
+Shader::Lighting_pass_PBR* Shader::Lighting_pass_PBR::instance = nullptr;
+
+Shader::Lighting_pass_PBR* Shader::Lighting_pass_PBR::get_instance()
+{
+    return instance ? instance : (instance = new Lighting_pass_PBR());
+}
+
+Shader::Lighting_pass_PBR::Lighting_pass_PBR(): Lighting_pass("./shader/lighting_pass_PBR")
+{
+
 }
 
 Shader::HDRI2cubemap* Shader::HDRI2cubemap::instance = nullptr;

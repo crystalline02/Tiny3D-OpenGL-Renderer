@@ -137,10 +137,26 @@ namespace Shader
     {
     public:
         void set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const;
-        static G_buffer* get_instance();
+    protected:
+        G_buffer(std::string dir_path);
+    };
+
+    class G_buffer_BP: public G_buffer
+    {
+    public:
+        static G_buffer_BP* get_instance();
+        G_buffer_BP();
     private:
-        G_buffer();
-        static G_buffer* instance;
+        static G_buffer_BP* instance;
+    };
+
+    class G_buffer_PBR: public G_buffer
+    {
+    public:
+        static G_buffer_PBR* get_instance();
+    private:
+        G_buffer_PBR();
+        static G_buffer_PBR* instance;
     };
 
     class SSAO: public Shader
@@ -157,10 +173,26 @@ namespace Shader
     {
     public:
         void set_uniforms(const Camera &camera) const;
-        static Lighting_pass* get_instance();
+    protected:
+        Lighting_pass(std::string dir_path);
+    };
+
+    class Lighting_pass_BP: public Lighting_pass
+    {
+    public:
+        static Lighting_pass_BP* get_instance();
     private:
-        Lighting_pass();
-        static Lighting_pass* instance;
+        static Lighting_pass_BP* instance;
+        Lighting_pass_BP();
+    };
+
+    class Lighting_pass_PBR: public Lighting_pass
+    {
+    public:
+        static Lighting_pass_PBR* get_instance();
+    private:
+        static Lighting_pass_PBR* instance;
+        Lighting_pass_PBR();
     };
 
     class HDRI2cubemap: public Shader

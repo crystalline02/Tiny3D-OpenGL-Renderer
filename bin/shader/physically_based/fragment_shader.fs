@@ -154,17 +154,11 @@ void main()
 
     vec3 result = vec3(0.f);
     for(int i = 0; i < point_lights_count; ++i)
-    {
         result += cac_point_light(point_lights[i], material);
-    }
     for(int i = 0; i < direction_lights_count; ++i)
-    {
         result += cac_direction_light(direction_lights[i], material, i);
-    }
     for(int i = 0; i < spot_lights_count; ++i)
-    {
         result += cac_spot_light(spot_lights[i], material);
-    }
     result += cac_env_irradiance(skybox, material);
 
     result = gamma_correct(result);

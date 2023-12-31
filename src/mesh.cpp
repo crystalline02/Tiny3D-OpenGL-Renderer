@@ -103,7 +103,7 @@ void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const
 
 void Mesh::draw_gbuffer(const Shader::G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const
 {
-    assert(shader.shader_name() == "./shader/G_buffer");
+    assert(shader.shader_name() == (util::Globals::pbr_mat ? "./shader/G_buffer_PBR" : "./shader/G_buffer_BP"));
     assert(fbo != 0);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);

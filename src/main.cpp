@@ -133,10 +133,10 @@ int main(int argc, char** argv)
 		// Draw model.If deferred rendering is enabled, we draw on g-buffers,if not we draw objects directly.
 		if(util::Globals::deferred_rendering)
 		{
-			model.gbuffer_pass(*Shader::G_buffer::get_instance(), 
+			model.gbuffer_pass(util::Globals::pbr_mat ? static_cast<Shader::G_buffer>(*Shader::G_buffer_PBR::get_instance()) : static_cast<Shader::G_buffer>(*Shader::G_buffer_BP::get_instance()), 
 				util::Globals::camera, 
 				FBO_Manager::FBO_Data::windows_sized_fbos["Gemometry fbo"].fbo);
-			Postproc_quad::get_instance()->lighting_pass(*Shader::Lighting_pass::get_instance(), 
+			Postproc_quad::get_instance()->lighting_pass(util::Globals::pbr_mat ? static_cast<Shader::Lighting_pass>(*Shader::Lighting_pass_PBR::get_instance()) : static_cast<Shader::Lighting_pass>(*Shader::Lighting_pass_BP::get_instance()), 
 				util::Globals::camera,
 				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
 			if(util::Globals::SSAO)
@@ -178,8 +178,8 @@ int main(int argc, char** argv)
 			model.draw_tangent(tangent_shader, util::Globals::camera);
 
 		// Draw frambuffer debuger window
-		/* FBO_debuger::get_instance(util::Globals::camera.width(), util::Globals::camera.height())
-			->draw(*Shader::FBO_debuger::get_instance(), Model::get_texture("scene fbo color attachments[0]").texunit); */
+		FBO_debuger::get_instance(util::Globals::camera.width(), util::Globals::camera.height())
+			->draw(*Shader::FBO_debuger::get_instance(), Model::get_texture("G buffer ambient_metalic buffer").texunit);
 
 		// Imgui user interface design
 		util::imgui_design(model);

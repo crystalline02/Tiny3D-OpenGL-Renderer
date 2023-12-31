@@ -39,7 +39,7 @@ void Postproc_quad::draw(const Shader::Post_proc& shader) const
 
 void Postproc_quad::lighting_pass(const Shader::Lighting_pass &shader, const Camera &camera, GLuint fbo) const
 {
-    assert(shader.shader_name() == "./shader/lighting_pass");
+    assert(util::Globals::pbr_mat ? shader.shader_name() == "./shader/lighting_pass_PBR" : shader.shader_name() == "./shader/lighting_pass_BP");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glBindVertexArray(quad_VAO);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
