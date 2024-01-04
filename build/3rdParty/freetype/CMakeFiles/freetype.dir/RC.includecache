@@ -1,0 +1,12 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.8/3rdParty/freetype/src/base/ftver.rc
+windows.h
+-
+
