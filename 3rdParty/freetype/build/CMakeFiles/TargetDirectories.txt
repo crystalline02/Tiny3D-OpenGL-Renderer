@@ -1,0 +1,9 @@
+D:/git_main/freetype-2.13.2/build/CMakeFiles/freetype.dir
+D:/git_main/freetype-2.13.2/build/CMakeFiles/package.dir
+D:/git_main/freetype-2.13.2/build/CMakeFiles/package_source.dir
+D:/git_main/freetype-2.13.2/build/CMakeFiles/edit_cache.dir
+D:/git_main/freetype-2.13.2/build/CMakeFiles/rebuild_cache.dir
+D:/git_main/freetype-2.13.2/build/CMakeFiles/list_install_components.dir
+D:/git_main/freetype-2.13.2/build/CMakeFiles/install.dir
+D:/git_main/freetype-2.13.2/build/CMakeFiles/install/local.dir
+D:/git_main/freetype-2.13.2/build/CMakeFiles/install/strip.dir

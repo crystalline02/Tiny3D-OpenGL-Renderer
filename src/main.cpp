@@ -178,8 +178,8 @@ int main(int argc, char** argv)
 			model.draw_tangent(tangent_shader, util::Globals::camera);
 
 		// Draw frambuffer debuger window
-		FBO_debuger::get_instance(util::Globals::camera.width(), util::Globals::camera.height())
-			->draw(*Shader::FBO_debuger::get_instance(), Model::get_texture("G buffer ambient_metalic buffer").texunit);
+/* 		FBO_debuger::get_instance(util::Globals::camera.width(), util::Globals::camera.height())
+			->draw(*Shader::FBO_debuger::get_instance(), Model::get_texture("G buffer ambient_metalic buffer").texunit); */
 
 		// Imgui user interface design
 		util::imgui_design(model);

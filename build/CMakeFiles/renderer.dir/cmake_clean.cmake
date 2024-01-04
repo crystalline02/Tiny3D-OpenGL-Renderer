@@ -1,8 +1,7 @@
 file(REMOVE_RECURSE
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/librenderer.dll.a"
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe"
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.exe.manifest"
-  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.7/bin/renderer.pdb"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.8/bin/renderer.exe"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.8/bin/renderer.exe.manifest"
+  "C:/Users/ZhenKou/OneDrive/project/opengl_learn/renderer_opengl1.8/bin/renderer.pdb"
   "CMakeFiles/renderer.dir/src/camera.cpp.obj"
   "CMakeFiles/renderer.dir/src/camera.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/character.cpp.obj"
@@ -31,6 +30,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/renderer.dir/src/skybox.cpp.obj.d"
   "CMakeFiles/renderer.dir/src/texture.cpp.obj"
   "CMakeFiles/renderer.dir/src/texture.cpp.obj.d"
+  "librenderer.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -77,7 +77,7 @@ void Character_Render::init_fonts(const char* font)
 	FT_Face face;
 	if(FT_New_Face(ft, font, 0, &face))
 	{
-		std::cout << "ERROR:FREETYPE: Could not load font from './Fonts/arial.ttf'.\n";
+		std::cout << "ERROR:FREETYPE: Could not load font from "<< font << ".\n";
 		exit(1);
 	}
 	FT_Set_Pixel_Sizes(face, 0, 48);
