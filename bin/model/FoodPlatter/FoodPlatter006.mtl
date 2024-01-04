@@ -1,0 +1,101 @@
+# Blender 3.5.1 MTL File: 'FoodPlatter006.blend'
+# www.blender.org
+
+newmtl BreadBaguetteFrenchSlice001_1K
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd BreadBaguetteFrenchSlice001_COL_1K.jpg
+map_Ks BreadBaguetteFrenchSlice001_REFL_1K.jpg
+map_Bump -bm 1.000000 BreadBaguetteFrenchSlice001_NRM_1K.jpg
+
+newmtl CheeseBrieWedge001_1K
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd CheeseBrieWedge001_COL_1K.jpg
+map_Ks CheeseBrieWedge001_REFL_1K.jpg
+map_Bump -bm 1.000000 CheeseBrieWedge001_NRM_1K.jpg
+
+newmtl CuttingBoard002_2K
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd CuttingBoard002_COL_2K.jpg
+map_Ks CuttingBoard002_REFL_2K.jpg
+map_Bump -bm 1.000000 CuttingBoard002_NRM_2K.jpg
+
+newmtl FruitFigs001_1K
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd FruitFigs001_COL_1K.jpg
+map_Ks FruitFigs001_REFL_1K.jpg
+map_Bump -bm 1.000000 FruitFigs001_NRM_1K.jpg
+
+newmtl FruitFigsHalves001_1K
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd FruitFigsHalves001_COL_1K.jpg
+map_Ks FruitFigsHalves001_REFL_1K.jpg
+map_Bump -bm 1.000000 FruitFigsHalves001_NRM_1K.jpg
+
+newmtl KnifeCheese001_1K
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd KnifeCheese001_COL_1K_METALNESS.jpg
+map_Ns KnifeCheese001_ROUGHNESS_1K_METALNESS.jpg
+map_refl KnifeCheese001_METALNESS_1K_METALNESS.jpg
+map_Bump -bm 1.000000 KnifeCheese001_NRM_1K_METALNESS.png
+
+newmtl Material
+Ns 33.408321
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd GroundGrassGreen002_COL_1K.jpg
+map_Ks GroundGrassGreen002_REFL_1K.jpg
+map_Bump -bm 1.000000 GroundGrassGreen002_NRM_1K.jpg
+
+newmtl Material.001
+Ns 307.337921
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd blending_transparent_window_albedo.jpg
+map_d blending_transparent_window_alpha.png
+
+newmtl Material.002
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+illum 2
+map_Kd TexturesCom_Grass12_1K_albedo.jpg
+map_d TexturesCom_Grass12_1K_alpha.png
+map_Bump -bm 1.000000 TexturesCom_Grass12_1K_normal.jpg

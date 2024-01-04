@@ -1,0 +1,47 @@
+# Blender 3.5.1 MTL File: 'CoffeeCart_01_4k.blend'
+# www.blender.org
+
+newmtl CoffeeCart_01_cart
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/CoffeeCart_01_cart_diff_4k.png
+map_Ks textures/CoffeeCart_01_cart_roughness_4k.png
+map_refl textures/CoffeeCart_01_cart_metallic_4k.png
+map_Bump -bm 1.000000 textures/CoffeeCart_01_cart_nor_gl_4k.png
+
+newmtl CoffeeCart_01_mugs
+Ns 714.793457
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl CoffeeCart_01_props
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/CoffeeCart_01_props_diff_4k.png
+map_Ks textures/CoffeeCart_01_props_roughness_4k.png
+map_refl textures/CoffeeCart_01_props_metallic_4k.png
+map_Bump -bm 1.000000 textures/CoffeeCart_01_props_nor_gl_4k.png
+
+newmtl Material
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd textures/TilesTerracottaBeigeSquareStacked001_COL_2K.jpg
+map_Ks textures/TilesTerracottaBeigeSquareStacked001_GLOSS_2K.jpg
+map_Bump -bm 1.000000 textures/TilesTerracottaBeigeSquareStacked001_NRM_2K.jpg
