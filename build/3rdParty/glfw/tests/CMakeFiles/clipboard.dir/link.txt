@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\clipboard.dir/objects.a
-C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\ar.exe qc CMakeFiles\clipboard.dir/objects.a @CMakeFiles\clipboard.dir\objects1.rsp
-C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\gcc.exe -g -Wl,--whole-archive CMakeFiles\clipboard.dir/objects.a -Wl,--no-whole-archive -o clipboard.exe -Wl,--out-implib,libclipboard.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\clipboard.dir\linkLibs.rsp

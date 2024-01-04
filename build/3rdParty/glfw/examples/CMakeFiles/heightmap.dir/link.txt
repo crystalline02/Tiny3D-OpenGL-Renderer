@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\heightmap.dir/objects.a
-C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\ar.exe qc CMakeFiles\heightmap.dir/objects.a @CMakeFiles\heightmap.dir\objects1.rsp
-C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\gcc.exe -g -mwindows -Wl,--whole-archive CMakeFiles\heightmap.dir/objects.a -Wl,--no-whole-archive -o heightmap.exe -Wl,--out-implib,libheightmap.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\heightmap.dir\linkLibs.rsp
