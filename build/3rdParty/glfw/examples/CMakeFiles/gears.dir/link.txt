@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\gears.dir/objects.a
-C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\ar.exe qc CMakeFiles\gears.dir/objects.a @CMakeFiles\gears.dir\objects1.rsp
-C:\library_cpp\MinGW\x86_64-13.1.0-release-posix-seh-ucrt-rt_v11-rev1\bin\gcc.exe -g -mwindows -Wl,--whole-archive CMakeFiles\gears.dir/objects.a -Wl,--no-whole-archive -o gears.exe -Wl,--out-implib,libgears.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\gears.dir\linkLibs.rsp
