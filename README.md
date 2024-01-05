@@ -1,6 +1,5 @@
 # Tiny3D-OpenGL-Renderer
-This is a project of opengl renderer imitating general 3D solfware like blender.
-# Technique
+This is a project of opengl renderer imitating general 3D solfware.In this project, I have implemented some basic algorithm regarding Computer Grahpics.They were listsed below.
 Transparent blending.
 
 Cubemap shadow mapping.
