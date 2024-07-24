@@ -129,7 +129,6 @@ int main(int argc, char** argv)
 
 		// Draw depth maps
 		model.draw_depthmaps(cascade_shader, depth_cube_shader);
-		
 		// Draw model.If deferred rendering is enabled, we draw on g-buffers,if not we draw objects directly.
 		if(util::Globals::deferred_rendering)
 		{

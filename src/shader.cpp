@@ -177,17 +177,20 @@ void Shader::Shader::set_single_color(const glm::vec3& color) const
 
 void Shader::Shader::update_uniform_blocks(const Camera& camera)
 {
+    // Uniform buffer for ViewProjection matrices 
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_matrices);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera.lookat()));  // Fill buffer for view matrix
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.projection()));  // Fill buffer for projection matrix
 
+    // Uniform buffeer for far&near floating point numbers
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_fn);
     float n = camera.near(), f = camera.far();
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(float), &f);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(float), sizeof(float), &n);
     
+    // Unifrom
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_light_matrices);
-   std::vector<Light*> all_lights = Light::get_lights(); 
+    std::vector<Light*> all_lights = Light::get_lights(); 
     for(Light*& light: all_lights)
     {
         if(light->type() == Light_type::SUN)

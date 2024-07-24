@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.30)
 project(renderer)
 
 add_subdirectory(./3rdParty)

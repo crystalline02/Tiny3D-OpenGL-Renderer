@@ -405,11 +405,7 @@ void util::create_cubemap(const char* hdri_path, Texture& hdri_cubemap_texture, 
         glBindFramebuffer(GL_FRAMEBUFFER, hdri2cubemap_fbo);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
             hdri_cubemap_texture.texbuffer, 0);
-        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::cout << "hdri2cubemap framebuffer incomplete!\n";
-            exit(1);
-        }
+        util::checkFrameBufferInComplete("HDRI2CubemapFbo");
         Skybox::get_instance()->draw_equirectangular_on_cubmap(*Shader::HDRI2cubemap::get_instance(), views[i],
             hdri_texture.texunit, hdri2cubemap_fbo);
     }
@@ -877,11 +873,7 @@ void util::create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, co
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_buffer, 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "Depth framebuffer incomplete!\n";
-        exit(1);
-    }
+    util::checkFrameBufferInComplete("CascadedShadowMapFbo");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glActiveTexture(GL_TEXTURE0);
 }
@@ -917,11 +909,7 @@ void util::create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, 
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depth_cubemap_buffer, 0);
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "Depth framebuffer incomplete!\n";
-        exit(1);
-    }
+    util::checkFrameBufferInComplete("DepthCubemapFBO");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

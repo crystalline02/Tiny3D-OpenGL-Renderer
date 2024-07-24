@@ -140,6 +140,15 @@ namespace util
         if(location != -1) glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(mat3)); 
     }
 
+    inline void checkFrameBufferInComplete(const char* fboName)
+    {
+        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            std::cerr << "FrameBuffer: [" << fboName << "] incomplete!Check your code!" << std::endl;
+            exit(1); 
+        }
+    }
+
     void create_cascademap_framebuffer(GLuint &depth_fbo, Texture &texture, const char* tex_name);
     void create_depthcubemap_framebuffer(GLuint& depth_fbo, Texture& texture, const char* tex_name);
     void create_HDRI(const char* path, Texture& texture);

@@ -117,11 +117,7 @@ void FBO_Manager::create_G_frambuffer()
 
     FBO_Manager::FBO_Data::windows_sized_fbos["Gemometry fbo"] = fbo_struct;
 
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "G framebuffer incomplete!\n";
-        exit(1);
-    }
+    util::checkFrameBufferInComplete("GBuffer");
 
     unsigned int color_attachments[5] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
     glDrawBuffers(5, color_attachments);
@@ -157,11 +153,7 @@ void FBO_Manager::create_pingpong_framebuffer_ms()
 
         fbo_struct[i].rbo = 0;
         
-        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::cout << "Pingpong frame buffer incomplete!\n";
-            exit(1);
-        }
+        util::checkFrameBufferInComplete("PingPongFrameBuffer");
         FBO_Manager::FBO_Data::windows_sized_fbos["pingpng fbo[" + std::to_string(i) + "]"] = fbo_struct[i];
     }
     glActiveTexture(GL_TEXTURE0);
@@ -285,11 +277,7 @@ void FBO_Manager::create_scene_framebuffer_ms()
     // Announcing that we will draw on 2 color attachments
     unsigned int draw_buffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
     glDrawBuffers(2, draw_buffers);
-    if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        std::cout << "Model framebuffer incomplete!\n";
-        exit(1);
-    }
+    util::checkFrameBufferInComplete("sceneMsFrmaeBuffer");
 
     glActiveTexture(GL_TEXTURE0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);

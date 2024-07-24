@@ -261,7 +261,10 @@ GLuint Model::fatch_new_texunit()
         ordered_unit.insert(it->second.texunit);
     GLuint texunit = 0;
     for(std::set<GLuint>::iterator it = ordered_unit.begin(); it != ordered_unit.end(); ++it)
+    {
         if(texunit == *it) ++texunit;
+        else break;
+    }
     return texunit;
 }
 
@@ -376,18 +379,16 @@ void Model::draw_depthmaps(const Shader::Cascade_map& cascade_shader, const Shad
         assert(light->depth_FBO() != -1);
         glBindFramebuffer(GL_FRAMEBUFFER, light->depth_FBO());
         glClear(GL_DEPTH_BUFFER_BIT);
-        if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        {
-            std::cout << "Depth framebuffer incompelete!\n";
-            exit(1);
-        }
+        util::checkFrameBufferInComplete("DepthFbo");
         if(light->type() == Light_type::SUN)
         {
+            // shadow pass for directional light
             glViewport(0, 0, util::Globals::cascade_size, util::Globals::cascade_size);
             for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(cascade_shader, *light, m_model_mat);
         }
         else
         {
+            // shadow pass for point light
             glViewport(0, 0, util::Globals::cubemap_size, util::Globals::cubemap_size);
             for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(depth_cube_shader, *light, m_model_mat);
         }

@@ -55,7 +55,7 @@ void main()
 
     position_buffer = fs_in.frag_position;  // world
 
-    vec3 normal = material.use_normal_map ? normalize(fs_in.TBN * (texture(material.normal_maps[0], texture_coord).rgb * 2.f - 1.f)) : normalize(fs_in.frag_normal);
+    vec3 normal = material.use_normal_map ? normalize(fs_in.TBN * (texture(material.normal_maps[0], texture_coord).rgb * 2.f - 1.f)) : normalize(fs_in.frag_normal);  // world
     if(material.use_normal_map)
         normal = normalize(normal * material.normal_map_strength + fs_in.TBN[2] * (1.f - material.normal_map_strength));
     normal_depth = vec4(normal, float(gl_FragCoord.z));  // world
