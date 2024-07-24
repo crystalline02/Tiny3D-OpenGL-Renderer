@@ -1,5 +1,5 @@
 # Tiny3D-OpenGL-Renderer
-This is a project of opengl renderer imitating general 3D solfware.In this project, I have implemented some basic algorithm regarding Computer Grahpics.They were listed below.
+This is a project of opengl renderer imitating general 3D solfware.In this project, I have implemented some basic algorithms regarding Computer Grahpics.They were listed below.
 # Features
 Transparent blending.
 
@@ -33,3 +33,6 @@ Geometry picking.
 Gizmo visualizing.
 Variance shadow mapping.
 Screen space reflection.
+Defferred Lighting.
+Weighted blended OIT.
+TAA.
