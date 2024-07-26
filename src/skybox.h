@@ -9,25 +9,25 @@
 class Camera;
 namespace Shader
 {
-    class Sky_cube;
+    class SkyCube;
     class HDRI2cubemap;
-    class Cubemap2irradiance;
-    class Cubemap_prefilter;
-    class Cubemap_BRDFIntergral;
+    class Cubemap2Irradiance;
+    class CubemapPrefilter;
+    class CubemapBRDFIntergral;
 }
 struct Texture;
 
 class Skybox
 {
 public:
-    void draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo = 0) const;
+    void draw(const Shader::SkyCube& shader, const Camera& camera, GLuint fbo = 0) const;
     void draw_equirectangular_on_cubmap(const Shader::HDRI2cubemap& shader, const glm::mat4& view, 
         GLuint hdri_unit, GLuint fbo) const;
-    void draw_irradiancemap(const Shader::Cubemap2irradiance& shader, const glm::mat4& view, 
+    void draw_irradiancemap(const Shader::Cubemap2Irradiance& shader, const glm::mat4& view, 
         GLuint cubemap_unit, GLuint fbo) const;
-    void prefilt_cubemap(const Shader::Cubemap_prefilter& shader, const glm::mat4& view, float roughness, 
+    void prefilt_cubemap(const Shader::CubemapPrefilter& shader, const glm::mat4& view, float roughness, 
         GLuint cubemap_unit, GLuint fbo, GLsizei width, GLsizei height) const;
-    void BRDF_LUT_intergral(const Shader::Cubemap_BRDFIntergral& shader, GLuint fbo, GLsizei width, GLsizei height) const;
+    void BRDF_LUT_intergral(const Shader::CubemapBRDFIntergral& shader, GLuint fbo, GLsizei width, GLsizei height) const;
     inline void change_dir(unsigned int id) { m_cur_id = id; }
     inline std::vector<std::string> directories() const { return m_directories; }
     inline unsigned int selected() { return m_cur_id; }

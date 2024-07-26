@@ -13,7 +13,7 @@
 
 namespace Shader
 {
-    class Text_shader;
+    class TextShader;
 }
 
 struct Character
@@ -24,20 +24,20 @@ struct Character
     unsigned int advance;
 };
 
-class Character_Render
+class CharacterRender
 {
 public:
-    void render_text(const Shader::Text_shader& shader, std::string texts, float x, float y, float scale, 
+    void render_text(const Shader::TextShader& shader, std::string texts, float x, float y, float scale, 
         const glm::vec3& color) const;
     void set_projection(int window_w, int window_h);
     void init_fonts(const char* font);
     
-    static Character_Render* get_instance();
+    static CharacterRender* getInstance();
 private:
-    Character_Render();
+    CharacterRender();
     glm::mat4 m_projection;
     GLuint VAO, VBO;
     std::unordered_map<char, Character> m_characters;
 
-    static Character_Render* instance;
+    static CharacterRender* instance;
 };

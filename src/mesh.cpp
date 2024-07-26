@@ -62,12 +62,12 @@ void Mesh::setup_mesh()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const glm::mat4& model, GLuint fbo) const
+void Mesh::forwardPass(const Shader::ObjectShader& shader, const Camera& camera, const glm::mat4& model, GLuint fbo) const
 {
-    if(m_material->mat_type() == Mat_type::Blinn_Phong)
-        assert(shader.shader_name() == "./shader/blinn_phong");
-    else if(m_material->mat_type() == Mat_type::PBR)
-        assert(shader.shader_name() == "./shader/physically_based");
+    if(m_material->matType() == Mat_type::Blinn_Phong)
+        assert(shader.shaderName() == "./shader/blinnPhong");
+    else if(m_material->matType() == Mat_type::PBR)
+        assert(shader.shaderName() == "./shader/physicallyBased");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     shader.use();
     // Render settings
@@ -79,9 +79,11 @@ void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const
         glStencilMask(0xFF);
     }
     glEnable(GL_DEPTH_TEST);
-    if(m_material->is_blend_mat() && m_isblend)
+    // I have sperated rendering of the transparent objects into a transparent pass, so the below code won't execute.
+    if(m_material->isTransparent() && m_isblend)
     {
         glEnable(GL_BLEND);
+        glDepthMask(GL_FALSE);
         glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
     }
     if(m_iscullface)
@@ -98,12 +100,13 @@ void Mesh::draw(const Shader::Object_shader& shader, const Camera& camera, const
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_STENCIL_TEST);
+    glDepthMask(GL_TRUE);
     glBindVertexArray(0);
 }
 
-void Mesh::draw_gbuffer(const Shader::G_buffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const
+void Mesh::gbufferPass(const Shader::GBuffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const
 {
-    assert(shader.shader_name() == (util::Globals::pbr_mat ? "./shader/G_buffer_PBR" : "./shader/G_buffer_BP"));
+    assert(shader.shaderName() == (util::Globals::pbr_mat ? "./shader/GBufferPBR" : "./shader/GBufferBP"));
     assert(fbo != 0);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);
@@ -119,14 +122,14 @@ void Mesh::draw_gbuffer(const Shader::G_buffer &shader, const Camera &camera, co
     glBindVertexArray(0);
 }
 
-bool Mesh::is_blend_mesh() const
+bool Mesh::isTransparent() const
 {
-    return m_material->is_blend_mat();
+    return m_material->isTransparent();
 }
 
-void Mesh::draw_normals(const Shader::Normal& shader, const Camera& camera, const glm::mat4& model) const
+void Mesh::forwardNormals(const Shader::Normal& shader, const Camera& camera, const glm::mat4& model) const
 {
-    assert(shader.shader_name() == "./shader/normal");
+    assert(shader.shaderName() == "./shader/normal");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(VAO_normal);
@@ -138,9 +141,9 @@ void Mesh::draw_normals(const Shader::Normal& shader, const Camera& camera, cons
     glDisable(GL_DEPTH_TEST);
 }
 
-void Mesh::draw_tangent(const Shader::Tangent_normal &shader, const Camera &camera, const glm::mat4 &model) const
+void Mesh::forwardTangent(const Shader::TangentNormal &shader, const Camera &camera, const glm::mat4 &model) const
 {
-    assert(shader.shader_name() == "./shader/tangent_normal");
+    assert(shader.shaderName() == "./shader/tangentNormal");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(VAO_tangent);
@@ -152,9 +155,9 @@ void Mesh::draw_tangent(const Shader::Tangent_normal &shader, const Camera &came
     glDisable(GL_DEPTH_TEST);
 }
 
-void Mesh::draw_outline(const Shader::Single_color& shader, const Camera& camera, const glm::mat4& model) const
+void Mesh::draw_outline(const Shader::SingleColor& shader, const Camera& camera, const glm::mat4& model) const
 {
-    assert(shader.shader_name() == "./shader/single_color");
+    assert(shader.shaderName() == "./shader/singleColor");
     if(!m_outlined) return;
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -172,10 +175,10 @@ void Mesh::draw_outline(const Shader::Single_color& shader, const Camera& camera
     glBindVertexArray(0);
 }
 
-void Mesh::draw_depthmap(const Shader::Depth_shader& depth_shader, const Light& light, const glm::mat4& model) const
+void Mesh::depthmapPass(const Shader::DepthShader& depth_shader, const Light& light, const glm::mat4& model) const
 {
-    if(light.type() == Light_type::SUN) assert(depth_shader.shader_name() == "./shader/cascade_map");
-    else if(light.type() == Light_type::POINT) assert(depth_shader.shader_name() == "./shader/depth_cubemap");
+    if(light.type() == Light_type::SUN) assert(depth_shader.shaderName() == "./shader/cascadeMap");
+    else if(light.type() == Light_type::POINT) assert(depth_shader.shaderName() == "./shader/depthCubemap");
     glEnable(GL_DEPTH_TEST);
     depth_shader.use();
     depth_shader.set_uniforms(model, light);
@@ -185,6 +188,29 @@ void Mesh::draw_depthmap(const Shader::Depth_shader& depth_shader, const Light& 
     
     glDisable(GL_DEPTH_TEST);
     glBindVertexArray(0);
+}
+
+void Mesh::transparentPass(const Shader::TransparentWBPBR& transShader, const Camera& camera, const glm::mat4& model, GLuint fbo) const
+{
+    assert(transShader.shaderName() == "./shader/transparentWBPBR");
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);  // disable depth writing!
+    glEnable(GL_BLEND);
+    glBlendFunci(0, GL_ONE, GL_ONE);
+    glBlendFunci(1, GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+
+    transShader.use();
+    transShader.setUniforms(*m_material, camera, model);
+    glBindVertexArray(VAO);
+    for(int i = 0; i < 4; ++i) glEnableVertexAttribArray(i);
+    glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, (void*)0);
+
+    glDepthMask(GL_TRUE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Mesh::clear()

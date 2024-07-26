@@ -6,18 +6,18 @@
 
 namespace Shader
 {
-    class FBO_debuger;
+    class FBODebuger;
 }
 
-class FBO_debuger
+class FBODebuger
 {
 public:
-    static FBO_debuger* get_instance(int width, int height);
-    void draw(const Shader::FBO_debuger& shader, GLuint texture_unit);
+    static FBODebuger* getInstance(int width, int height);
+    void draw(const Shader::FBODebuger& shader, GLuint texture_unit, bool alpha = false);
 private:
     GLuint VAO, VBO, EBO;
     glm::mat4 m_model;
     int m_window_w, m_window_h;
-    static FBO_debuger* instance;
-    FBO_debuger(int width, int height);
+    static FBODebuger* instance;
+    FBODebuger(int width, int height);
 };

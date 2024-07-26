@@ -1,6 +1,7 @@
 #version 460 core
 
 in vec2 texture_coord;
+// SSAO fbo
 out float FragColor;
 
 layout(std140) uniform Matrices

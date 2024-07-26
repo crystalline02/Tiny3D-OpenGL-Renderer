@@ -64,7 +64,7 @@ Shader::Shader::Shader(std::string dir_path): m_dir(dir_path)
             }
             geometry_shader_ss << geometry_shader_file.rdbuf();
             geometry_shader_str = geometry_shader_ss.str();
-            if(geometry_shader_path == "./shader/cascade_map/geometry_shader.gs")
+            if(geometry_shader_path == "./shader/cascadeMap/geometry_shader.gs")
             {
                 std::string invocation_replacement = "invocations = " + std::to_string(util::Globals::cascade_levels.size() + 1);
                 geometry_shader_str = geometry_shader_str.replace(geometry_shader_str.find("invocations = 1"), 
@@ -123,15 +123,15 @@ Shader::Shader::Shader(std::string dir_path): m_dir(dir_path)
         }
     }
 
-    program_id = glCreateProgram();
-    glAttachShader(program_id, vertex_shader_id);
-    glAttachShader(program_id, fragment_shader_id);
-    if(geometry_shader_id != -1) glAttachShader(program_id, geometry_shader_id);
-    glLinkProgram(program_id);
-    glGetProgramiv(program_id, GL_LINK_STATUS, &success);
+    programId = glCreateProgram();
+    glAttachShader(programId, vertex_shader_id);
+    glAttachShader(programId, fragment_shader_id);
+    if(geometry_shader_id != -1) glAttachShader(programId, geometry_shader_id);
+    glLinkProgram(programId);
+    glGetProgramiv(programId, GL_LINK_STATUS, &success);
     if(!success)
     {
-        glGetProgramInfoLog(program_id, 512, nullptr, infolog);
+        glGetProgramInfoLog(programId, 512, nullptr, infolog);
         std::cout << dir_path << " shader program link error:" << infolog << std::endl;
         exit(1);
     }
@@ -160,19 +160,19 @@ Shader::Shader::Shader(std::string dir_path): m_dir(dir_path)
 
 void Shader::Shader::set_material(const char* name, const Material& material) const
 {
-    material.set_uniforms(name, program_id);
+    material.set_uniforms(name, programId);
 }
 
 void Shader::Shader::set_globals() const
 {
-    util::set_float("near", util::Globals::camera.near(), program_id);
-    util::set_float("far", util::Globals::camera.far(), program_id);
-    util::set_float("bias", util::Globals::shadow_bias, program_id);
+    util::set_float("near", util::Globals::camera.near(), programId);
+    util::set_float("far", util::Globals::camera.far(), programId);
+    util::set_float("bias", util::Globals::shadow_bias, programId);
 }
 
-void Shader::Shader::set_single_color(const glm::vec3& color) const
+void Shader::Shader::setSingleColor(const glm::vec3& color) const
 {
-    util::set_floats("single_color", color, program_id);
+    util::set_floats("single_color", color, programId);
 }
 
 void Shader::Shader::update_uniform_blocks(const Camera& camera)
@@ -206,36 +206,36 @@ void Shader::Shader::update_uniform_blocks(const Camera& camera)
 
 void Shader::Shader::set_model(const glm::mat4& model) const
 {
-    util::set_mat("model", model, program_id);
+    util::set_mat("model", model, programId);
 }
 
 void Shader::Shader::set_normal_mat(const glm::mat4& model) const
 {
-    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);  // 要把normal转换到view space下，注意在glm中非常奇怪，矩阵乘法A * B在底层实现实际上是B * A
+    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), programId);  // 要把normal转换到view space下，注意在glm中非常奇怪，矩阵乘法A * B在底层实现实际上是B * A
 }
 
 void Shader::Shader::set_viewpos(const glm::vec3& view_pos) const
 {
-    util::set_floats("view_pos", view_pos, program_id);
+    util::set_floats("view_pos", view_pos, programId);
 }
 
-Shader::Object_shader::Object_shader(std::string dir_path): Shader(dir_path)
+Shader::ObjectShader::ObjectShader(std::string dir_path): Shader(dir_path)
 {
 
 }
 
-Shader::Blinn_phong::Blinn_phong(): Object_shader("./shader/blinn_phong") 
+Shader::BlinnPhong::BlinnPhong(): ObjectShader("./shader/blinnPhong") 
 {     
 
 }
 
-void Shader::Blinn_phong::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
+void Shader::BlinnPhong::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
 {
-    util::set_mat("model", model, program_id);
-    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);
-    util::set_floats("view_pos", camera.position(), program_id);
-    material.set_uniforms("material", program_id);
-    util::set_float("bias", util::Globals::shadow_bias, program_id);
+    util::set_mat("model", model, programId);
+    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), programId);
+    util::set_floats("view_pos", camera.position(), programId);
+    material.set_uniforms("material", programId);
+    util::set_float("bias", util::Globals::shadow_bias, programId);
     std::vector<Light*> all_lights = Light::get_lights();
     for(Light*& light : all_lights)
     {
@@ -243,42 +243,42 @@ void Shader::Blinn_phong::set_uniforms(const Material& material, const Camera& c
         {
         case Light_type::POINT:
         {
-            light->set_uniforms("point_lights", program_id);
+            light->set_uniforms("point_lights", programId);
             break;
         }
         case Light_type::SPOT:
         {
-            light->set_uniforms("spot_lights", program_id);
+            light->set_uniforms("spot_lights", programId);
             break;
         }
         case Light_type::SUN:
         {
-            light->set_uniforms("direction_lights", program_id);
+            light->set_uniforms("direction_lights", programId);
             break;
         }
         defalut:
             break;
         }
     }
-    util::set_bool("bloom", util::Globals::bloom, program_id);
-    util::set_float("threshold", util::Globals::threshold, program_id);
-    util::set_int("point_lights_count", Light::point_lights_count(), program_id);
-    util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
-    util::set_int("direction_lights_count", Light::direction_lights_count(), program_id);
+    util::set_bool("bloom", util::Globals::bloom, programId);
+    util::set_float("threshold", util::Globals::threshold, programId);
+    util::set_int("point_lights_count", Light::point_lights_count(), programId);
+    util::set_int("spot_lights_count", Light::spot_lights_count(), programId);
+    util::set_int("direction_lights_count", Light::direction_lights_count(), programId);
     for(int i = 0; i < util::Globals::cascade_levels.size(); ++i)
-        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], program_id);
-    util::set_int("cascade_count", int(util::Globals::cascade_levels.size()) + 1, program_id);
+        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], programId);
+    util::set_int("cascade_count", int(util::Globals::cascade_levels.size()) + 1, programId);
 }
 
-Shader::PBR::PBR(): Object_shader("./shader/physically_based")
+Shader::PBR::PBR(): ObjectShader("./shader/physicallyBased")
 {
 
 }
 
 void Shader::PBR::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
 {
-    util::set_mat("model", model, program_id);
-    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);
+    util::set_mat("model", model, programId);
+    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), programId);
     std::vector<Light*> all_lights = Light::get_lights();
     for(Light*& light : all_lights)
     {
@@ -286,65 +286,65 @@ void Shader::PBR::set_uniforms(const Material& material, const Camera& camera, c
         {
         case Light_type::POINT:
         {
-            light->set_uniforms("point_lights", program_id);
+            light->set_uniforms("point_lights", programId);
             break;
         }
         case Light_type::SPOT:
         {
-            light->set_uniforms("spot_lights", program_id);
+            light->set_uniforms("spot_lights", programId);
             break;
         }
         case Light_type::SUN:
         {
-            light->set_uniforms("direction_lights", program_id);
+            light->set_uniforms("direction_lights", programId);
             break;
         }
         defalut:
             break;
         }
     }
-    util::set_int("point_lights_count", Light::point_lights_count(), program_id);
-    util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
-    util::set_int("direction_lights_count", Light::direction_lights_count(), program_id);
-    util::set_int("cascade_count", int(util::Globals::cascade_levels.size() + 1), program_id);
+    util::set_int("point_lights_count", Light::point_lights_count(), programId);
+    util::set_int("spot_lights_count", Light::spot_lights_count(), programId);
+    util::set_int("direction_lights_count", Light::direction_lights_count(), programId);
+    util::set_int("cascade_count", int(util::Globals::cascade_levels.size() + 1), programId);
     for(int i = 0; i < util::Globals::cascade_levels.size(); ++i)
-        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], program_id);
-    util::set_floats("view_pos", camera.position(), program_id);
-    util::set_float("bias", util::Globals::shadow_bias, program_id);
-    material.set_uniforms("material", program_id);
-    Skybox::set_uniforms("skybox", camera, program_id);
-    util::set_float("bloom", util::Globals::bloom, program_id);
-    util::set_float("threshold", util::Globals::threshold, program_id);
+        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], programId);
+    util::set_floats("view_pos", camera.position(), programId);
+    util::set_float("bias", util::Globals::shadow_bias, programId);
+    material.set_uniforms("material", programId);
+    Skybox::set_uniforms("skybox", camera, programId);
+    util::set_float("bloom", util::Globals::bloom, programId);
+    util::set_float("threshold", util::Globals::threshold, programId);
 }
 
-Shader::Single_color::Single_color(): Shader("./shader/single_color") 
+Shader::SingleColor::SingleColor(): Shader("./shader/singleColor") 
 {
     // Bind current shader's Matices uniform block to Binding Point 0
     // glUniformBlockBinding(program_id, glGetUniformBlockIndex(program_id, "Matrices"), 0);
 }
 
-void Shader::Single_color::set_uniforms(const glm::mat4& model, const glm::vec3& color) const
+void Shader::SingleColor::set_uniforms(const glm::mat4& model, const glm::vec3& color) const
 {
-    util::set_mat("model", model, program_id);
+    util::set_mat("model", model, programId);
 }
 
-Shader::Depth_shader::Depth_shader(std::string dir_path): Shader(dir_path)
+Shader::DepthShader::DepthShader(std::string dir_path): Shader(dir_path)
 {
     
 }
 
-Shader::Cascade_map::Cascade_map(): Depth_shader("./shader/cascade_map")
+Shader::CascadeMap::CascadeMap(): DepthShader("./shader/cascadeMap")
 {
 
 }
 
-void Shader::Cascade_map::set_uniforms(const glm::mat4& model, const Light& light) const
+void Shader::CascadeMap::set_uniforms(const glm::mat4& model, const Light& light) const
 {
-    util::set_mat("model", model, program_id);
-    util::set_int("dir_light_id", light.index(), program_id);
+    util::set_mat("model", model, programId);
+    util::set_int("dir_light_id", light.index(), programId);
 }
 
-Shader::Depth_cubemap::Depth_cubemap(): Depth_shader("./shader/depth_cubemap") 
+Shader::DepthCubemap::DepthCubemap(): DepthShader("./shader/depthCubemap") 
 {
 
 }
@@ -356,151 +356,220 @@ Shader::Normal::Normal(): Shader("./shader/normal")
 
 void Shader::Normal::set_uniforms(const Camera& camera, const glm::mat4& model) const
 {
-    util::set_mat("model", model, program_id);
-    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), program_id);
-    util::set_float("magnitude", util::Globals::normal_magnitude, program_id);
+    util::set_mat("model", model, programId);
+    util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), programId);
+    util::set_float("magnitude", util::Globals::normal_magnitude, programId);
 }
 
-Shader::Sky_cube::Sky_cube(): Shader("./shader/sky_cube")
+Shader::SkyCube::SkyCube(): Shader("./shader/skyCube")
 {
 
 }
 
-void Shader::Sky_cube::set_uniforms(const Camera& camera, float intensity, GLuint texture_unit) const
+void Shader::SkyCube::set_uniforms(const Camera& camera, float intensity, GLuint texture_unit) const
 {
-    util::set_mat("view", glm::transpose(util::Globals::camera.camera_mat()), program_id);
-    util::set_mat("projection", camera.projection(), program_id);
-    util::set_int("skybox", texture_unit, program_id);
-    util::set_float("brightness", intensity, program_id);
-    util::set_float("threshold", util::Globals::threshold, program_id);
+    util::set_mat("view", glm::transpose(util::Globals::camera.camera_mat()), programId);
+    util::set_mat("projection", camera.projection(), programId);
+    util::set_int("skybox", texture_unit, programId);
+    util::set_float("brightness", intensity, programId);
+    util::set_float("threshold", util::Globals::threshold, programId);
 }
 
-void Shader::Depth_cubemap::set_uniforms(const glm::mat4& model, const Light& light) const
+void Shader::DepthCubemap::set_uniforms(const glm::mat4& model, const Light& light) const
 {
     const Point_light& p_light = static_cast<const Point_light&>(light); 
-    util::set_mat("model", model, program_id);
+    util::set_mat("model", model, programId);
     std::array<glm::mat4, 6> all_mat = p_light.light_space_mat();
     for(int i = 0; i < 6; ++i)
-        util::set_mat(("light_space_mat[" + std::to_string(i) + "]").c_str(), all_mat[i], program_id);
-    util::set_float("near", light.near(), program_id);
-    util::set_float("far", light.far(), program_id);
-    util::set_floats("light_pos", light.position(), program_id);
+        util::set_mat(("light_space_mat[" + std::to_string(i) + "]").c_str(), all_mat[i], programId);
+    util::set_float("near", light.near(), programId);
+    util::set_float("far", light.far(), programId);
+    util::set_floats("light_pos", light.position(), programId);
 }
 
-Shader::Tangent_normal::Tangent_normal(): Shader("./shader/tangent_normal")
+Shader::TangentNormal::TangentNormal(): Shader("./shader/tangentNormal")
 {
 
 }
 
-void Shader::Tangent_normal::set_uniforms(const Camera &camera, const glm::mat4 &model) const
+void Shader::TangentNormal::set_uniforms(const Camera &camera, const glm::mat4 &model) const
 {
-    util::set_mat("model", model, program_id);
-    util::set_mat("normal_mat", glm::inverse(glm::transpose(glm::mat3(model))), program_id);
-    util::set_float("magnitude", util::Globals::tangent_magnitude, program_id);
+    util::set_mat("model", model, programId);
+    util::set_mat("normal_mat", glm::inverse(glm::transpose(glm::mat3(model))), programId);
+    util::set_float("magnitude", util::Globals::tangent_magnitude, programId);
 }
 
-Shader::Post_proc* Shader::Post_proc::instance = nullptr;
+Shader::PostProc* Shader::PostProc::instance = nullptr;
 
-Shader::Post_proc::Post_proc(): Shader("./shader/post_quad")
-{
-
-}
-
-void Shader::Post_proc::set_uniforms(GLuint image_unit, GLuint blured_image_unit) const
-{
-    util::set_int("image", image_unit, program_id);
-    util::set_int("blured_brightness", blured_image_unit, program_id);
-    util::set_bool("hdr", util::Globals::hdr, program_id);
-    util::set_bool("bloom", util::Globals::bloom, program_id);
-    util::set_float("exposure", util::Globals::exposure, program_id);
-}
-
-Shader::Post_proc *Shader::Post_proc::get_instance()
-{
-    return instance ? instance : (instance = new Post_proc());
-}
-
-Shader::Bloom_blur* Shader::Bloom_blur::instance = nullptr;
-
-Shader::Bloom_blur::Bloom_blur(): Shader("./shader/bloom_blur")
+Shader::PostProc::PostProc(): Shader("./shader/postQuad")
 {
 
 }
 
-void Shader::Bloom_blur::set_uniforms(GLuint image_unit, bool horizental) const
+void Shader::PostProc::set_uniforms(GLuint image_unit, GLuint blured_image_unit) const
 {
-    util::set_int("image", image_unit, program_id);
-    util::set_bool("horizental", horizental, program_id);
+    util::set_int("image", image_unit, programId);
+    util::set_int("blured_brightness", blured_image_unit, programId);
+    util::set_bool("hdr", util::Globals::hdr, programId);
+    util::set_bool("bloom", util::Globals::bloom, programId);
+    util::set_float("exposure", util::Globals::exposure, programId);
 }
 
-Shader::Bloom_blur *Shader::Bloom_blur::get_instance()
+Shader::PostProc *Shader::PostProc::get_instance()
 {
-    return instance ? instance : (instance = new Bloom_blur());
+    return instance ? instance : (instance = new PostProc());
 }
 
-Shader::SSAO_blur* Shader::SSAO_blur::instance = nullptr;
+Shader::BloomBlur* Shader::BloomBlur::instance = nullptr;
 
-Shader::SSAO_blur *Shader::SSAO_blur::get_instance()
+Shader::BloomBlur::BloomBlur(): Shader("./shader/bloomBlur")
 {
-    return instance ? instance : (instance = new SSAO_blur());
+
 }
 
-void Shader::SSAO_blur::set_uniforms() const
+void Shader::BloomBlur::set_uniforms(GLuint image_unit, bool horizental) const
 {
-    util::set_int("ssao_buffer", Model::get_texture("SSAO color buffer").texunit, program_id);
+    util::set_int("image", image_unit, programId);
+    util::set_bool("horizental", horizental, programId);
 }
 
-Shader::SSAO_blur::SSAO_blur() : Shader("./shader/ssao_blur")
+Shader::BloomBlur *Shader::BloomBlur::get_instance()
 {
-    
+    return instance ? instance : (instance = new BloomBlur());
 }
 
-void Shader::G_buffer::set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const
+Shader::SSAOBlur* Shader::SSAOBlur::instance = nullptr;
+
+Shader::SSAOBlur *Shader::SSAOBlur::get_instance()
 {
-    util::set_mat("model", model, program_id);
-    util::set_mat("normal_mat", glm::inverse(glm::transpose(glm::mat3(model))), program_id);
-    material.set_uniforms("material", program_id);
-    util::set_floats("view_pos", camera.position(), program_id);
+    return instance ? instance : (instance = new SSAOBlur());
 }
 
-Shader::G_buffer::G_buffer(std::string dir_path): Shader(dir_path)
+void Shader::SSAOBlur::set_uniforms() const
+{
+    util::set_int("ssao_buffer", Model::getTexture("SSAO color buffer").texUnit, programId);
+}
+
+Shader::SSAOBlur::SSAOBlur() : Shader("./shader/ssaoBlur")
 {
     
 }
 
-Shader::G_buffer_BP* Shader::G_buffer_BP::instance = nullptr;
+void Shader::GBuffer::set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const
+{
+    util::set_mat("model", model, programId);
+    util::set_mat("normal_mat", glm::inverse(glm::transpose(glm::mat3(model))), programId);
+    material.set_uniforms("material", programId);
+    util::set_floats("view_pos", camera.position(), programId);
+}
 
-Shader::G_buffer_BP::G_buffer_BP(): G_buffer("./shader/G_buffer_BP")
+Shader::GBuffer::GBuffer(std::string dir_path): Shader(dir_path)
 {
     
 }
 
-Shader::G_buffer_BP* Shader::G_buffer_BP::get_instance()
-{
-    return instance ? instance : (instance = new G_buffer_BP()); 
-}
-Shader::G_buffer_PBR* Shader::G_buffer_PBR::instance = nullptr;
+Shader::GBufferBP* Shader::GBufferBP::instance = nullptr;
 
-Shader::G_buffer_PBR::G_buffer_PBR(): G_buffer("./shader/G_buffer_PBR")
+Shader::GBufferBP::GBufferBP(): GBuffer("./shader/GBufferBP")
 {
-
+    
 }
 
-Shader::G_buffer_PBR *Shader::G_buffer_PBR::get_instance()
+Shader::GBufferBP* Shader::GBufferBP::get_instance()
 {
-    return instance ? instance : (instance = new G_buffer_PBR());
+    return instance ? instance : (instance = new GBufferBP()); 
+}
+Shader::GBufferPBR* Shader::GBufferPBR::instance = nullptr;
+
+Shader::GBufferPBR::GBufferPBR(): GBuffer("./shader/GBufferPBR")
+{
+
+}
+
+Shader::GBufferPBR* Shader::GBufferPBR::get_instance()
+{
+    return instance ? instance : (instance = new GBufferPBR());
+}
+
+Shader::TransparentWBPBR* Shader::TransparentWBPBR::instance = nullptr;
+
+Shader::TransparentWBPBR::TransparentWBPBR(): Shader("./shader/transparentWBPBR") { }
+
+Shader::TransparentWBPBR* Shader::TransparentWBPBR::getInstance()
+{
+    return instance ? instance : (instance = new TransparentWBPBR());
+}
+
+void Shader::TransparentWBPBR::setUniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
+{
+    // 目前这些uniform变量的设置和PBR Shader是一样的
+    util::set_mat("model", model, programId);
+    util::set_mat("normalMat", glm::transpose(glm::inverse(glm::mat3(model))), programId);
+    std::vector<Light*> all_lights = Light::get_lights();
+    for(Light*& light : all_lights)
+    {
+        switch(light->type())
+        {
+        case Light_type::POINT:
+        {
+            light->set_uniforms("point_lights", programId);
+            break;
+        }
+        case Light_type::SPOT:
+        {
+            light->set_uniforms("spot_lights", programId);
+            break;
+        }
+        case Light_type::SUN:
+        {
+            light->set_uniforms("direction_lights", programId);
+            break;
+        }
+        defalut:
+            break;
+        }
+    }
+    util::set_int("point_lights_count", Light::point_lights_count(), programId);
+    util::set_int("spot_lights_count", Light::spot_lights_count(), programId);
+    util::set_int("direction_lights_count", Light::direction_lights_count(), programId);
+    util::set_int("cascade_count", int(util::Globals::cascade_levels.size() + 1), programId);
+    for(int i = 0; i < util::Globals::cascade_levels.size(); ++i)
+        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], programId);
+    util::set_floats("view_pos", camera.position(), programId);
+    util::set_float("bias", util::Globals::shadow_bias, programId);
+    material.set_uniforms("material", programId);
+    Skybox::set_uniforms("skybox", camera, programId);
+    util::set_float("bloom", util::Globals::bloom, programId);
+    util::set_float("threshold", util::Globals::threshold, programId);
+}
+
+Shader::Composite* Shader::Composite::instance = nullptr;
+
+Shader::Composite::Composite(): Shader("./shader/composite") { }
+
+Shader::Composite* Shader::Composite::getInstance() 
+{ 
+    return instance ? instance : (instance = new Composite());
+}
+
+void Shader::Composite::setUniforms(GLuint accumTexUnit, GLuint revealageTexUnit) const
+{
+    util::set_int("accum", accumTexUnit, programId);
+    util::set_int("revealage", revealageTexUnit, programId);
+    util::set_bool("bloom", util::Globals::bloom, programId);
+    util::set_float("threshold", util::Globals::threshold, programId);
 }
 
 void Shader::SSAO::set_uniforms() const
 {
-    util::set_int("position_buffer", Model::get_texture("G buffer position buffer").texunit, program_id);
-    util::set_int("surface_normal", Model::get_texture("G buffer surface normal buffer").texunit, program_id);
-    util::set_int("noise_tex", Model::get_texture("SSAO noisetex").texunit, program_id);
-    util::set_float("radius", util::Globals::ssao_radius, program_id);
+    util::set_int("position_buffer", Model::getTexture("G buffer position buffer").texUnit, programId);
+    util::set_int("surface_normal", Model::getTexture("G buffer surface normal buffer").texUnit, programId);
+    util::set_int("noise_tex", Model::getTexture("SSAO noisetex").texUnit, programId);
+    util::set_float("radius", util::Globals::ssao_radius, programId);
     // Here I take samples when assigning uniforms, which means smaples differs per rendering frame per fragment
     std::array<glm::vec3, 64> samples = util::get_ssao_samples();
     for(int i = 0; i < 64; ++i)
-        util::set_floats(("samples[" + std::to_string(i) + "]").c_str(), samples[i], program_id);
+        util::set_floats(("samples[" + std::to_string(i) + "]").c_str(), samples[i], programId);
 }
 
 Shader::SSAO *Shader::SSAO::get_instance()
@@ -515,17 +584,17 @@ Shader::SSAO::SSAO() : Shader("./shader/ssao")
 
 }
 
-void Shader::Lighting_pass::set_uniforms(const Camera &camera) const
+void Shader::LightingPass::set_uniforms(const Camera &camera) const
 {
-    util::set_int("position_buffer", Model::get_texture("G buffer position buffer").texunit, program_id);
-    util::set_int("normal_depth", Model::get_texture("G buffer normal_depth buffer").texunit, program_id);
-    util::set_int("surface_normal", Model::get_texture("G buffer surface normal buffer").texunit, program_id);
-    util::set_int("albedo_specular", Model::get_texture("G buffer albedo_specular buffer").texunit, program_id);
-    util::set_int("ambient_metalic", Model::get_texture("G buffer ambient_metalic buffer").texunit, program_id);
-    util::set_int("ssao_buffer", Model::get_texture("SSAO color buffer").texunit, program_id);
-    util::set_int("point_lights_count", Light::point_lights_count(), program_id);
-    util::set_int("spot_lights_count", Light::spot_lights_count(), program_id);
-    util::set_int("direction_lights_count", Light::direction_lights_count(), program_id);
+    util::set_int("position_buffer", Model::getTexture("G buffer position buffer").texUnit, programId);
+    util::set_int("normal_depth", Model::getTexture("G buffer normal_depth buffer").texUnit, programId);
+    util::set_int("surface_normal", Model::getTexture("G buffer surface normal buffer").texUnit, programId);
+    util::set_int("albedo_specular", Model::getTexture("G buffer albedo_specular buffer").texUnit, programId);
+    util::set_int("ambient_metalic", Model::getTexture("G buffer ambient_metalic buffer").texUnit, programId);
+    util::set_int("ssao_buffer", Model::getTexture("SSAO color buffer").texUnit, programId);
+    util::set_int("point_lights_count", Light::point_lights_count(), programId);
+    util::set_int("spot_lights_count", Light::spot_lights_count(), programId);
+    util::set_int("direction_lights_count", Light::direction_lights_count(), programId);
     std::vector<Light*> all_lights = Light::get_lights();
     for(Light *& light: all_lights)
     {
@@ -533,74 +602,74 @@ void Shader::Lighting_pass::set_uniforms(const Camera &camera) const
         {
         case Light_type::POINT:
         {
-            light->set_uniforms("point_lights", program_id);
+            light->set_uniforms("point_lights", programId);
             break;
         }
         case Light_type::SPOT:
         {
-            light->set_uniforms("spot_lights", program_id);
+            light->set_uniforms("spot_lights", programId);
             break;
         }
         case Light_type::SUN:
         {
-            light->set_uniforms("direction_lights", program_id);
+            light->set_uniforms("direction_lights", programId);
             break;
         }
         default:
             break;
         }
     }
-    Skybox::set_uniforms("skybox", camera, program_id);
-    util::set_floats("view_pos", camera.position(), program_id);
-    util::set_float("bias", util::Globals::shadow_bias, program_id);
+    Skybox::set_uniforms("skybox", camera, programId);
+    util::set_floats("view_pos", camera.position(), programId);
+    util::set_float("bias", util::Globals::shadow_bias, programId);
     for(int i = 0; i < util::Globals::cascade_levels.size(); ++i)
-        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], program_id);
-    util::set_int("cascade_count", util::Globals::cascade_levels.size(), program_id);
-    util::set_float("threshold", util::Globals::threshold, program_id);
-    util::set_bool("ssao", util::Globals::SSAO, program_id);
+        util::set_float(("cascade_levels[" + std::to_string(i) + "]").c_str(), util::Globals::cascade_levels[i], programId);
+    util::set_int("cascade_count", static_cast<int>(util::Globals::cascade_levels.size() + 1), programId);
+    util::set_float("threshold", util::Globals::threshold, programId);
+    util::set_bool("ssao", util::Globals::SSAO, programId);
 }
 
-Shader::Lighting_pass::Lighting_pass(std::string dir_path): Shader(dir_path)
+Shader::LightingPass::LightingPass(std::string dir_path): Shader(dir_path)
 {
     
 }
 
-Shader::Lighting_pass_BP* Shader::Lighting_pass_BP::instance = nullptr;
+Shader::LightingPassBP* Shader::LightingPassBP::instance = nullptr;
 
-Shader::Lighting_pass_BP* Shader::Lighting_pass_BP::get_instance()
+Shader::LightingPassBP* Shader::LightingPassBP::get_instance()
 {
-    return instance ? instance : (instance = new Lighting_pass_BP());
+    return instance ? instance : (instance = new LightingPassBP());
 }
 
-Shader::Lighting_pass_BP::Lighting_pass_BP(): Lighting_pass("./shader/lighting_pass_BP")
+Shader::LightingPassBP::LightingPassBP(): LightingPass("./shader/lightingPassBP")
 {
 
 }
 
-Shader::Lighting_pass_PBR* Shader::Lighting_pass_PBR::instance = nullptr;
+Shader::LightingPassPBR* Shader::LightingPassPBR::instance = nullptr;
 
-Shader::Lighting_pass_PBR* Shader::Lighting_pass_PBR::get_instance()
+Shader::LightingPassPBR* Shader::LightingPassPBR::get_instance()
 {
-    return instance ? instance : (instance = new Lighting_pass_PBR());
+    return instance ? instance : (instance = new LightingPassPBR());
 }
 
-Shader::Lighting_pass_PBR::Lighting_pass_PBR(): Lighting_pass("./shader/lighting_pass_PBR")
+Shader::LightingPassPBR::LightingPassPBR(): LightingPass("./shader/lightingPassPBR")
 {
 
 }
 
 Shader::HDRI2cubemap* Shader::HDRI2cubemap::instance = nullptr;
 
-Shader::HDRI2cubemap::HDRI2cubemap(): Shader("./shader/HDRI2cubemap")
+Shader::HDRI2cubemap::HDRI2cubemap(): Shader("./shader/HDRI2Cubemap")
 {
 
 }
 
 void Shader::HDRI2cubemap::set_uniforms(GLuint HDRI_map_unit, const glm::mat4& view) const
 {
-    util::set_mat("projection", glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1.f), program_id);
-    util::set_mat("view", view, program_id);
-    util::set_int("equirectangularmap", HDRI_map_unit, program_id);
+    util::set_mat("projection", glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1.f), programId);
+    util::set_mat("view", view, programId);
+    util::set_int("equirectangularmap", HDRI_map_unit, programId);
 }
 
 Shader::HDRI2cubemap* Shader::HDRI2cubemap::get_instance()
@@ -608,97 +677,98 @@ Shader::HDRI2cubemap* Shader::HDRI2cubemap::get_instance()
     return instance ? instance : (instance = new HDRI2cubemap());
 }
 
-Shader::Cubemap2irradiance* Shader::Cubemap2irradiance::instance = nullptr;
+Shader::Cubemap2Irradiance* Shader::Cubemap2Irradiance::instance = nullptr;
 
-Shader::Cubemap2irradiance::Cubemap2irradiance(): Shader("./shader/cubemap2irradiance")
+Shader::Cubemap2Irradiance::Cubemap2Irradiance(): Shader("./shader/cubemap2Irradiance")
 {
 
 }
 
-Shader::Cubemap2irradiance* Shader::Cubemap2irradiance::get_instance()
+Shader::Cubemap2Irradiance* Shader::Cubemap2Irradiance::get_instance()
 {
-    return instance ? instance : (instance = new Cubemap2irradiance());
+    return instance ? instance : (instance = new Cubemap2Irradiance());
 }
 
-void Shader::Cubemap2irradiance::set_uniforms(const glm::mat4& view, GLuint cubemap_unit) const
+void Shader::Cubemap2Irradiance::set_uniforms(const glm::mat4& view, GLuint cubemap_unit) const
 {
-    util::set_mat("view", view, program_id);
-    util::set_mat("projection", glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1.f), program_id);
-    util::set_int("env_map", cubemap_unit, program_id);
+    util::set_mat("view", view, programId);
+    util::set_mat("projection", glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1.f), programId);
+    util::set_int("env_map", cubemap_unit, programId);
 }
 
-Shader::Cubemap_prefilter* Shader::Cubemap_prefilter::instance = nullptr;
+Shader::CubemapPrefilter* Shader::CubemapPrefilter::instance = nullptr;
 
-Shader::Cubemap_prefilter::Cubemap_prefilter(): Shader("./shader/cubemap_prefilter")
+Shader::CubemapPrefilter::CubemapPrefilter(): Shader("./shader/cubemapPrefilter")
 {
 
 }
 
-Shader::Cubemap_prefilter* Shader::Cubemap_prefilter::get_instance()
+Shader::CubemapPrefilter* Shader::CubemapPrefilter::get_instance()
 {
-    return instance ? instance : (instance = new Cubemap_prefilter());
+    return instance ? instance : (instance = new CubemapPrefilter());
 }
 
-void Shader::Cubemap_prefilter::set_uniforms(const glm::mat4& view, GLuint cubemap_unit, float roughness) const
+void Shader::CubemapPrefilter::set_uniforms(const glm::mat4& view, GLuint cubemap_unit, float roughness) const
 {
     glm::mat4 projection = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 10.f);
-    util::set_mat("view", view, program_id);
-    util::set_mat("projection", projection, program_id);
-    util::set_float("roughness", roughness, program_id);
-    util::set_int("enviroment_map", cubemap_unit, program_id);
+    util::set_mat("view", view, programId);
+    util::set_mat("projection", projection, programId);
+    util::set_float("roughness", roughness, programId);
+    util::set_int("enviroment_map", cubemap_unit, programId);
 }   
 
-Shader::Cubemap_BRDFIntergral* Shader::Cubemap_BRDFIntergral::instance = nullptr;
+Shader::CubemapBRDFIntergral* Shader::CubemapBRDFIntergral::instance = nullptr;
 
-Shader::Cubemap_BRDFIntergral::Cubemap_BRDFIntergral(): Shader("./shader/cubemap_BRDFIntergral")
+Shader::CubemapBRDFIntergral::CubemapBRDFIntergral(): Shader("./shader/cubemapBRDFIntergral")
 {
     
 }
 
-Shader::Cubemap_BRDFIntergral* Shader::Cubemap_BRDFIntergral::get_instance()
+Shader::CubemapBRDFIntergral* Shader::CubemapBRDFIntergral::getInstance()
 {
-    return instance ? instance : (instance = new Cubemap_BRDFIntergral());
+    return instance ? instance : (instance = new CubemapBRDFIntergral());
 }
 
 
-void Shader::Cubemap_BRDFIntergral::set_uniforms() const
+void Shader::CubemapBRDFIntergral::set_uniforms() const
 {
     // No uniforms to set
 }
 
-Shader::FBO_debuger* Shader::FBO_debuger::instance = nullptr;
+Shader::FBODebuger* Shader::FBODebuger::instance = nullptr;
 
-Shader::FBO_debuger::FBO_debuger(): Shader("./shader/FBO_debuger")
+Shader::FBODebuger::FBODebuger(): Shader("./shader/FBODebuger")
 {
 
 }
 
-Shader::FBO_debuger* Shader::FBO_debuger::get_instance()
+Shader::FBODebuger* Shader::FBODebuger::getInstance()
 {
-    return instance ? instance : (instance = new FBO_debuger());
+    return instance ? instance : (instance = new FBODebuger());
 }
 
-void Shader::FBO_debuger::set_uniforms(GLuint tex_unit, const glm::mat4& model) const
+void Shader::FBODebuger::set_uniforms(GLuint tex_unit, const glm::mat4& model, bool alpha) const
 {
-    util::set_mat("model", model, program_id);
-    util::set_int("fbo_attachment", tex_unit, program_id);
+    util::set_mat("model", model, programId);
+    util::set_int("fbo_attachment", tex_unit, programId);
+    util::set_bool("alpha", alpha, programId);
 }
 
-Shader::Text_shader* Shader::Text_shader::instance = nullptr;
+Shader::TextShader* Shader::TextShader::instance = nullptr;
 
-Shader::Text_shader::Text_shader(): Shader("./shader/text_shader")
+Shader::TextShader::TextShader(): Shader("./shader/textShader")
 {
 
 }
 
-Shader::Text_shader* Shader::Text_shader::get_instance()
+Shader::TextShader* Shader::TextShader::get_instance()
 {
-    return instance ? instance : (instance = new Text_shader());
+    return instance ? instance : (instance = new TextShader());
 }
 
-void Shader::Text_shader::set_uniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const
+void Shader::TextShader::set_uniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const
 {
-    util::set_mat("projection", projection, program_id);
-    util::set_int("bitmap", bitmap_unit, program_id);
-    util::set_floats("color", color, program_id);
+    util::set_mat("projection", projection, programId);
+    util::set_int("bitmap", bitmap_unit, programId);
+    util::set_floats("color", color, programId);
 }

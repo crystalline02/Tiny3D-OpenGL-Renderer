@@ -4,32 +4,32 @@
 #include "camera.h"
 #include "shader.h"
 #include "model.h"
-#include "fbo_manager.h"
+#include "fboManager.h"
 #include "material.h"
 
-Postproc_quad* Postproc_quad::instance = nullptr;
+PostprocQuad* PostprocQuad::instance = nullptr;
 
-Postproc_quad *Postproc_quad::get_instance()
+PostprocQuad *PostprocQuad::get_instance()
 {
-    if(!instance) return new Postproc_quad();
+    if(!instance) return new PostprocQuad();
     else return instance;
 }
 
-void Postproc_quad::draw(const Shader::Post_proc& shader) const
+void PostprocQuad::drawFinal(const Shader::PostProc& shader) const
 {
-    assert(shader.shader_name() == "./shader/post_quad");
+    assert(shader.shaderName() == "./shader/postQuad");
     if(util::Globals::bloom)
-        run_blur(*Shader::Bloom_blur::get_instance(), util::Globals::blur_brightimage_unit);
+        run_blur(*Shader::BloomBlur::get_instance(), util::Globals::blur_brightimage_unit);
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     shader.use();
-    shader.set_uniforms(Model::get_texture("scene fbo color attachments[0]").texunit, util::Globals::blur_brightimage_unit);
+    shader.set_uniforms(Model::getTexture("scene fbo color attachments[0]").texUnit, util::Globals::blur_brightimage_unit);
     glBindVertexArray(quad_VAO);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    // Dump depth information from scene fbo to default fbo
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
+    // Dump depth information from scene ms fbo to default fbo
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBlitFramebuffer(0, 0, util::Globals::camera.width(), util::Globals::camera.height(),
         0, 0, util::Globals::camera.width(), util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
@@ -37,9 +37,9 @@ void Postproc_quad::draw(const Shader::Post_proc& shader) const
     glBindVertexArray(0);
 }
 
-void Postproc_quad::lighting_pass(const Shader::Lighting_pass &shader, const Camera &camera, GLuint fbo) const
+void PostprocQuad::lightingPass(const Shader::LightingPass &shader, const Camera &camera, GLuint fbo) const
 {
-    assert(util::Globals::pbr_mat ? shader.shader_name() == "./shader/lighting_pass_PBR" : shader.shader_name() == "./shader/lighting_pass_BP");
+    assert(util::Globals::pbr_mat ? shader.shaderName() == "./shader/lightingPassPBR" : shader.shaderName() == "./shader/lightingPassBP");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glBindVertexArray(quad_VAO);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
@@ -47,20 +47,20 @@ void Postproc_quad::lighting_pass(const Shader::Lighting_pass &shader, const Cam
     shader.set_uniforms(camera);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    // Dump depth information from GBuffer fbo to current light_pass fbo
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBO_Manager::FBO_Data::windows_sized_fbos["Gemometry fbo"].fbo);
+    // Dump depth information from GBuffer fbo to current scene ms fbo
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBOManager::FBOData::windows_sized_fbos["Gemometry fbo"].fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
     glBlitFramebuffer(0, 0, util::Globals::camera.width(), util::Globals::camera.height(),
         0, 0, util::Globals::camera.width(), util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-
+        
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Postproc_quad::ssao_pass(const Shader::SSAO &shader, const Shader::SSAO_blur &blur_shader, GLuint ssao_fbo, GLuint ssao_blur_fbo) const
+void PostprocQuad::SSAOPass(const Shader::SSAO &shader, const Shader::SSAOBlur &blur_shader, GLuint ssao_fbo, GLuint fbo) const
 {
-    assert(shader.shader_name() == "./shader/ssao");
-    assert(blur_shader.shader_name() == "./shader/ssao_blur");
+    assert(shader.shaderName() == "./shader/ssao");
+    assert(blur_shader.shaderName() == "./shader/ssaoBlur");
     glBindFramebuffer(GL_FRAMEBUFFER, ssao_fbo);
     glBindVertexArray(quad_VAO);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
@@ -68,7 +68,7 @@ void Postproc_quad::ssao_pass(const Shader::SSAO &shader, const Shader::SSAO_blu
     shader.set_uniforms();
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, ssao_blur_fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     blur_shader.use();
     blur_shader.set_uniforms();
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -77,9 +77,28 @@ void Postproc_quad::ssao_pass(const Shader::SSAO &shader, const Shader::SSAO_blu
     glBindVertexArray(0);
 }
 
-void Postproc_quad::run_blur(const Shader::Bloom_blur &shader, GLuint &blur_buffer_unit) const
+void PostprocQuad::compositePass(const Shader::Composite& shader, GLuint fbo) const
 {
-    assert(shader.shader_name() == "./shader/bloom_blur");
+    assert(shader.shaderName() == "./shader/composite");
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glDepthFunc(GL_ALWAYS);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // both for 'FragColor' and 'Bloom'.This is rational.
+
+    glBindVertexArray(quad_VAO);
+    for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
+    shader.use();
+    shader.setUniforms(Model::getTexture("accumTex").texUnit, Model::getTexture("revealageTex").texUnit);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glDisable(GL_BLEND);
+    glDepthFunc(GL_LESS);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void PostprocQuad::run_blur(const Shader::BloomBlur &shader, GLuint &blur_buffer_unit) const
+{
+    assert(shader.shaderName() == "./shader/bloomBlur");
     if(!util::Globals::bloom) 
     {
         blur_buffer_unit = -1;
@@ -92,23 +111,23 @@ void Postproc_quad::run_blur(const Shader::Bloom_blur &shader, GLuint &blur_buff
     {
         // 现在要blur的结果要存在哪个fbo的color attachment中
         glBindFramebuffer(GL_FRAMEBUFFER, 
-            FBO_Manager::FBO_Data::windows_sized_fbos["pingpng fbo[" + std::to_string(int(horizental)) + "]"].fbo);
+            FBOManager::FBOData::windows_sized_fbos["pingpng fbo[" + std::to_string(int(horizental)) + "]"].fbo);
         glBindVertexArray(quad_VAO);
         for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
         shader.use();
         // 现在要blur哪个fbo的color attachment
-        shader.set_uniforms(i == 0 ? Model::get_texture("scene fbo color attachments[1]").texunit : 
-            Model::get_texture(("pingpong color attchment[" + std::to_string(int(!horizental)) + "]").c_str()).texunit, horizental);
+        shader.set_uniforms(i == 0 ? Model::getTexture("scene fbo color attachments[1]").texUnit : 
+            Model::getTexture(("pingpong color attchment[" + std::to_string(int(!horizental)) + "]").c_str()).texUnit, horizental);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         horizental = !horizental;
     }
-    blur_buffer_unit = Model::get_texture("pingpong color attchment[0]").texunit;
+    blur_buffer_unit = Model::getTexture("pingpong color attchment[0]").texUnit;
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindVertexArray(0);
 }
 
-Postproc_quad::Postproc_quad()
+PostprocQuad::PostprocQuad()
 {
     float quad_vertices[] = {
         // position    // UV

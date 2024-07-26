@@ -42,8 +42,8 @@ public:
     inline void set_normal_strength(float strength) { m_normal_stength = strength; }
     inline float normal_strength() const { return m_normal_stength; }
     inline void set_opacity(float opacity) { m_opacity = opacity; }
-    inline bool is_blend_mat() const { return (!m_opacity_textures.empty()) || (m_opacity_textures.empty() && m_opacity < 1.f); }
-    inline Mat_type mat_type() const { return m_type; }
+    inline bool isTransparent() const { return (!m_opacity_textures.empty()) || (m_opacity_textures.empty() && m_opacity < 1.f); }
+    inline Mat_type matType() const { return m_type; }
 private:
     glm::vec3 m_diffuse_color, m_specular_color, m_ambient_color;
     std::vector<Texture> m_diffuse_textures, 

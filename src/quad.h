@@ -3,24 +3,26 @@
 
 namespace Shader
 {
-    class Post_proc;
-    class Lighting_pass;
-    class Bloom_blur;
+    class PostProc;
+    class LightingPass;
+    class BloomBlur;
     class SSAO;
-    class SSAO_blur;
+    class SSAOBlur;
+    class Composite;
 }
 class Camera;
 
-class Postproc_quad
+class PostprocQuad
 {
 public:
-    static Postproc_quad* get_instance();
-    void draw(const Shader::Post_proc &shader) const;
-    void lighting_pass(const Shader::Lighting_pass &shader, const Camera &camera, GLuint fbo) const;
-    void ssao_pass(const Shader::SSAO &shader, const Shader::SSAO_blur &blur_shader, GLuint ssao_fbo, GLuint ssao_blur_fbo) const;
+    static PostprocQuad* get_instance();
+    void drawFinal(const Shader::PostProc &shader) const;
+    void compositePass(const Shader::Composite& shader, GLuint fbo) const;
+    void lightingPass(const Shader::LightingPass &shader, const Camera &camera, GLuint fbo) const;
+    void SSAOPass(const Shader::SSAO &shader, const Shader::SSAOBlur &blur_shader, GLuint ssao_fbo, GLuint ssao_blur_fbo) const;
 private:
-    void run_blur(const Shader::Bloom_blur &shader, GLuint &blur_image_unit) const;
-    static Postproc_quad* instance;
-    Postproc_quad();
+    void run_blur(const Shader::BloomBlur &shader, GLuint &blur_image_unit) const;
+    static PostprocQuad* instance;
+    PostprocQuad();
     GLuint quad_VAO, quad_VBO;
 };

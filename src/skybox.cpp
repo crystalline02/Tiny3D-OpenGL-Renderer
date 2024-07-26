@@ -78,7 +78,7 @@ m_tex_prefilter(new Texture()), m_affect_scene(false), m_BRDF_LUT(new Texture())
             *m_tex_prefilter, 
             *m_BRDF_LUT);
     else
-        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad, 
+        util::createCubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad, 
             *m_tex_prefilter,
             *m_BRDF_LUT);
 }
@@ -96,7 +96,7 @@ void Skybox::set_selected(GLuint index)
             *m_tex_prefilter,
             *m_BRDF_LUT);
     else
-        util::create_cubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, 
+        util::createCubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, 
             *m_tex_diffuseirrad,
             *m_tex_prefilter,
             *m_BRDF_LUT);
@@ -112,27 +112,27 @@ Skybox* Skybox::get_instance()
 
 GLuint Skybox::cubemap_unit() const
 {
-    return m_tex_cubemap->texunit;
+    return m_tex_cubemap->texUnit;
 }
 
 GLuint Skybox::irradiancemap_unit() const
 {
-    return m_tex_diffuseirrad->texunit;
+    return m_tex_diffuseirrad->texUnit;
 }
 
 GLuint Skybox::prefilteredmap_unit() const
 {
-    return m_tex_prefilter->texunit;
+    return m_tex_prefilter->texUnit;
 }
 
 GLuint Skybox::BRDF_LUT_unit() const
 {
-    return m_BRDF_LUT->texunit;
+    return m_BRDF_LUT->texUnit;
 }
 
-void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint fbo) const
+void Skybox::draw(const Shader::SkyCube& shader, const Camera& camera, GLuint fbo) const
 {
-    assert(shader.shader_name() == "./shader/sky_cube");
+    assert(shader.shaderName() == "./shader/skyCube");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -140,7 +140,7 @@ void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint f
 
     glBindVertexArray(VAO);
     shader.use();
-    shader.set_uniforms(camera, m_intensity, m_tex_cubemap->texunit);
+    shader.set_uniforms(camera, m_intensity, m_tex_cubemap->texUnit);
     glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -153,7 +153,7 @@ void Skybox::draw(const Shader::Sky_cube& shader, const Camera& camera, GLuint f
 
 void Skybox::draw_equirectangular_on_cubmap(const Shader::HDRI2cubemap& shader, const glm::mat4& view, GLuint hdri_unit, GLuint fbo) const
 {
-    assert(shader.shader_name() == "./shader/HDRI2cubemap");
+    assert(shader.shaderName() == "./shader/HDRI2Cubemap");
     glViewport(0, 0, 2048, 2048);  // Important step!
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);
@@ -173,9 +173,9 @@ void Skybox::draw_equirectangular_on_cubmap(const Shader::HDRI2cubemap& shader, 
     glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
 }
 
-void Skybox::draw_irradiancemap(const Shader::Cubemap2irradiance& shader, const glm::mat4& view, GLuint cubemap_unit, GLuint fbo) const
+void Skybox::draw_irradiancemap(const Shader::Cubemap2Irradiance& shader, const glm::mat4& view, GLuint cubemap_unit, GLuint fbo) const
 {
-    assert(shader.shader_name() == "./shader/cubemap2irradiance");
+    assert(shader.shaderName() == "./shader/cubemap2Irradiance");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glViewport(0, 0, 128, 128);
     glEnable(GL_DEPTH_TEST);
@@ -195,10 +195,10 @@ void Skybox::draw_irradiancemap(const Shader::Cubemap2irradiance& shader, const 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Skybox::prefilt_cubemap(const Shader::Cubemap_prefilter& shader, const glm::mat4& view, float roughness, 
+void Skybox::prefilt_cubemap(const Shader::CubemapPrefilter& shader, const glm::mat4& view, float roughness, 
     GLuint cubemap_unit, GLuint fbo, GLsizei width, GLsizei height) const
 {
-    assert(shader.shader_name() == "./shader/cubemap_prefilter");
+    assert(shader.shaderName() == "./shader/cubemapPrefilter");
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
@@ -216,10 +216,10 @@ void Skybox::prefilt_cubemap(const Shader::Cubemap_prefilter& shader, const glm:
     glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
 }
 
-void Skybox::BRDF_LUT_intergral(const Shader::Cubemap_BRDFIntergral& shader, GLuint fbo, GLsizei width, 
+void Skybox::BRDF_LUT_intergral(const Shader::CubemapBRDFIntergral& shader, GLuint fbo, GLsizei width, 
     GLsizei height) const
 {
-    assert(shader.shader_name() == "./shader/cubemap_BRDFIntergral");
+    assert(shader.shaderName() == "./shader/cubemapBRDFIntergral");
     // Render plane
     float data[] = {
         // 2d location | texture coords

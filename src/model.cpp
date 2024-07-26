@@ -5,6 +5,7 @@
 #include "material.h"
 #include "globals.h"
 #include "light.h"
+#include "fboManager.h"
 
 #include <glm/glm.hpp>
 #include <chrono>
@@ -56,21 +57,21 @@ void Model::log_texture_info()
     std::cout << std::setfill('-') << std::setw(headers.size() * (col_width + 1) + 1) << "" << std::endl;
     std::cout << std::setfill(' ');
     for(std::unordered_map<std::string, Texture>::iterator it = loaded_textures.begin(); it != loaded_textures.end(); ++it)
-        util::print_row({std::string(it->second.texname), 
-            std::to_string(it->second.texunit), 
-            std::to_string(it->second.texbuffer)}, 
+        util::print_row({std::string(it->second.texName), 
+            std::to_string(it->second.texUnit), 
+            std::to_string(it->second.texBuffer)}, 
                 col_width);
     std::cout << std::endl;
 }
 
 void Model::draw_normals(const Shader::Normal& normal_shader, const Camera& camera) const
 {
-    for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_normals(normal_shader, camera, m_model_mat);
+    for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->forwardNormals(normal_shader, camera, m_model_mat);
 }
 
-void Model::draw_tangent(const Shader::Tangent_normal &tangent_shader, const Camera &camera) const
+void Model::draw_tangent(const Shader::TangentNormal &tangent_shader, const Camera &camera) const
 {
-    for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_tangent(tangent_shader, camera, m_model_mat);
+    for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->forwardTangent(tangent_shader, camera, m_model_mat);
 }
 
 void Model::load_model(std::string path)
@@ -91,19 +92,19 @@ void Model::clear_model()
 {
     // 这里的clear并没有clear texture buffer，后面可以加上，可能需要改动很多代码
     m_meshes.clear();
-    m_blend_meshes_temp.clear();
+    m_transparentMeshes.clear();
     directory.clear();
 }
 
 void Model::rm_texture(const Texture& texture)
 {
-    auto it = loaded_textures.find(texture.texname);
+    auto it = loaded_textures.find(texture.texName);
     if(it == loaded_textures.end()) return;
     
     loaded_textures.erase(it);
-    glActiveTexture(GL_TEXTURE0 + texture.texunit);
+    glActiveTexture(GL_TEXTURE0 + texture.texUnit);
     glBindTexture(GL_TEXTURE_2D, 0);
-    glDeleteTextures(1, &texture.texbuffer);
+    glDeleteTextures(1, &texture.texBuffer);
 }
 
 void Model::process_node(aiNode* node, const aiScene* scene)
@@ -245,20 +246,20 @@ Mesh* Model::process_mesh(aiMesh* mesh, const aiScene* scene)
     return new Mesh(vertices, indices, material);
 }
 
-Texture Model::get_texture(const char* texname)
+Texture Model::getTexture(const char* texname)
 {
     std::unordered_map<std::string, Texture>::iterator it = loaded_textures.find(texname);
     if(it == loaded_textures.end()) return Texture("Null texture", 0, 0);
     else return it->second;
 }
 
-GLuint Model::fatch_new_texunit()
+GLuint Model::fetchNewTexunit()
 {
     if(loaded_textures.empty()) return 0;
     
     std::set<GLuint> ordered_unit;
     for(auto it = loaded_textures.begin(); it != loaded_textures.end(); ++it)
-        ordered_unit.insert(it->second.texunit);
+        ordered_unit.insert(it->second.texUnit);
     GLuint texunit = 0;
     for(std::set<GLuint>::iterator it = ordered_unit.begin(); it != ordered_unit.end(); ++it)
     {
@@ -304,15 +305,15 @@ void Model::set_cullface(bool iscull)
     for(std::shared_ptr<Mesh>& mesh: m_meshes) mesh->set_cullface(iscull);
 }
 
-void Model::draw(const Shader::Object_shader& model_shader, const Camera& camera, GLuint fbo) const
+void Model::draw(const Shader::ObjectShader& model_shader, const Camera& camera, GLuint fbo) const
 {
     // This is not a good ideal to solve blending problem, but temporarily works
     std::map<float, const Mesh*> blend_mesh;
     for(const std::shared_ptr<Mesh>& mesh: m_meshes)
     {
-        if(!mesh->is_blend_mesh())
+        if(!mesh->isTransparent())
         {
-            mesh->draw(model_shader, camera, m_model_mat, fbo);
+            mesh->forwardPass(model_shader, camera, m_model_mat, fbo);
         }
         else 
         {
@@ -321,28 +322,41 @@ void Model::draw(const Shader::Object_shader& model_shader, const Camera& camera
     }
     for(std::map<float, const Mesh*>::reverse_iterator it = blend_mesh.rbegin(); it != blend_mesh.rend() ; ++it)
     {
-        it->second->draw(model_shader, camera, m_model_mat, fbo);
+        it->second->forwardPass(model_shader, camera, m_model_mat, fbo);
     }
     blend_mesh.clear();
 }
 
-void Model::gbuffer_pass(const Shader::G_buffer &shader, const Camera &camera, GLuint fbo)
+void Model::gbufferPass(const Shader::GBuffer &shader, const Camera &camera, GLuint fbo)
 {
     for(const std::shared_ptr<Mesh>& mesh: m_meshes)
     {
-        if(mesh->is_blend_mesh())
-            m_blend_meshes_temp[glm::length(glm::vec3(m_model_mat * glm::vec4(mesh->center(), 1.f)) - camera.position())] = mesh.get();
+        if(mesh->isTransparent() && mesh->isAlphablend())
+            m_transparentMeshes.emplace_back(mesh);
         else 
-            mesh->draw_gbuffer(shader, camera, m_model_mat, fbo);
+            mesh->gbufferPass(shader, camera, m_model_mat, fbo);
     }
 }
 
-void Model::forward_tranparent(const Shader::Object_shader &shader, const Camera &camera, GLuint fbo)
+void Model::transparentPass(const Shader::TransparentWBPBR &shader, const Camera& camera, GLuint fbo)
 {
-    for(std::map<float, const Mesh*>::const_reverse_iterator it = m_blend_meshes_temp.rbegin(); it != m_blend_meshes_temp.rend(); ++it)
-        it->second->draw(shader, camera, m_model_mat, fbo);
-    // 别忘了clear这个map容器，要不然这个容器越来越大，程序越来越卡...
-    m_blend_meshes_temp.clear();
+    assert(shader.shaderName() == "./shader/transparentWBPBR");
+
+    // Dump depth information from GBuffer pass to transparentFBO
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBOManager::FBOData::windows_sized_fbos["Gemometry fbo"].fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+    glBlitFramebuffer(0, 0, util::Globals::camera.width(), util::Globals::camera.height(), 
+        0, 0, util::Globals::camera.width(), util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+        
+    for(const std::shared_ptr<Mesh>& mesh: m_transparentMeshes)
+        mesh->transparentPass(shader, camera, m_model_mat, fbo);
+    // 别忘了clear这个vector容器，要不然这个容器越来越大，程序越来越卡...
+    m_transparentMeshes.clear();
+}
+
+void Model::compositePass() const
+{
+
 }
 
 void Model::reload(const std::string new_path)
@@ -355,7 +369,7 @@ void Model::reload(const std::string new_path)
     std::cout << "Model loaded, time:" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms.\n";
 }
 
-void Model::draw_outline(const Shader::Single_color& single_color, const Camera& camera) const
+void Model::draw_outline(const Shader::SingleColor& single_color, const Camera& camera) const
 {
     for(const std::shared_ptr<Mesh>& mesh: m_meshes) if(mesh->is_outline()) mesh->draw_outline(single_color, camera, glm::scale(m_model_mat, glm::vec3(1.008f)));
     glClear(GL_STENCIL_BUFFER_BIT);
@@ -367,10 +381,10 @@ void Model::set_outline(bool isoutline)
         mesh->set_outline(isoutline);
 }
 
-void Model::draw_depthmaps(const Shader::Cascade_map& cascade_shader, const Shader::Depth_cubemap& depth_cube_shader) const
+void Model::draw_depthmaps(const Shader::CascadeMap& cascade_shader, const Shader::DepthCubemap& depth_cube_shader) const
 {
-    assert(cascade_shader.shader_name() == "./shader/cascade_map");
-    assert(depth_cube_shader.shader_name() == "./shader/depth_cubemap");
+    assert(cascade_shader.shaderName() == "./shader/cascadeMap");
+    assert(depth_cube_shader.shaderName() == "./shader/depthCubemap");
     std::vector<Light*> all_lights = Light::get_lights();
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
@@ -384,13 +398,13 @@ void Model::draw_depthmaps(const Shader::Cascade_map& cascade_shader, const Shad
         {
             // shadow pass for directional light
             glViewport(0, 0, util::Globals::cascade_size, util::Globals::cascade_size);
-            for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(cascade_shader, *light, m_model_mat);
+            for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->depthmapPass(cascade_shader, *light, m_model_mat);
         }
         else
         {
             // shadow pass for point light
             glViewport(0, 0, util::Globals::cubemap_size, util::Globals::cubemap_size);
-            for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->draw_depthmap(depth_cube_shader, *light, m_model_mat);
+            for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->depthmapPass(depth_cube_shader, *light, m_model_mat);
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

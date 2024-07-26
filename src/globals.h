@@ -48,7 +48,7 @@ namespace util
         static std::vector<float> cascade_levels;
     };
     GLenum checkGLError_(const char* file, int line);
-    void APIENTRY debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+    void APIENTRY debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
         const char* message, const void* userParam);
     void mouse_callback(GLFWwindow* window, double xpos, double ypos);
     void scroll_callback(GLFWwindow* window, double delta_x, double delta_y);
@@ -158,7 +158,7 @@ namespace util
         Texture& diffuse_irrad_texture,
         Texture& prefilter_envmap_texture,
         Texture& BRDF_LUT);
-    void create_cubemap(const char* hdri_path, 
+    void createCubemap(const char* hdri_path, 
         Texture& hdri_cubemap_texture,
         Texture& diffuse_irrad_texture,
         Texture& prefilter_envmap_texture,

@@ -4,9 +4,9 @@
 #include "shader.h"
 #include "camera.h"
 
-FBO_debuger* FBO_debuger::instance = nullptr;
+FBODebuger* FBODebuger::instance = nullptr;
 
-FBO_debuger::FBO_debuger(int width, int height)
+FBODebuger::FBODebuger(int width, int height)
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -52,14 +52,14 @@ FBO_debuger::FBO_debuger(int width, int height)
         1.f});
 }
 
-FBO_debuger* FBO_debuger::get_instance(int width, int height)
+FBODebuger* FBODebuger::getInstance(int width, int height)
 {
-    return instance ? instance : (instance = new FBO_debuger(width, height));
+    return instance ? instance : (instance = new FBODebuger(width, height));
 }
 
-void FBO_debuger::draw(const Shader::FBO_debuger& shader, GLuint texture_unit)
+void FBODebuger::draw(const Shader::FBODebuger& shader, GLuint textureUnit, bool alpha)
 {
-    assert(shader.shader_name() == "./shader/FBO_debuger");
+    assert(shader.shaderName() == "./shader/FBODebuger");
     int camera_width = util::Globals::camera.width();
     int camera_height = util::Globals::camera.height();
     glBindVertexArray(VAO);
@@ -67,7 +67,7 @@ void FBO_debuger::draw(const Shader::FBO_debuger& shader, GLuint texture_unit)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     for(GLuint i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
     shader.use();
-    shader.set_uniforms(texture_unit, m_model);
+    shader.set_uniforms(textureUnit, m_model, alpha);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
     
     glBindVertexArray(0);

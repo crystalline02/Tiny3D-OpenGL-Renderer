@@ -22,7 +22,7 @@
 #include "skybox.h"
 #include "globals.h"
 #include "fbo_debuger.h"
-#include "fbo_manager.h"
+#include "fboManager.h"
 
 int main(int argc, char** argv)
 {
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 	{
 		glEnable(GL_DEBUG_OUTPUT);  // Enable debug output
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);  // Tell opengl to directly call the callback function the moment an error occured.
-		glDebugMessageCallback(util::debug_callback, nullptr);
+		glDebugMessageCallback(util::debugCallback, nullptr);
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 	
@@ -83,21 +83,21 @@ int main(int argc, char** argv)
 	ImGui::GetStyle().ScaleAllSizes(ImGui::GetFrameHeight() * .3f);
 
 	// Init font
-	Character_Render* cr = Character_Render::get_instance();
+	CharacterRender* cr = CharacterRender::getInstance();
 	cr->init_fonts("./fonts/arial.ttf");
 
 	// Model
 	Model model("./model/cubes/cubes.obj");
 
 	// Shaders
-	Shader::Blinn_phong bp_shader;
+	Shader::BlinnPhong bp_shader;
 	Shader::PBR pbr_shader;
-	Shader::Single_color color_shader;
-	Shader::Sky_cube skybox_shader;
+	Shader::SingleColor color_shader;
+	Shader::SkyCube skybox_shader;
 	Shader::Normal normal_shader;
-	Shader::Cascade_map cascade_shader;
-	Shader::Depth_cubemap depth_cube_shader;
-	Shader::Tangent_normal tangent_shader;
+	Shader::CascadeMap cascade_shader;
+	Shader::DepthCubemap depth_cube_shader;
+	Shader::TangentNormal tangent_shader;
 
 	// Lights
 	Point_light light1(glm::vec3(2.f, 1.5f, -2.f), glm::vec3(1.f, .4392f, .3294f), 20.0f);
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
 	Spot_light light6(glm::vec3(-2.f, -2.6f, -1.5f), glm::vec3(2.25f, 1.91f, 2.27f), glm::vec3(.5f, .5f, .5f), 15.0f);
 
 	// Scene framebuffer for postprocessing
-	FBO_Manager::gen_window_FBOs();
+	FBOManager::genWindowFBOs();
 	while(!glfwWindowShouldClose(window))
 	{
 		// Process input
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
 		ImGui::NewFrame();
 
 		// Rendering preperation, mainly clearing framebuffer
-		FBO_Manager::clear_buffers();
+		FBOManager::clearBuffers();
 		glEnable(GL_MULTISAMPLE); 
 		Shader::Shader::update_uniform_blocks(util::Globals::camera);
 		// glm::mat4 model_mat(1.f);
@@ -132,35 +132,34 @@ int main(int argc, char** argv)
 		// Draw model.If deferred rendering is enabled, we draw on g-buffers,if not we draw objects directly.
 		if(util::Globals::deferred_rendering)
 		{
-			model.gbuffer_pass(util::Globals::pbr_mat ? static_cast<Shader::G_buffer>(*Shader::G_buffer_PBR::get_instance()) : static_cast<Shader::G_buffer>(*Shader::G_buffer_BP::get_instance()), 
+			model.gbufferPass(util::Globals::pbr_mat ? static_cast<Shader::GBuffer>(*Shader::GBufferPBR::get_instance()) : static_cast<Shader::GBuffer>(*Shader::GBufferBP::get_instance()), 
 				util::Globals::camera, 
-				FBO_Manager::FBO_Data::windows_sized_fbos["Gemometry fbo"].fbo);
-			Postproc_quad::get_instance()->lighting_pass(util::Globals::pbr_mat ? static_cast<Shader::Lighting_pass>(*Shader::Lighting_pass_PBR::get_instance()) : static_cast<Shader::Lighting_pass>(*Shader::Lighting_pass_BP::get_instance()), 
+				FBOManager::FBOData::windows_sized_fbos["Gemometry fbo"].fbo);
+			PostprocQuad::get_instance()->lightingPass(util::Globals::pbr_mat ? static_cast<Shader::LightingPass>(*Shader::LightingPassPBR::get_instance()) : static_cast<Shader::LightingPass>(*Shader::LightingPassBP::get_instance()), 
 				util::Globals::camera,
-				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
+				FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
 			if(util::Globals::SSAO)
 			{
-				Postproc_quad::get_instance()->ssao_pass(*Shader::SSAO::get_instance(), 
-					*Shader::SSAO_blur::get_instance(), 
-					FBO_Manager::FBO_Data::windows_sized_fbos["SSAO fbo"].fbo, 
-					FBO_Manager::FBO_Data::windows_sized_fbos["SSAO blur fbo"].fbo);
+				PostprocQuad::get_instance()->SSAOPass(*Shader::SSAO::get_instance(), 
+					*Shader::SSAOBlur::get_instance(), 
+					FBOManager::FBOData::windows_sized_fbos["SSAO fbo"].fbo, 
+					FBOManager::FBOData::windows_sized_fbos["SSAO blur fbo"].fbo);
 			}
-			model.forward_tranparent(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, 
-				util::Globals::camera, 
-				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
+			model.transparentPass(*Shader::TransparentWBPBR::getInstance(), util::Globals::camera, FBOManager::FBOData::windows_sized_fbos["transparentFBO"].fbo);
+			PostprocQuad::get_instance()->compositePass(*Shader::Composite::getInstance(), FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
 		}
 		else
-			model.draw(util::Globals::pbr_mat ? (Shader::Object_shader&)pbr_shader : (Shader::Object_shader&)bp_shader, 
+			model.draw(util::Globals::pbr_mat ? (Shader::ObjectShader&)pbr_shader : (Shader::ObjectShader&)bp_shader, 
 				util::Globals::camera, 
-				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
+				FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
 
 		// Draw skybox
 		if(util::Globals::skybox) 
 			Skybox::get_instance()->draw(skybox_shader, util::Globals::camera, 
-				FBO_Manager::FBO_Data::windows_sized_fbos["scene ms fbo"].fbo);
+				FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
 
 		// Post process
-		Postproc_quad::get_instance()->draw(*Shader::Post_proc::get_instance());
+		PostprocQuad::get_instance()->drawFinal(*Shader::PostProc::get_instance());
 
 		// Draw outline
 		model.draw_outline(color_shader, util::Globals::camera);
@@ -177,8 +176,8 @@ int main(int argc, char** argv)
 			model.draw_tangent(tangent_shader, util::Globals::camera);
 
 		// Draw frambuffer debuger window
-/* 		FBO_debuger::get_instance(util::Globals::camera.width(), util::Globals::camera.height())
-			->draw(*Shader::FBO_debuger::get_instance(), Model::get_texture("G buffer ambient_metalic buffer").texunit); */
+ 		FBODebuger::getInstance(util::Globals::camera.width(), util::Globals::camera.height())
+			->draw(*Shader::FBODebuger::getInstance(), Model::getTexture("SSAO color buffer").texUnit);
 
 		// Imgui user interface design
 		util::imgui_design(model);

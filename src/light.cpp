@@ -99,13 +99,13 @@ void Point_light::set_uniforms(const char* name, GLuint program) const
     util::set_float(light_kq.c_str(), kq, program);
     util::set_float(light_near.c_str(), m_near, program);
     util::set_float(light_far.c_str(), m_far, program);
-    util::set_int(light_depthcubemap.c_str(), m_depth_texture.texunit, program);
+    util::set_int(light_depthcubemap.c_str(), m_depth_texture.texUnit, program);
 }
 
 void Point_light::resize_depthmap(int shadow_size) const
 {
-    glActiveTexture(GL_TEXTURE0 + m_depth_texture.texunit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_depth_texture.texbuffer);
+    glActiveTexture(GL_TEXTURE0 + m_depth_texture.texUnit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_depth_texture.texBuffer);
     for(unsigned int i = 0; i < 6; ++i)
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, util::Globals::cubemap_size, 
             util::Globals::cubemap_size, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
@@ -147,7 +147,7 @@ void Direction_light::set_uniforms(const char* name, GLuint program) const
     std::string light_direction = (prefix + std::string("direction"));
     std::string light_cascade_maps = (prefix + std::string("cascade_maps"));
     util::set_floats(light_direction.c_str(), m_direction, program);
-    util::set_int(light_cascade_maps.c_str(), m_depth_texture.texunit, program);
+    util::set_int(light_cascade_maps.c_str(), m_depth_texture.texUnit, program);
 }
 
 std::vector<glm::mat4> Direction_light::light_space_mat(const Camera& camera) const
@@ -197,8 +197,8 @@ std::vector<glm::mat4> Direction_light::light_space_mat(const Camera& camera) co
 
 void Direction_light::resize_depthmap(int shadow_size) const
 {
-    glActiveTexture(GL_TEXTURE0 + m_depth_texture.texunit);
-    glBindTexture(GL_TEXTURE_2D, m_depth_texture.texbuffer);
+    glActiveTexture(GL_TEXTURE0 + m_depth_texture.texUnit);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_depth_texture.texBuffer);
     glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_DEPTH_COMPONENT32, util::Globals::cascade_size, util::Globals::cascade_size,
         util::Globals::cascade_levels.size() + 1, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
     glActiveTexture(GL_TEXTURE0);
@@ -351,12 +351,12 @@ glm::mat4 Light_vertices::get_bar_dir_matrix(glm::vec3 direction, glm::vec3 post
 
 void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
 {
-    assert(shader.shader_name() == "./shader/single_color");
+    assert(shader.shaderName() == "./shader/singleColor");
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glEnable(GL_DEPTH_TEST);
     shader.use();
-    shader.set_single_color(glm::vec3(0.f));
+    shader.setSingleColor(glm::vec3(0.f));
     const std::vector<Light*>& all_lights = Light::get_lights();
     for(Light* light: all_lights)
     {

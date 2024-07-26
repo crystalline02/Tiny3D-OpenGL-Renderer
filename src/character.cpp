@@ -11,27 +11,27 @@
 #include "globals.h"
 #include "camera.h"
 
-Character_Render* Character_Render::instance = nullptr;
+CharacterRender* CharacterRender::instance = nullptr;
 
-Character_Render* Character_Render::get_instance()
+CharacterRender* CharacterRender::getInstance()
 {
-    return instance ? instance : (instance = new Character_Render());
+    return instance ? instance : (instance = new CharacterRender());
 }
 
-Character_Render::Character_Render()
+CharacterRender::CharacterRender()
 {
     m_projection = glm::ortho<float>(0.f, util::Globals::camera.width(), 0.f, util::Globals::camera.height());
 }
 
-void Character_Render::set_projection(int window_w, int window_h)
+void CharacterRender::set_projection(int window_w, int window_h)
 {
     m_projection = glm::ortho(0.f, (float)window_w, 0.f, (float)window_h);
 }
 
-void Character_Render::render_text(const Shader::Text_shader& shader, std::string texts, float x, float y, 
+void CharacterRender::render_text(const Shader::TextShader& shader, std::string texts, float x, float y, 
     float scale, const glm::vec3& color) const
 {
-    assert(shader.shader_name() == "./shader/text_shader");
+    assert(shader.shaderName() == "./shader/textShader");
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindVertexArray(VAO);
     glEnable(GL_BLEND);
@@ -57,7 +57,7 @@ void Character_Render::render_text(const Shader::Text_shader& shader, std::strin
         };
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 6 * 4, data);
         glEnableVertexAttribArray(0);
-        shader.set_uniforms(m_projection, color, ch.texture.texunit);
+        shader.set_uniforms(m_projection, color, ch.texture.texUnit);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         x += (ch.advance >> 6) * scale;
     }
@@ -66,7 +66,7 @@ void Character_Render::render_text(const Shader::Text_shader& shader, std::strin
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Character_Render::init_fonts(const char* font)
+void CharacterRender::init_fonts(const char* font)
 {
     FT_Library ft;
 	if(FT_Init_FreeType(&ft))
@@ -93,12 +93,12 @@ void Character_Render::init_fonts(const char* font)
             exit(1);
         }
         Texture character_tex;;
-        glGenTextures(1, &character_tex.texbuffer);
-        character_tex.texname = c;
-        character_tex.texunit = Model::fatch_new_texunit();
-        glActiveTexture(GL_TEXTURE0 + character_tex.texunit);
-        glBindTexture(GL_TEXTURE_2D, character_tex.texbuffer);
-        Model::add_texture(character_tex.texname.c_str(), character_tex);
+        glGenTextures(1, &character_tex.texBuffer);
+        character_tex.texName = c;
+        character_tex.texUnit = Model::fetchNewTexunit();
+        glActiveTexture(GL_TEXTURE0 + character_tex.texUnit);
+        glBindTexture(GL_TEXTURE_2D, character_tex.texBuffer);
+        Model::add_texture(character_tex.texName.c_str(), character_tex);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows,
             0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

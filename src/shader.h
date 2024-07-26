@@ -17,11 +17,11 @@ namespace Shader
     {
     public:
         Shader(std::string dir_path);
-        inline GLuint program() const { return program_id; }
-        inline void use() const { glUseProgram(program_id); }
-        inline std::string shader_name() const { return m_dir; }
+        inline GLuint program() const { return programId; }
+        inline void use() const { glUseProgram(programId); }
+        inline std::string shaderName() const { return m_dir; }
         static void update_uniform_blocks(const Camera& camera);
-        void set_single_color(const glm::vec3& color) const;
+        void setSingleColor(const glm::vec3& color) const;
         void set_model(const glm::mat4& model) const;
         void set_viewpos(const glm::vec3& view_pos) const;
         void set_globals() const;
@@ -30,34 +30,34 @@ namespace Shader
     protected:
         std::string m_dir;
         static GLuint ubo_matrices, ubo_fn, ubo_light_matrices;
-        GLuint program_id;
+        GLuint programId;
     };
 
-    class Object_shader: public Shader
+    class ObjectShader: public Shader
     {
     public:
-        Object_shader(std::string dir_path);
+        ObjectShader(std::string dir_path);
         virtual void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const = 0;
     };
 
-    class Blinn_phong: public Object_shader
+    class BlinnPhong: public ObjectShader
     {
     public:
-        Blinn_phong();
+        BlinnPhong();
         void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const override;
     };
 
-    class PBR: public Object_shader
+    class PBR: public ObjectShader
     {
     public:
         PBR();
         void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const override;
     };
 
-    class Single_color: public Shader
+    class SingleColor: public Shader
     {
     public:
-        Single_color();
+        SingleColor();
         void set_uniforms(const glm::mat4& model, const glm::vec3& color) const;
     };
 
@@ -68,95 +68,115 @@ namespace Shader
         void set_uniforms(const Camera& camera, const glm::mat4& model) const;
     };
 
-    class Tangent_normal: public Shader
+    class TangentNormal: public Shader
     {
     public:
-        Tangent_normal();
+        TangentNormal();
         void set_uniforms(const Camera& camera, const glm::mat4& model) const;
     };
 
-    class Depth_shader: public Shader
+    class DepthShader: public Shader
     {
     public:
-        Depth_shader(std::string dir_path);
+        DepthShader(std::string dir_path);
         virtual void set_uniforms(const glm::mat4& model, const Light& light) const = 0;
     };
 
-    class Cascade_map: public Depth_shader
+    class CascadeMap: public DepthShader
     {
     public:
-        Cascade_map();
+        CascadeMap();
         void set_uniforms(const glm::mat4& model, const Light& light) const override;
     };
 
-    class Depth_cubemap: public Depth_shader
+    class DepthCubemap: public DepthShader
     {
     public:
-        Depth_cubemap();
+        DepthCubemap();
         void set_uniforms(const glm::mat4& model, const Light& light) const override;
     };
 
-    class Sky_cube: public Shader
+    class SkyCube: public Shader
     {
     public:
-        Sky_cube();
+        SkyCube();
         void set_uniforms(const Camera& camera, float intensity, GLuint texture_unit) const;
     };
 
-    class Bloom_blur: public Shader
+    class BloomBlur: public Shader
     {
     public:
         void set_uniforms(GLuint image_unit, bool horizental) const;
-        static Bloom_blur* get_instance();
+        static BloomBlur* get_instance();
     private:
-        Bloom_blur();
-        static Bloom_blur* instance;
+        BloomBlur();
+        static BloomBlur* instance;
     };
 
-    class SSAO_blur: public Shader
+    class SSAOBlur: public Shader
     {
     public:
-        static SSAO_blur* get_instance();
+        static SSAOBlur* get_instance();
         void set_uniforms() const;
     private:
-        SSAO_blur();
-        static SSAO_blur* instance;
+        SSAOBlur();
+        static SSAOBlur* instance;
     };
 
-    class Post_proc: public Shader
+    class PostProc: public Shader
     {
     public:
         void set_uniforms(GLuint image_unit, GLuint blured_image_unit) const;
-        static Post_proc* get_instance();
+        static PostProc* get_instance();
     private:
-        Post_proc();
-        static Post_proc* instance;
+        PostProc();
+        static PostProc* instance;
     };
 
-    class G_buffer: public Shader
+    class GBuffer: public Shader
     {
     public:
         void set_uniforms(const Material &material, const Camera &camera, const glm::mat4 &model) const;
     protected:
-        G_buffer(std::string dir_path);
+        GBuffer(std::string dir_path);
     };
 
-    class G_buffer_BP: public G_buffer
+    class GBufferBP: public GBuffer
     {
     public:
-        static G_buffer_BP* get_instance();
-        G_buffer_BP();
+        static GBufferBP* get_instance();
+        GBufferBP();
     private:
-        static G_buffer_BP* instance;
+        static GBufferBP* instance;
     };
 
-    class G_buffer_PBR: public G_buffer
+    class GBufferPBR: public GBuffer
     {
     public:
-        static G_buffer_PBR* get_instance();
+        static GBufferPBR* get_instance();
     private:
-        G_buffer_PBR();
-        static G_buffer_PBR* instance;
+        GBufferPBR();
+        static GBufferPBR* instance;
+    };
+
+    class TransparentWBPBR: public Shader
+    {
+    public:
+        static TransparentWBPBR* getInstance();
+        void setUniforms(const Material& material, const Camera& camera, const glm::mat4& model) const;
+    private:
+        TransparentWBPBR();
+        static TransparentWBPBR* instance;
+    };
+
+    class Composite: public Shader
+    {
+    public:
+        static Composite* getInstance();
+        void setUniforms(GLuint accumTexUnit, GLuint revealageTexUnit) const;
+    private:
+        Composite();
+        static Composite* instance;
     };
 
     class SSAO: public Shader
@@ -169,30 +189,30 @@ namespace Shader
         static SSAO* instance;
     };
 
-    class Lighting_pass: public Shader
+    class LightingPass: public Shader
     {
     public:
         void set_uniforms(const Camera &camera) const;
     protected:
-        Lighting_pass(std::string dir_path);
+        LightingPass(std::string dir_path);
     };
 
-    class Lighting_pass_BP: public Lighting_pass
+    class LightingPassBP: public LightingPass
     {
     public:
-        static Lighting_pass_BP* get_instance();
+        static LightingPassBP* get_instance();
     private:
-        static Lighting_pass_BP* instance;
-        Lighting_pass_BP();
+        static LightingPassBP* instance;
+        LightingPassBP();
     };
 
-    class Lighting_pass_PBR: public Lighting_pass
+    class LightingPassPBR: public LightingPass
     {
     public:
-        static Lighting_pass_PBR* get_instance();
+        static LightingPassPBR* get_instance();
     private:
-        static Lighting_pass_PBR* instance;
-        Lighting_pass_PBR();
+        static LightingPassPBR* instance;
+        LightingPassPBR();
     };
 
     class HDRI2cubemap: public Shader
@@ -205,53 +225,53 @@ namespace Shader
         static HDRI2cubemap* instance;
     };
 
-    class Cubemap2irradiance: public Shader
+    class Cubemap2Irradiance: public Shader
     {
     public:
         void set_uniforms(const glm::mat4& view, GLuint cubemap_unit) const;
-        static Cubemap2irradiance* get_instance();
+        static Cubemap2Irradiance* get_instance();
     private:
-        Cubemap2irradiance();
-        static Cubemap2irradiance* instance;
+        Cubemap2Irradiance();
+        static Cubemap2Irradiance* instance;
     };
 
-    class Cubemap_prefilter: public Shader
+    class CubemapPrefilter: public Shader
     {
     public:
         void set_uniforms(const glm::mat4& view, GLuint cubemap_unit, float roughness) const;
-        static Cubemap_prefilter* get_instance();
+        static CubemapPrefilter* get_instance();
     private:
-        Cubemap_prefilter();
-        static Cubemap_prefilter* instance;
+        CubemapPrefilter();
+        static CubemapPrefilter* instance;
     };
 
-    class Cubemap_BRDFIntergral: public Shader
+    class CubemapBRDFIntergral: public Shader
     {
     public:
         void set_uniforms() const;
-        static Cubemap_BRDFIntergral* get_instance();
+        static CubemapBRDFIntergral* getInstance();
     private:
-        Cubemap_BRDFIntergral();
-        static Cubemap_BRDFIntergral* instance;
+        CubemapBRDFIntergral();
+        static CubemapBRDFIntergral* instance;
     };
 
-    class FBO_debuger: public Shader
+    class FBODebuger: public Shader
     {
     public:
-        void set_uniforms(GLuint tex_unit, const glm::mat4& model) const;
-        static FBO_debuger* get_instance();
+        void set_uniforms(GLuint tex_unit, const glm::mat4& mode, bool alphal) const;
+        static FBODebuger* getInstance();
     private:
-        FBO_debuger();
-        static FBO_debuger* instance;
+        FBODebuger();
+        static FBODebuger* instance;
     };
 
-    class Text_shader: public Shader
+    class TextShader: public Shader
     {
     public:
         void set_uniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const;
-        static Text_shader* get_instance();
+        static TextShader* get_instance();
     private:
-        Text_shader();
-        static Text_shader* instance;
+        TextShader();
+        static TextShader* instance;
     };
 }
