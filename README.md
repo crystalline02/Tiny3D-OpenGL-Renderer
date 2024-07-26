@@ -30,8 +30,14 @@ Specular IBL.
 
 # Futher features
 Geometry picking.
+
 Gizmo visualizing.
+
 Variance shadow mapping.
+
 Screen space reflection.
+
 Defferred Lighting.
 TAA.
+
+Preprocessing shader code to reuse the shader function.
