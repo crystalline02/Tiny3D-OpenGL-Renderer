@@ -1,8 +1,6 @@
 # Tiny3D-OpenGL-Renderer
 This is a project of opengl renderer imitating general 3D solfware.In this project, I have implemented some basic algorithms regarding Computer Grahpics.They were listed below.
 # Features
-Transparent blending.
-
 Cubemap shadow mapping.
 
 Cascaded shadow mapping.
@@ -21,6 +19,8 @@ Bloom.
 
 PBR.
 
+Weighted blended OIT.
+
 Specular IBL.
 # Sceen shots
 <img width="962" alt="Screenshot 2023-12-26 185618" src="https://github.com/crystalline02/Tiny3D-OpenGL-Renderer/assets/45896894/52029295-740c-463a-afcd-29ad0ae07116">
@@ -34,5 +34,4 @@ Gizmo visualizing.
 Variance shadow mapping.
 Screen space reflection.
 Defferred Lighting.
-Weighted blended OIT.
 TAA.
