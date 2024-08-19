@@ -20,14 +20,17 @@ namespace FBOManager
         GLuint rbo;
         std::vector<Texture> textures;
 
-        static std::unordered_map<std::string, FBOData> windows_sized_fbos;
+        static std::unordered_map<std::string, FBOData> windowsSizeFBOs;
     };
     
     void createTransparentFBO();
     void createSceneFramebufferMS();
+    void createSceneFramebuffer();
     void createSSAOFramebuffer();
+    void createPingpongFramebuffer();
     void createPingpongFramebufferMS();
     void createGFrambuffer();
+    void createHistoryFramebuffer();
     void genWindowFBOs();
     void regenWindowFBOs();
     void clearBuffers();

@@ -20,16 +20,16 @@ namespace Shader
         inline GLuint program() const { return programId; }
         inline void use() const { glUseProgram(programId); }
         inline std::string shaderName() const { return m_dir; }
-        static void update_uniform_blocks(const Camera& camera);
+        static void updateUniformBlocks(const Camera& camera);
         void setSingleColor(const glm::vec3& color) const;
-        void set_model(const glm::mat4& model) const;
-        void set_viewpos(const glm::vec3& view_pos) const;
-        void set_globals() const;
-        void set_normal_mat(const glm::mat4& model) const;
-        void set_material(const char* name, const Material& material) const;
+        void setModel(const glm::mat4& model) const;
+        void setViewpos(const glm::vec3& view_pos) const;
+        void setGlobals() const;
+        void setNormalMat(const glm::mat4& model) const;
+        void setMaterial(const char* name, const Material& material) const;
     protected:
         std::string m_dir;
-        static GLuint ubo_matrices, ubo_fn, ubo_light_matrices;
+        static GLuint uboMatrices, uboFN, uboLightMatrices, uboJitterVec;
         GLuint programId;
     };
 
@@ -37,35 +37,35 @@ namespace Shader
     {
     public:
         ObjectShader(std::string dir_path);
-        virtual void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const = 0;
+        virtual void setUniforms(const Material& material, const Camera& camera, const glm::mat4& model) const = 0;
     };
 
     class BlinnPhong: public ObjectShader
     {
     public:
         BlinnPhong();
-        void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const override;
+        void setUniforms(const Material& material, const Camera& camera, const glm::mat4& model) const override;
     };
 
     class PBR: public ObjectShader
     {
     public:
         PBR();
-        void set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const override;
+        void setUniforms(const Material& material, const Camera& camera, const glm::mat4& model) const override;
     };
 
     class SingleColor: public Shader
     {
     public:
         SingleColor();
-        void set_uniforms(const glm::mat4& model, const glm::vec3& color) const;
+        void setUniforms(const glm::mat4& model, const glm::vec3& color) const;
     };
 
     class Normal: public Shader
     {
     public:
         Normal();
-        void set_uniforms(const Camera& camera, const glm::mat4& model) const;
+        void setUniforms(const Camera& camera, const glm::mat4& model) const;
     };
 
     class TangentNormal: public Shader
@@ -106,8 +106,8 @@ namespace Shader
     class BloomBlur: public Shader
     {
     public:
-        void set_uniforms(GLuint image_unit, bool horizental) const;
-        static BloomBlur* get_instance();
+        void setUniforms(GLuint imageUnit, bool horizental) const;
+        static BloomBlur* getInstance();
     private:
         BloomBlur();
         static BloomBlur* instance;
@@ -116,8 +116,8 @@ namespace Shader
     class SSAOBlur: public Shader
     {
     public:
-        static SSAOBlur* get_instance();
-        void set_uniforms() const;
+        static SSAOBlur* getInstance();
+        void setUniforms() const;
     private:
         SSAOBlur();
         static SSAOBlur* instance;
@@ -126,8 +126,8 @@ namespace Shader
     class PostProc: public Shader
     {
     public:
-        void set_uniforms(GLuint image_unit, GLuint blured_image_unit) const;
-        static PostProc* get_instance();
+        void setUniforms(GLuint sceneColorUnit, GLuint bluredBrighnessUnit) const;
+        static PostProc* getInstance();
     private:
         PostProc();
         static PostProc* instance;
@@ -144,7 +144,7 @@ namespace Shader
     class GBufferBP: public GBuffer
     {
     public:
-        static GBufferBP* get_instance();
+        static GBufferBP* getInstance();
         GBufferBP();
     private:
         static GBufferBP* instance;
@@ -153,7 +153,7 @@ namespace Shader
     class GBufferPBR: public GBuffer
     {
     public:
-        static GBufferPBR* get_instance();
+        static GBufferPBR* getInstance();
     private:
         GBufferPBR();
         static GBufferPBR* instance;
@@ -183,7 +183,7 @@ namespace Shader
     {
     public:
         void set_uniforms() const;
-        static SSAO* get_instance();
+        static SSAO* getInstance();
     private:
         SSAO();
         static SSAO* instance;
@@ -192,7 +192,7 @@ namespace Shader
     class LightingPass: public Shader
     {
     public:
-        void set_uniforms(const Camera &camera) const;
+        void setUniforms(const Camera &camera) const;
     protected:
         LightingPass(std::string dir_path);
     };
@@ -200,7 +200,7 @@ namespace Shader
     class LightingPassBP: public LightingPass
     {
     public:
-        static LightingPassBP* get_instance();
+        static LightingPassBP* getInstance();
     private:
         static LightingPassBP* instance;
         LightingPassBP();
@@ -209,7 +209,7 @@ namespace Shader
     class LightingPassPBR: public LightingPass
     {
     public:
-        static LightingPassPBR* get_instance();
+        static LightingPassPBR* getInstance();
     private:
         static LightingPassPBR* instance;
         LightingPassPBR();
@@ -219,7 +219,7 @@ namespace Shader
     {
     public:
         void set_uniforms(GLuint HDRI_map_unit, const glm::mat4& view) const;
-        static HDRI2cubemap* get_instance();
+        static HDRI2cubemap* getInstance();
     private:
         HDRI2cubemap();
         static HDRI2cubemap* instance;
@@ -229,7 +229,7 @@ namespace Shader
     {
     public:
         void set_uniforms(const glm::mat4& view, GLuint cubemap_unit) const;
-        static Cubemap2Irradiance* get_instance();
+        static Cubemap2Irradiance* getInstance();
     private:
         Cubemap2Irradiance();
         static Cubemap2Irradiance* instance;
@@ -239,7 +239,7 @@ namespace Shader
     {
     public:
         void set_uniforms(const glm::mat4& view, GLuint cubemap_unit, float roughness) const;
-        static CubemapPrefilter* get_instance();
+        static CubemapPrefilter* getInstance();
     private:
         CubemapPrefilter();
         static CubemapPrefilter* instance;
@@ -268,10 +268,20 @@ namespace Shader
     class TextShader: public Shader
     {
     public:
-        void set_uniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const;
-        static TextShader* get_instance();
+        void setUniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const;
+        static TextShader* getInstance();
     private:
         TextShader();
         static TextShader* instance;
+    };
+
+    class TAAResolve: public Shader
+    {
+    public:
+        void setUniforms(GLuint currentColorTexUnit, GLuint historyColorTexUnit) const;
+        static TAAResolve* getInstance();
+    private:
+        TAAResolve();
+        static TAAResolve* instance;
     };
 }

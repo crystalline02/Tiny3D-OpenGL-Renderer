@@ -14,9 +14,11 @@
 #include "camera.h"
 #include "globals.h"
 #include "model.h"
+#include "TAAManager.h"
 #include "skybox.h"
 
-GLuint Shader::Shader::ubo_matrices = -1, Shader::Shader::ubo_fn = -1, Shader::Shader::ubo_light_matrices = -1;
+GLuint Shader::Shader::uboMatrices = -1, Shader::Shader::uboFN = -1, Shader::Shader::uboLightMatrices = -1,
+    Shader::Shader::uboJitterVec = -1;
 
 Shader::Shader::Shader(std::string dir_path): m_dir(dir_path)
 {
@@ -140,30 +142,39 @@ Shader::Shader::Shader(std::string dir_path): m_dir(dir_path)
     if(geometry_shader_id != -1) glDeleteShader(geometry_shader_id);
 
     // Binding uniform buffer object and corresbonding uniform block to BindingPoint 0
-    if(ubo_matrices == -1 || ubo_fn == -1 || ubo_light_matrices == -1)
+    if(uboMatrices == -1 || uboFN == -1 || uboLightMatrices == -1 || uboJitterVec)
     {
-        glGenBuffers(1, &ubo_matrices);
-        glGenBuffers(1, &ubo_fn);
-        glGenBuffers(1, &ubo_light_matrices);
-        glBindBuffer(GL_UNIFORM_BUFFER, ubo_matrices);
+        glGenBuffers(1, &uboMatrices);
+        glGenBuffers(1, &uboFN);
+        glGenBuffers(1, &uboLightMatrices);
+        glGenBuffers(1, &uboJitterVec);
+
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
         glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-        glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo_matrices, 0, 2 * sizeof(glm::mat4));  // Bind ubo_matrics to Binding Point 0
-        glBindBuffer(GL_UNIFORM_BUFFER, ubo_fn);
+        glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));  // Bind uboMatrics to Binding Point 0
+
+        glBindBuffer(GL_UNIFORM_BUFFER, uboFN);
         glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(float), nullptr, GL_STATIC_DRAW);
-        glBindBufferRange(GL_UNIFORM_BUFFER, 1, ubo_fn, 0, 2 * sizeof(float));  // Bind ubo_FN to Binding point 1
-        glBindBuffer(GL_UNIFORM_BUFFER, ubo_light_matrices);
+        glBindBufferRange(GL_UNIFORM_BUFFER, 1, uboFN, 0, 2 * sizeof(float));  // Bind uboFN to Binding point 1
+
+        glBindBuffer(GL_UNIFORM_BUFFER, uboLightMatrices);
         glBufferData(GL_UNIFORM_BUFFER, 80 * sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-        glBindBufferRange(GL_UNIFORM_BUFFER, 2, ubo_light_matrices, 0, 80 * sizeof(glm::mat4));  // Bind ubo_light_matrices to Binding point 2
+        glBindBufferRange(GL_UNIFORM_BUFFER, 2, uboLightMatrices, 0, 80 * sizeof(glm::mat4));  // Bind uboLightMatrices to Binding point 2
+
+        glBindBuffer(GL_UNIFORM_BUFFER, uboJitterVec);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec2), nullptr, GL_STATIC_DRAW);
+        glBindBufferRange(GL_UNIFORM_BUFFER, 3, uboJitterVec, 0, sizeof(glm::vec2));
+
         glBindBuffer(GL_UNIFORM_BUFFER, 0);  // Unbind
     }
 }
 
-void Shader::Shader::set_material(const char* name, const Material& material) const
+void Shader::Shader::setMaterial(const char* name, const Material& material) const
 {
     material.set_uniforms(name, programId);
 }
 
-void Shader::Shader::set_globals() const
+void Shader::Shader::setGlobals() const
 {
     util::set_float("near", util::Globals::camera.near(), programId);
     util::set_float("far", util::Globals::camera.far(), programId);
@@ -175,46 +186,51 @@ void Shader::Shader::setSingleColor(const glm::vec3& color) const
     util::set_floats("single_color", color, programId);
 }
 
-void Shader::Shader::update_uniform_blocks(const Camera& camera)
+void Shader::Shader::updateUniformBlocks(const Camera& camera)
 {
     // Uniform buffer for ViewProjection matrices 
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo_matrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(camera.lookat()));  // Fill buffer for view matrix
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(camera.projection()));  // Fill buffer for projection matrix
 
-    // Uniform buffeer for far&near floating point numbers
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo_fn);
+    // Uniform buffer for far&near floating point numbers
+    glBindBuffer(GL_UNIFORM_BUFFER, uboFN);
     float n = camera.near(), f = camera.far();
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(float), &f);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(float), sizeof(float), &n);
     
-    // Unifrom
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo_light_matrices);
-    std::vector<Light*> all_lights = Light::get_lights(); 
-    for(Light*& light: all_lights)
+    // Unifrom buffer for directional light matrices
+    glBindBuffer(GL_UNIFORM_BUFFER, uboLightMatrices);
+    std::vector<Light*> allLights = Light::get_lights(); 
+    for(Light*& light: allLights)
     {
         if(light->type() == Light_type::SUN)
         {
-            Direction_light* dir_light = static_cast<Direction_light*>(light);  // 父类指针指向子类对象时，强转父类指针为子类指针，已知可以完成转换，故用static cast
-            std::vector<glm::mat4> light_matrices = dir_light->light_space_mat(camera);
-            assert(light_matrices.size() <= 10);
-            glBufferSubData(GL_UNIFORM_BUFFER, dir_light->index() * 10 * sizeof(glm::mat4), light_matrices.size() * sizeof(glm::mat4), light_matrices.data());
+            Direction_light* dirLight = static_cast<Direction_light*>(light);  // 父类指针指向子类对象时，强转父类指针为子类指针，已知可以完成转换，故用static cast
+            std::vector<glm::mat4> lightMatrices = dirLight->light_space_mat(camera);
+            assert(lightMatrices.size() <= 10);
+            glBufferSubData(GL_UNIFORM_BUFFER, dirLight->index() * 10 * sizeof(glm::mat4), lightMatrices.size() * sizeof(glm::mat4), lightMatrices.data());
         }
     }
+
+    // Uniform buffer for jitter vector
+    glBindBuffer(GL_UNIFORM_BUFFER, uboJitterVec);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec2), glm::value_ptr(TAAManager::jitterVec[util::Globals::frameIndexMod16]));
+
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void Shader::Shader::set_model(const glm::mat4& model) const
+void Shader::Shader::setModel(const glm::mat4& model) const
 {
     util::set_mat("model", model, programId);
 }
 
-void Shader::Shader::set_normal_mat(const glm::mat4& model) const
+void Shader::Shader::setNormalMat(const glm::mat4& model) const
 {
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), programId);  // 要把normal转换到view space下，注意在glm中非常奇怪，矩阵乘法A * B在底层实现实际上是B * A
 }
 
-void Shader::Shader::set_viewpos(const glm::vec3& view_pos) const
+void Shader::Shader::setViewpos(const glm::vec3& view_pos) const
 {
     util::set_floats("view_pos", view_pos, programId);
 }
@@ -229,7 +245,7 @@ Shader::BlinnPhong::BlinnPhong(): ObjectShader("./shader/blinnPhong")
 
 }
 
-void Shader::BlinnPhong::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
+void Shader::BlinnPhong::setUniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
 {
     util::set_mat("model", model, programId);
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), programId);
@@ -275,7 +291,7 @@ Shader::PBR::PBR(): ObjectShader("./shader/physicallyBased")
 
 }
 
-void Shader::PBR::set_uniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
+void Shader::PBR::setUniforms(const Material& material, const Camera& camera, const glm::mat4& model) const
 {
     util::set_mat("model", model, programId);
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), programId);
@@ -323,7 +339,7 @@ Shader::SingleColor::SingleColor(): Shader("./shader/singleColor")
     // glUniformBlockBinding(program_id, glGetUniformBlockIndex(program_id, "Matrices"), 0);
 }
 
-void Shader::SingleColor::set_uniforms(const glm::mat4& model, const glm::vec3& color) const
+void Shader::SingleColor::setUniforms(const glm::mat4& model, const glm::vec3& color) const
 {
     util::set_mat("model", model, programId);
 }
@@ -354,7 +370,7 @@ Shader::Normal::Normal(): Shader("./shader/normal")
     // glUniformBlockBinding(program_id, glGetUniformBlockIndex(program_id, "Matrices"), 0);
 }
 
-void Shader::Normal::set_uniforms(const Camera& camera, const glm::mat4& model) const
+void Shader::Normal::setUniforms(const Camera& camera, const glm::mat4& model) const
 {
     util::set_mat("model", model, programId);
     util::set_mat("normal_mat", glm::transpose(glm::inverse(glm::mat3(model))), programId);
@@ -406,16 +422,25 @@ Shader::PostProc::PostProc(): Shader("./shader/postQuad")
 
 }
 
-void Shader::PostProc::set_uniforms(GLuint image_unit, GLuint blured_image_unit) const
+void Shader::PostProc::setUniforms(GLuint sceneColorUnit, GLuint bluredBrighnessUnit) const
 {
-    util::set_int("image", image_unit, programId);
-    util::set_int("blured_brightness", blured_image_unit, programId);
+    if(util::Globals::deferred)
+    {
+        util::set_int("sceneColor", sceneColorUnit, programId);
+        util::set_int("bluredBrightness", bluredBrighnessUnit, programId);
+    }
+    else
+    {
+        util::set_int("sceneColorMS", sceneColorUnit, programId);
+        util::set_int("bluredBrightnessMS", bluredBrighnessUnit, programId);
+    }
     util::set_bool("hdr", util::Globals::hdr, programId);
     util::set_bool("bloom", util::Globals::bloom, programId);
     util::set_float("exposure", util::Globals::exposure, programId);
+    util::set_bool("defered", util::Globals::deferred, programId);
 }
 
-Shader::PostProc *Shader::PostProc::get_instance()
+Shader::PostProc *Shader::PostProc::getInstance()
 {
     return instance ? instance : (instance = new PostProc());
 }
@@ -427,25 +452,29 @@ Shader::BloomBlur::BloomBlur(): Shader("./shader/bloomBlur")
 
 }
 
-void Shader::BloomBlur::set_uniforms(GLuint image_unit, bool horizental) const
+void Shader::BloomBlur::setUniforms(GLuint imageUnit, bool horizental) const
 {
-    util::set_int("image", image_unit, programId);
+    if(util::Globals::deferred)
+        util::set_int("image", imageUnit, programId);
+    else
+        util::set_int("imageMS", imageUnit, programId);
     util::set_bool("horizental", horizental, programId);
+    util::set_bool("defered", util::Globals::deferred, programId);
 }
 
-Shader::BloomBlur *Shader::BloomBlur::get_instance()
+Shader::BloomBlur *Shader::BloomBlur::getInstance()
 {
     return instance ? instance : (instance = new BloomBlur());
 }
 
 Shader::SSAOBlur* Shader::SSAOBlur::instance = nullptr;
 
-Shader::SSAOBlur *Shader::SSAOBlur::get_instance()
+Shader::SSAOBlur *Shader::SSAOBlur::getInstance()
 {
     return instance ? instance : (instance = new SSAOBlur());
 }
 
-void Shader::SSAOBlur::set_uniforms() const
+void Shader::SSAOBlur::setUniforms() const
 {
     util::set_int("ssao_buffer", Model::getTexture("SSAO color buffer").texUnit, programId);
 }
@@ -475,7 +504,7 @@ Shader::GBufferBP::GBufferBP(): GBuffer("./shader/GBufferBP")
     
 }
 
-Shader::GBufferBP* Shader::GBufferBP::get_instance()
+Shader::GBufferBP* Shader::GBufferBP::getInstance()
 {
     return instance ? instance : (instance = new GBufferBP()); 
 }
@@ -486,7 +515,7 @@ Shader::GBufferPBR::GBufferPBR(): GBuffer("./shader/GBufferPBR")
 
 }
 
-Shader::GBufferPBR* Shader::GBufferPBR::get_instance()
+Shader::GBufferPBR* Shader::GBufferPBR::getInstance()
 {
     return instance ? instance : (instance = new GBufferPBR());
 }
@@ -562,17 +591,17 @@ void Shader::Composite::setUniforms(GLuint accumTexUnit, GLuint revealageTexUnit
 
 void Shader::SSAO::set_uniforms() const
 {
-    util::set_int("position_buffer", Model::getTexture("G buffer position buffer").texUnit, programId);
-    util::set_int("surface_normal", Model::getTexture("G buffer surface normal buffer").texUnit, programId);
+    util::set_int("position_buffer", Model::getTexture("GBufferPostionAlpha").texUnit, programId);
+    util::set_int("surface_normal", Model::getTexture("GBufferSurfaceNormal").texUnit, programId);
     util::set_int("noise_tex", Model::getTexture("SSAO noisetex").texUnit, programId);
-    util::set_float("radius", util::Globals::ssao_radius, programId);
+    util::set_float("radius", util::Globals::ssaoRadius, programId);
     // Here I take samples when assigning uniforms, which means smaples differs per rendering frame per fragment
     std::array<glm::vec3, 64> samples = util::get_ssao_samples();
     for(int i = 0; i < 64; ++i)
         util::set_floats(("samples[" + std::to_string(i) + "]").c_str(), samples[i], programId);
 }
 
-Shader::SSAO *Shader::SSAO::get_instance()
+Shader::SSAO *Shader::SSAO::getInstance()
 {
     return instance ? instance : (instance = new SSAO());
 }
@@ -584,13 +613,13 @@ Shader::SSAO::SSAO() : Shader("./shader/ssao")
 
 }
 
-void Shader::LightingPass::set_uniforms(const Camera &camera) const
+void Shader::LightingPass::setUniforms(const Camera &camera) const
 {
-    util::set_int("position_buffer", Model::getTexture("G buffer position buffer").texUnit, programId);
-    util::set_int("normal_depth", Model::getTexture("G buffer normal_depth buffer").texUnit, programId);
-    util::set_int("surface_normal", Model::getTexture("G buffer surface normal buffer").texUnit, programId);
-    util::set_int("albedo_specular", Model::getTexture("G buffer albedo_specular buffer").texUnit, programId);
-    util::set_int("ambient_metalic", Model::getTexture("G buffer ambient_metalic buffer").texUnit, programId);
+    util::set_int("position_buffer", Model::getTexture("GBufferPostionAlpha").texUnit, programId);
+    util::set_int("normal_depth", Model::getTexture("GBufferNormalDepth").texUnit, programId);
+    util::set_int("surface_normal", Model::getTexture("GBufferSurfaceNormal").texUnit, programId);
+    util::set_int("albedo_specular", Model::getTexture("GBufferAlbedoSpecular").texUnit, programId);
+    util::set_int("ambient_metalic", Model::getTexture("GBufferAmbientMetalic").texUnit, programId);
     util::set_int("ssao_buffer", Model::getTexture("SSAO color buffer").texUnit, programId);
     util::set_int("point_lights_count", Light::point_lights_count(), programId);
     util::set_int("spot_lights_count", Light::spot_lights_count(), programId);
@@ -627,6 +656,7 @@ void Shader::LightingPass::set_uniforms(const Camera &camera) const
     util::set_int("cascade_count", static_cast<int>(util::Globals::cascade_levels.size() + 1), programId);
     util::set_float("threshold", util::Globals::threshold, programId);
     util::set_bool("ssao", util::Globals::SSAO, programId);
+    util::set_bool("bloom", util::Globals::bloom, programId);
 }
 
 Shader::LightingPass::LightingPass(std::string dir_path): Shader(dir_path)
@@ -636,7 +666,7 @@ Shader::LightingPass::LightingPass(std::string dir_path): Shader(dir_path)
 
 Shader::LightingPassBP* Shader::LightingPassBP::instance = nullptr;
 
-Shader::LightingPassBP* Shader::LightingPassBP::get_instance()
+Shader::LightingPassBP* Shader::LightingPassBP::getInstance()
 {
     return instance ? instance : (instance = new LightingPassBP());
 }
@@ -648,7 +678,7 @@ Shader::LightingPassBP::LightingPassBP(): LightingPass("./shader/lightingPassBP"
 
 Shader::LightingPassPBR* Shader::LightingPassPBR::instance = nullptr;
 
-Shader::LightingPassPBR* Shader::LightingPassPBR::get_instance()
+Shader::LightingPassPBR* Shader::LightingPassPBR::getInstance()
 {
     return instance ? instance : (instance = new LightingPassPBR());
 }
@@ -672,7 +702,7 @@ void Shader::HDRI2cubemap::set_uniforms(GLuint HDRI_map_unit, const glm::mat4& v
     util::set_int("equirectangularmap", HDRI_map_unit, programId);
 }
 
-Shader::HDRI2cubemap* Shader::HDRI2cubemap::get_instance()
+Shader::HDRI2cubemap* Shader::HDRI2cubemap::getInstance()
 {
     return instance ? instance : (instance = new HDRI2cubemap());
 }
@@ -684,7 +714,7 @@ Shader::Cubemap2Irradiance::Cubemap2Irradiance(): Shader("./shader/cubemap2Irrad
 
 }
 
-Shader::Cubemap2Irradiance* Shader::Cubemap2Irradiance::get_instance()
+Shader::Cubemap2Irradiance* Shader::Cubemap2Irradiance::getInstance()
 {
     return instance ? instance : (instance = new Cubemap2Irradiance());
 }
@@ -703,7 +733,7 @@ Shader::CubemapPrefilter::CubemapPrefilter(): Shader("./shader/cubemapPrefilter"
 
 }
 
-Shader::CubemapPrefilter* Shader::CubemapPrefilter::get_instance()
+Shader::CubemapPrefilter* Shader::CubemapPrefilter::getInstance()
 {
     return instance ? instance : (instance = new CubemapPrefilter());
 }
@@ -761,14 +791,32 @@ Shader::TextShader::TextShader(): Shader("./shader/textShader")
 
 }
 
-Shader::TextShader* Shader::TextShader::get_instance()
+Shader::TextShader* Shader::TextShader::getInstance()
 {
     return instance ? instance : (instance = new TextShader());
 }
 
-void Shader::TextShader::set_uniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const
+void Shader::TextShader::setUniforms(const glm::mat4& projection, const glm::vec3& color, GLuint bitmap_unit) const
 {
     util::set_mat("projection", projection, programId);
     util::set_int("bitmap", bitmap_unit, programId);
     util::set_floats("color", color, programId);
+}
+
+Shader::TAAResolve* Shader::TAAResolve::instance = nullptr;
+
+Shader::TAAResolve::TAAResolve(): Shader("./shader/TAAResolve")
+{
+    
+}
+
+void Shader::TAAResolve::setUniforms(GLuint currentColorTexUnit, GLuint historyColorTexUnit) const
+{
+    util::set_int("currentColorTex", currentColorTexUnit, programId);
+    util::set_int("historyColorTex", historyColorTexUnit, programId);
+}
+
+Shader::TAAResolve* Shader::TAAResolve::getInstance()
+{
+    return instance ? instance : (instance = new TAAResolve());
 }

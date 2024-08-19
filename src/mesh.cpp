@@ -91,7 +91,7 @@ void Mesh::forwardPass(const Shader::ObjectShader& shader, const Camera& camera,
 
     glBindVertexArray(VAO);
     for(int i = 0; i < 4; ++i) glEnableVertexAttribArray(i);
-    shader.set_uniforms(*m_material, camera, model);
+    shader.setUniforms(*m_material, camera, model);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 
     // Render settings back to default
@@ -106,7 +106,7 @@ void Mesh::forwardPass(const Shader::ObjectShader& shader, const Camera& camera,
 
 void Mesh::gbufferPass(const Shader::GBuffer &shader, const Camera &camera, const glm::mat4 &model, GLuint fbo) const
 {
-    assert(shader.shaderName() == (util::Globals::pbr_mat ? "./shader/GBufferPBR" : "./shader/GBufferBP"));
+    assert(shader.shaderName() == (util::Globals::pbrMat ? "./shader/GBufferPBR" : "./shader/GBufferBP"));
     assert(fbo != 0);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);
@@ -135,7 +135,7 @@ void Mesh::forwardNormals(const Shader::Normal& shader, const Camera& camera, co
     glBindVertexArray(VAO_normal);
     for(int i = 0; i < 2; ++i) glEnableVertexAttribArray(i);
     shader.use();
-    shader.set_uniforms(camera, model);
+    shader.setUniforms(camera, model);
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, (void*)0);
     glBindVertexArray(0);
     glDisable(GL_DEPTH_TEST);
@@ -168,7 +168,7 @@ void Mesh::draw_outline(const Shader::SingleColor& shader, const Camera& camera,
 
     shader.use();
     glBindVertexArray(VAO);
-    shader.set_uniforms(model, {1.f, .5f, .25f});
+    shader.setUniforms(model, {1.f, .5f, .25f});
     glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, (void*)0);
 
     glDisable(GL_STENCIL_TEST);

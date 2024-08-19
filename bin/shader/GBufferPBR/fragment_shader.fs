@@ -1,4 +1,6 @@
 #version 460 core
+
+// GemotryFBO
 layout(location = 0) out vec4 position_buffer;
 layout(location = 1) out vec4 normal_depth;
 layout(location = 2) out vec4 surface_normal;

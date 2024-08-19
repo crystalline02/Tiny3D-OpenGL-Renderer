@@ -332,7 +332,7 @@ void Light_vertices::bind_vbo_2_vao(GLint VAO, GLint VBO) const
     glEnableVertexAttribArray(0);
 }
 
-Light_vertices* Light_vertices::get_instance()
+Light_vertices* Light_vertices::getInstance()
 {
     if(!singleton) return singleton = new Light_vertices();
     else return singleton;
@@ -349,7 +349,7 @@ glm::mat4 Light_vertices::get_bar_dir_matrix(glm::vec3 direction, glm::vec3 post
     return model_bar_dir;
 }
 
-void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
+void Light_vertices::forward(const Shader::Shader& shader, const Camera& camera)
 {
     assert(shader.shaderName() == "./shader/singleColor");
 
@@ -370,7 +370,7 @@ void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
             glm::mat4 model_circle = util::face_camera_model(util::Globals::camera.camera_mat(), light->position());
             glBindVertexArray(m_circle_VAO);
             glEnableVertexAttribArray(0);
-            shader.set_model(model_circle); 
+            shader.setModel(model_circle); 
             glDrawArrays(GL_LINE_LOOP, 0, m_size_vertices_circle / (3 * sizeof(float)));
             break;
         }
@@ -383,7 +383,7 @@ void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
             model_circle = glm::scale(model_circle, glm::vec3(factor * zdis_l2c, factor * zdis_l2c, factor * zdis_l2c));
             glBindVertexArray(m_circle_VAO);
             glEnableVertexAttribArray(0);
-            shader.set_model(model_circle);
+            shader.setModel(model_circle);
             glDrawArrays(GL_LINE_LOOP, 0, m_size_vertices_circle / (3 * sizeof(float)));
 
             // Draw direction bar
@@ -391,14 +391,14 @@ void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
             glm::mat4 model_bar_dir = get_bar_dir_matrix(light_d->direction(), light_d->position());
             glBindVertexArray(m_bar_VAO);
             glEnableVertexAttribArray(0);
-            shader.set_model(model_bar_dir);
+            shader.setModel(model_bar_dir);
             glDrawArrays(GL_LINE_LOOP, 0, m_size_vertices_circle / (3 * sizeof(float)));
 
             // Draw radiant
             glm::mat4 model_radiant(model_circle);
             glBindVertexArray(m_radiant_VAO);
             glEnableVertexAttribArray(0);
-            shader.set_model(model_radiant);
+            shader.setModel(model_radiant);
             for(int i = 0; i < m_size_vertices_radiant / (3 * sizeof(float)); i += 2)
                 glDrawArrays(GL_LINE_STRIP, i, 2);
             break;
@@ -412,7 +412,7 @@ void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
             model_circle = glm::scale(model_circle, glm::vec3(factor * zdis_l2c));
             glBindVertexArray(m_circle_VAO);
             glEnableVertexAttribArray(0);
-            shader.set_model(model_circle);
+            shader.setModel(model_circle);
             glDrawArrays(GL_LINE_LOOP, 0, m_size_vertices_circle / (3 * sizeof(float)));
             
             // Draw direction bar
@@ -421,7 +421,7 @@ void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
             glm::mat4 model_bar_dir_scaled = glm::scale(model_bar_dir, glm::vec3(0.5f, 0.5f, 0.5f));
             glBindVertexArray(m_bar_VAO);
             glEnableVertexAttribArray(0);
-            shader.set_model(model_bar_dir_scaled);
+            shader.setModel(model_bar_dir_scaled);
             glDrawArrays(GL_LINE_LOOP, 0, m_size_vertices_circle / (3 * sizeof(float)));
             
             // Draw outer clone bars
@@ -434,7 +434,7 @@ void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
                 glm::mat4 model_clone_bar = model_bar_dir * get_bar_dir_matrix(clone_bar_dirs_outer[i], glm::vec3(0.f));
                 glBindVertexArray(m_bar_VAO);
                 glEnableVertexAttribArray(0);
-                shader.set_model(model_clone_bar);
+                shader.setModel(model_clone_bar);
                 glDrawArrays(GL_LINE_STRIP, 0, m_size_verticies_bar / (3 * sizeof(float)));
             }
 
@@ -456,7 +456,7 @@ void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
             {
                 glBindVertexArray(m_circle_VAO);
                 glEnableVertexAttribArray(0);
-                shader.set_model(model_clone_circles[i]);
+                shader.setModel(model_clone_circles[i]);
                 glDrawArrays(GL_LINE_LOOP, 0, m_size_vertices_circle / (3 * sizeof(float)));
             }
             break;
@@ -468,7 +468,7 @@ void Light_vertices::draw(const Shader::Shader& shader, const Camera& camera)
         // Draw bar
         glBindVertexArray(m_bar_VAO);
         glEnableVertexAttribArray(0);
-        shader.set_model(model_bar);
+        shader.setModel(model_bar);
         glDrawArrays(GL_LINE_STRIP, 0, m_size_verticies_bar);
     }
     glBindVertexArray(0);

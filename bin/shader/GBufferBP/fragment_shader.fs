@@ -1,9 +1,12 @@
 #version 460 core
+
+// GemometryFBO
 layout(location = 0) out vec4 position_buffer;
 layout(location = 1) out vec4 normal_depth;
 layout(location = 2) out vec4 surface_normal;
 layout(location = 3) out vec4 albedo_specular;
 layout(location = 4) out vec4 ambient_metalic;
+layout(location = 5) out vec2 motionVec;
 
 in GS_OUT
 {

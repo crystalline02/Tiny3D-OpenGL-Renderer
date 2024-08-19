@@ -8,6 +8,7 @@ in GS_OUT
     mat3 TBN;  // world
 } fs_in;
 
+// sceneFBO
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 BrightColor;
 

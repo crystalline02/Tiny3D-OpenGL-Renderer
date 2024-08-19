@@ -29,7 +29,7 @@ public:
         float ambient = .005f);
     inline GLuint depth_FBO() const { return m_depth_fbo; }
     inline float& intensity_ptr() { return m_intensity; } 
-    inline float& color_ptr() { return m_color.x; }
+    inline float& colorPtr() { return m_color.x; }
     inline glm::vec3 color() const { return m_color; }
     inline float diffuse() const { return m_diffuse; }
     inline float specular() const { return m_specular; }
@@ -119,14 +119,14 @@ protected:
 class Light_vertices
 {
 public:
-    static Light_vertices* get_instance();
+    static Light_vertices* getInstance();
     inline GLuint circle_VAO() const { return m_circle_VAO; }
     inline GLuint bar_VAO() const { return m_bar_VAO; }
     inline GLuint radiant_VAO() const { return m_radiant_VAO; }
     inline GLuint size_vertices_circle() const { return m_size_vertices_circle; }
     inline GLuint size_verticies_bar() const { return m_size_verticies_bar; }
     inline GLuint size_vertices_radiant() const { return m_size_vertices_radiant; }
-    void draw(const Shader::Shader& shader, const Camera& camera);
+    void forward(const Shader::Shader& shader, const Camera& camera);
 private:
     Light_vertices();
     ~Light_vertices();

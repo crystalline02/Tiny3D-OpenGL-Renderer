@@ -21,15 +21,16 @@
 #include "quad.h"
 #include "skybox.h"
 #include "globals.h"
-#include "fbo_debuger.h"
+#include "fboDebuger.h"
 #include "fboManager.h"
+#include "TAAManager.h"
 
 int main(int argc, char** argv)
 {
 	INIT_GLFW();
 
  	// Init window
-	GLFWwindow* window = glfwCreateWindow(util::Globals::camera.width(), 
+	GLFWwindow* window = glfwCreateWindow(SRC_WIDTH, 
 		util::Globals::camera.height(), 
 		"OpenGL renderer", 
 		nullptr, 
@@ -62,7 +63,7 @@ int main(int argc, char** argv)
 	}
 	
 	// Viewport transform
-	glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
+	glViewport(0, 0, SRC_WIDTH, util::Globals::camera.height());
 
 	// Set callback function
 	glfwSetFramebufferSizeCallback(window, util::framebuffer_size_callback);
@@ -107,6 +108,10 @@ int main(int argc, char** argv)
 
 	// Scene framebuffer for postprocessing
 	FBOManager::genWindowFBOs();
+
+	// Initialize jitter vector
+	TAAManager::matchJitterVec(util::Globals::camera);
+
 	while(!glfwWindowShouldClose(window))
 	{
 		// Process input
@@ -117,70 +122,81 @@ int main(int argc, char** argv)
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		// Rendering preperation, mainly clearing framebuffer
+		// Rendering preperation
 		FBOManager::clearBuffers();
-		glEnable(GL_MULTISAMPLE); 
-		Shader::Shader::update_uniform_blocks(util::Globals::camera);
+		if(!util::Globals::deferred) glEnable(GL_MULTISAMPLE);
+		else glDisable(GL_MULTISAMPLE);
+		Shader::Shader::updateUniformBlocks(util::Globals::camera);
 		// glm::mat4 model_mat(1.f);
 		// model_mat = glm::rotate(model_mat, glm::radians((float)glfwGetTime() * 15.f), glm::vec3(0.f, 1.f, 0.f));
 		// model.set_model(model_mat);
-		model.set_cullface(util::Globals::cull_face);
-		model.set_blend(util::Globals::blend);
+		model.setCullface(util::Globals::cullFace);
+		model.setBlend(util::Globals::blend);
 
 		// Draw depth maps
-		model.draw_depthmaps(cascade_shader, depth_cube_shader);
-		// Draw model.If deferred rendering is enabled, we draw on g-buffers,if not we draw objects directly.
-		if(util::Globals::deferred_rendering)
+		model.depthmapPass(cascade_shader, depth_cube_shader);
+		// Draw model.If deferred rendering is enabled, we draw on g-buffers, if not we draw objects directly.
+		if(util::Globals::deferred)
 		{
-			model.gbufferPass(util::Globals::pbr_mat ? static_cast<Shader::GBuffer>(*Shader::GBufferPBR::get_instance()) : static_cast<Shader::GBuffer>(*Shader::GBufferBP::get_instance()), 
+			model.gbufferPass(util::Globals::pbrMat ? static_cast<Shader::GBuffer>(*Shader::GBufferPBR::getInstance()) : static_cast<Shader::GBuffer>(*Shader::GBufferBP::getInstance()), 
 				util::Globals::camera, 
-				FBOManager::FBOData::windows_sized_fbos["Gemometry fbo"].fbo);
-			PostprocQuad::get_instance()->lightingPass(util::Globals::pbr_mat ? static_cast<Shader::LightingPass>(*Shader::LightingPassPBR::get_instance()) : static_cast<Shader::LightingPass>(*Shader::LightingPassBP::get_instance()), 
+				FBOManager::FBOData::windowsSizeFBOs["GemometryFBO"].fbo);
+			PostprocQuad::getInstance()->lightingPass(util::Globals::pbrMat ? static_cast<Shader::LightingPass>(*Shader::LightingPassPBR::getInstance()) : static_cast<Shader::LightingPass>(*Shader::LightingPassBP::getInstance()), 
 				util::Globals::camera,
-				FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
+				FBOManager::FBOData::windowsSizeFBOs["sceneFBO"].fbo);
 			if(util::Globals::SSAO)
 			{
-				PostprocQuad::get_instance()->SSAOPass(*Shader::SSAO::get_instance(), 
-					*Shader::SSAOBlur::get_instance(), 
-					FBOManager::FBOData::windows_sized_fbos["SSAO fbo"].fbo, 
-					FBOManager::FBOData::windows_sized_fbos["SSAO blur fbo"].fbo);
+				PostprocQuad::getInstance()->SSAOPass(*Shader::SSAO::getInstance(), 
+					*Shader::SSAOBlur::getInstance(), 
+					FBOManager::FBOData::windowsSizeFBOs["SSAOFBO"].fbo, 
+					FBOManager::FBOData::windowsSizeFBOs["SSAOBlurFBO"].fbo);
 			}
-			model.transparentPass(*Shader::TransparentWBPBR::getInstance(), util::Globals::camera, FBOManager::FBOData::windows_sized_fbos["transparentFBO"].fbo);
-			PostprocQuad::get_instance()->compositePass(*Shader::Composite::getInstance(), FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
+			model.transparentPass(*Shader::TransparentWBPBR::getInstance(), util::Globals::camera, FBOManager::FBOData::windowsSizeFBOs["transparentFBO"].fbo);
+			PostprocQuad::getInstance()->compositePass(*Shader::Composite::getInstance(), FBOManager::FBOData::windowsSizeFBOs["sceneFBO"].fbo);
+			PostprocQuad::getInstance()->TAAResolvePass(*Shader::TAAResolve::getInstance(), TAAManager::historyFBO.fbo);
 		}
 		else
-			model.draw(util::Globals::pbr_mat ? (Shader::ObjectShader&)pbr_shader : (Shader::ObjectShader&)bp_shader, 
+		{
+			model.foward(util::Globals::pbrMat ? (Shader::ObjectShader&)pbr_shader : (Shader::ObjectShader&)bp_shader, 
 				util::Globals::camera, 
-				FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
+				FBOManager::FBOData::windowsSizeFBOs["sceneMSFBO"].fbo);
+		}
 
 		// Draw skybox
-		if(util::Globals::skybox) 
-			Skybox::get_instance()->draw(skybox_shader, util::Globals::camera, 
-				FBOManager::FBOData::windows_sized_fbos["scene ms fbo"].fbo);
+		if(util::Globals::skybox)
+			Skybox::getInstance()->draw(skybox_shader, util::Globals::camera, 
+				util::Globals::deferred ? FBOManager::FBOData::windowsSizeFBOs["sceneFBO"].fbo : FBOManager::FBOData::windowsSizeFBOs["sceneMSFBO"].fbo);
 
 		// Post process
-		PostprocQuad::get_instance()->drawFinal(*Shader::PostProc::get_instance());
+		PostprocQuad::getInstance()->drawOnScreen(*Shader::PostProc::getInstance());
 
 		// Draw outline
-		model.draw_outline(color_shader, util::Globals::camera);
+		model.drawOutline(color_shader, util::Globals::camera);
 
 		// Draw light
-		Light_vertices::get_instance()->draw(color_shader, util::Globals::camera);
+		Light_vertices::getInstance()->forward(color_shader, util::Globals::camera);
 		
 		// Draw model normals
-		if(util::Globals::visualize_normal)
-			model.draw_normals(normal_shader, util::Globals::camera);
+		if(util::Globals::visualizeNormal)
+			model.drawNormals(normal_shader, util::Globals::camera);
 
 		// Draw model tangent normal
-		if(util::Globals::visualize_tangent) 
-			model.draw_tangent(tangent_shader, util::Globals::camera);
+		if(util::Globals::visualizeTangent) 
+			model.drawTangent(tangent_shader, util::Globals::camera);
 
 		// Draw frambuffer debuger window
- 		FBODebuger::getInstance(util::Globals::camera.width(), util::Globals::camera.height())
-			->draw(*Shader::FBODebuger::getInstance(), Model::getTexture("SSAO color buffer").texUnit);
+ 		FBODebuger::getInstance(SRC_WIDTH, util::Globals::camera.height())
+			->draw(*Shader::FBODebuger::getInstance(), Model::getTexture("historyColor").texUnit);
+
+		// some variable updates
+		double current_time = glfwGetTime();
+		util::Globals::deltaTime = current_time - util::Globals::lastTime;
+		util::Globals::lastTime = current_time;
+		if(++util::Globals::frameIndexMod16 >= 16) util::Globals::frameIndexMod16 -= 16;
+		if(util::Globals::deferred && util::Globals::deferedFrameIndex <= 2) ++util::Globals::deferedFrameIndex;
 
 		// Imgui user interface design
-		util::imgui_design(model);
+		util::ImGUIDesign(model);
 
 		// End of imgui
 		ImGui::Render();
@@ -189,10 +205,6 @@ int main(int argc, char** argv)
 		// Check and call events and swap buffers
 		glfwPollEvents();  // 检测有无按下按键，鼠标操作等等，并执行相应的回调函数
 		glfwSwapBuffers(window);  // 双缓冲，把back buffer换到front buffer去，得以显示渲染图
-		
-		double current_time = glfwGetTime();
-		util::Globals::delta_time = current_time - util::Globals::last_time;
-		util::Globals::last_time = current_time;
 
 		// During the end of the current frame
 		// Check whether to switch current selected model

@@ -8,7 +8,7 @@
 #include <filesystem>
 
 
-Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_tex_cubemap(new Texture()), m_tex_diffuseirrad(new Texture()),
+Skybox::Skybox(): m_intensity(1.f), m_cur_id(3), m_cubemapTex(new Texture()), m_tex_diffuseirrad(new Texture()),
 m_tex_prefilter(new Texture()), m_affect_scene(false), m_BRDF_LUT(new Texture())
 {
     float cube_vertices[] = {
@@ -74,11 +74,11 @@ m_tex_prefilter(new Texture()), m_affect_scene(false), m_BRDF_LUT(new Texture())
     }
 
     if(std::filesystem::is_directory(m_directories[m_cur_id]))
-        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_tex_cubemap, *m_tex_diffuseirrad, 
+        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_cubemapTex, *m_tex_diffuseirrad, 
             *m_tex_prefilter, 
             *m_BRDF_LUT);
     else
-        util::createCubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, *m_tex_diffuseirrad, 
+        util::createCubemap(m_directories[m_cur_id].c_str(), *m_cubemapTex, *m_tex_diffuseirrad, 
             *m_tex_prefilter,
             *m_BRDF_LUT);
 }
@@ -86,17 +86,17 @@ m_tex_prefilter(new Texture()), m_affect_scene(false), m_BRDF_LUT(new Texture())
 void Skybox::set_selected(GLuint index)
 {
     m_cur_id = index;
-    Model::rm_texture(*m_tex_cubemap);
-    Model::rm_texture(*m_tex_diffuseirrad);
-    Model::rm_texture(*m_tex_prefilter);
-    Model::rm_texture(*m_BRDF_LUT);
+    Model::rmTexture(*m_cubemapTex);
+    Model::rmTexture(*m_tex_diffuseirrad);
+    Model::rmTexture(*m_tex_prefilter);
+    Model::rmTexture(*m_BRDF_LUT);
     if(std::filesystem::is_directory(m_directories[m_cur_id]))
-        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_tex_cubemap, 
+        util::create_cubemap(faces_vector(m_directories[m_cur_id]), *m_cubemapTex, 
             *m_tex_diffuseirrad,
             *m_tex_prefilter,
             *m_BRDF_LUT);
     else
-        util::createCubemap(m_directories[m_cur_id].c_str(), *m_tex_cubemap, 
+        util::createCubemap(m_directories[m_cur_id].c_str(), *m_cubemapTex, 
             *m_tex_diffuseirrad,
             *m_tex_prefilter,
             *m_BRDF_LUT);
@@ -104,7 +104,7 @@ void Skybox::set_selected(GLuint index)
     // std::cout << m_texture->m_name << ", " << m_texture->m_texunit << ", " << m_texture->m_texbuffer << std::endl;
 }
 
-Skybox* Skybox::get_instance()
+Skybox* Skybox::getInstance()
 {
     if(singleton == nullptr) return singleton = new Skybox();
     else return singleton;
@@ -112,7 +112,7 @@ Skybox* Skybox::get_instance()
 
 GLuint Skybox::cubemap_unit() const
 {
-    return m_tex_cubemap->texUnit;
+    return m_cubemapTex->texUnit;
 }
 
 GLuint Skybox::irradiancemap_unit() const
@@ -140,7 +140,7 @@ void Skybox::draw(const Shader::SkyCube& shader, const Camera& camera, GLuint fb
 
     glBindVertexArray(VAO);
     shader.use();
-    shader.set_uniforms(camera, m_intensity, m_tex_cubemap->texUnit);
+    shader.set_uniforms(camera, m_intensity, m_cubemapTex->texUnit);
     glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -170,7 +170,7 @@ void Skybox::draw_equirectangular_on_cubmap(const Shader::HDRI2cubemap& shader, 
     glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDisable(GL_DEPTH_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
+    glViewport(0, 0, SRC_WIDTH, util::Globals::camera.height());
 }
 
 void Skybox::draw_irradiancemap(const Shader::Cubemap2Irradiance& shader, const glm::mat4& view, GLuint cubemap_unit, GLuint fbo) const
@@ -191,7 +191,7 @@ void Skybox::draw_irradiancemap(const Shader::Cubemap2Irradiance& shader, const 
     glBindVertexArray(0);
     glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     glDisable(GL_DEPTH_TEST);
-    glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
+    glViewport(0, 0, SRC_WIDTH, util::Globals::camera.height());
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -213,7 +213,7 @@ void Skybox::prefilt_cubemap(const Shader::CubemapPrefilter& shader, const glm::
     glDisable(GL_DEPTH_TEST);
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
+    glViewport(0, 0, SRC_WIDTH, util::Globals::camera.height());
 }
 
 void Skybox::BRDF_LUT_intergral(const Shader::CubemapBRDFIntergral& shader, GLuint fbo, GLsizei width, 
@@ -254,7 +254,7 @@ void Skybox::BRDF_LUT_intergral(const Shader::CubemapBRDFIntergral& shader, GLui
     glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
 
     glDisable(GL_DEPTH_TEST);
-    glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
+    glViewport(0, 0, SRC_WIDTH, util::Globals::camera.height());
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -274,7 +274,7 @@ void Skybox::set_uniforms(const char* name, const Camera& camera, GLuint program
     std::string affect_scene = std::string(name) + ".affect_scene";
     if(util::Globals::skybox)
     {
-        Skybox* skybox = Skybox::get_instance();
+        Skybox* skybox = Skybox::getInstance();
         util::set_int(irradiance_cubemap.c_str(), skybox->irradiancemap_unit(), program);
         util::set_int(prefiltered_cubemap.c_str(), skybox->prefilteredmap_unit(), program);
         util::set_int(BRDF_LUT.c_str(), skybox->BRDF_LUT_unit(), program);

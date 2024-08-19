@@ -64,12 +64,12 @@ void Model::log_texture_info()
     std::cout << std::endl;
 }
 
-void Model::draw_normals(const Shader::Normal& normal_shader, const Camera& camera) const
+void Model::drawNormals(const Shader::Normal& normal_shader, const Camera& camera) const
 {
     for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->forwardNormals(normal_shader, camera, m_model_mat);
 }
 
-void Model::draw_tangent(const Shader::TangentNormal &tangent_shader, const Camera &camera) const
+void Model::drawTangent(const Shader::TangentNormal &tangent_shader, const Camera &camera) const
 {
     for(const std::shared_ptr<Mesh>& mesh: m_meshes) mesh->forwardTangent(tangent_shader, camera, m_model_mat);
 }
@@ -96,7 +96,7 @@ void Model::clear_model()
     directory.clear();
 }
 
-void Model::rm_texture(const Texture& texture)
+void Model::rmTexture(const Texture& texture)
 {
     auto it = loaded_textures.find(texture.texName);
     if(it == loaded_textures.end()) return;
@@ -140,7 +140,7 @@ Material* Model::process_material(aiMaterial* material)
         normal_textures,
         displacement_textures,
         metalic_textures,
-        util::Globals::pbr_mat ? Mat_type::PBR : Mat_type::Blinn_Phong);
+        util::Globals::pbrMat ? Mat_type::PBR : Mat_type::Blinn_Phong);
     
     if(diffuse_textures.empty())
     {
@@ -295,17 +295,17 @@ void Model::switch_mat_type(Mat_type new_type)
         mesh->switch_mat_type(new_type);
 }
 
-void Model::set_blend(bool isblend)
+void Model::setBlend(bool isblend)
 {
     for(std::shared_ptr<Mesh>& mesh: m_meshes) mesh->set_blend(isblend);
 }
 
-void Model::set_cullface(bool iscull)
+void Model::setCullface(bool iscull)
 {
     for(std::shared_ptr<Mesh>& mesh: m_meshes) mesh->set_cullface(iscull);
 }
 
-void Model::draw(const Shader::ObjectShader& model_shader, const Camera& camera, GLuint fbo) const
+void Model::foward(const Shader::ObjectShader& model_shader, const Camera& camera, GLuint fbo) const
 {
     // This is not a good ideal to solve blending problem, but temporarily works
     std::map<float, const Mesh*> blend_mesh;
@@ -343,10 +343,10 @@ void Model::transparentPass(const Shader::TransparentWBPBR &shader, const Camera
     assert(shader.shaderName() == "./shader/transparentWBPBR");
 
     // Dump depth information from GBuffer pass to transparentFBO
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBOManager::FBOData::windows_sized_fbos["Gemometry fbo"].fbo);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, FBOManager::FBOData::windowsSizeFBOs["GemometryFBO"].fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-    glBlitFramebuffer(0, 0, util::Globals::camera.width(), util::Globals::camera.height(), 
-        0, 0, util::Globals::camera.width(), util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+    glBlitFramebuffer(0, 0, SRC_WIDTH, util::Globals::camera.height(), 
+        0, 0, SRC_WIDTH, util::Globals::camera.height(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         
     for(const std::shared_ptr<Mesh>& mesh: m_transparentMeshes)
         mesh->transparentPass(shader, camera, m_model_mat, fbo);
@@ -369,7 +369,7 @@ void Model::reload(const std::string new_path)
     std::cout << "Model loaded, time:" << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms.\n";
 }
 
-void Model::draw_outline(const Shader::SingleColor& single_color, const Camera& camera) const
+void Model::drawOutline(const Shader::SingleColor& single_color, const Camera& camera) const
 {
     for(const std::shared_ptr<Mesh>& mesh: m_meshes) if(mesh->is_outline()) mesh->draw_outline(single_color, camera, glm::scale(m_model_mat, glm::vec3(1.008f)));
     glClear(GL_STENCIL_BUFFER_BIT);
@@ -381,7 +381,7 @@ void Model::set_outline(bool isoutline)
         mesh->set_outline(isoutline);
 }
 
-void Model::draw_depthmaps(const Shader::CascadeMap& cascade_shader, const Shader::DepthCubemap& depth_cube_shader) const
+void Model::depthmapPass(const Shader::CascadeMap& cascade_shader, const Shader::DepthCubemap& depth_cube_shader) const
 {
     assert(cascade_shader.shaderName() == "./shader/cascadeMap");
     assert(depth_cube_shader.shaderName() == "./shader/depthCubemap");
@@ -408,7 +408,7 @@ void Model::draw_depthmaps(const Shader::CascadeMap& cascade_shader, const Shade
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, util::Globals::camera.width(), util::Globals::camera.height());
+    glViewport(0, 0, SRC_WIDTH, util::Globals::camera.height());
     glDisable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 }

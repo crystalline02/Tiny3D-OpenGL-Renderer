@@ -42,21 +42,21 @@ m_opacity(1.f), m_shinness(32), m_normal_stength(1.f), m_type(mat_type)
 Material::~Material()
 {
     for(Texture& texture : m_diffuse_textures)
-        Model::rm_texture(texture);
+        Model::rmTexture(texture);
     for(Texture& texture : m_specular_textures)
-        Model::rm_texture(texture);
+        Model::rmTexture(texture);
     for(Texture& texture : m_ambient_textures)
-        Model::rm_texture(texture);
+        Model::rmTexture(texture);
     for(Texture& texture : m_opacity_textures)
-        Model::rm_texture(texture);
+        Model::rmTexture(texture);
     for(Texture& texture : m_normal_textures)
-        Model::rm_texture(texture);
+        Model::rmTexture(texture);
     for(Texture& texture : m_displacement_textures)
-        Model::rm_texture(texture);
+        Model::rmTexture(texture);
     for(Texture& texture : m_metalic_textures)
-        Model::rm_texture(texture);
+        Model::rmTexture(texture);
     for(Texture& texture : m_roughness_textures)
-        Model::rm_texture(texture);
+        Model::rmTexture(texture);
 }
 
 void Material::set_uniforms(const char* name, GLint program) const

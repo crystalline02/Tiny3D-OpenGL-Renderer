@@ -24,11 +24,17 @@ layout(std140, Binding = 0) uniform Matrices
     mat4 projection;
 };
 
+layout(std140, Binding = 3) uniform JitterVec
+{
+    vec2 jitter;
+};
+
 void main()
 {
     for(int i = 0; i < 3; ++i)
     {
-        gl_Position = projection * view * gl_in[i].gl_Position;
+        vec4 clipPos = projection * view * gl_in[i].gl_Position;  // world->clip
+        gl_Position = clipPos + vec4(jitter, 0.f, 0.f) * clipPos.w; 
         gsOut.fragPosition = gl_in[i].gl_Position;  // world;
         gsOut.fragNormal = normalize(gsIn[i].normal);  // world;
         gsOut.textureCoord = gsIn[i].textureCoord;  // uv

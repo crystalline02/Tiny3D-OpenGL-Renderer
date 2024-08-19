@@ -20,7 +20,7 @@ CharacterRender* CharacterRender::getInstance()
 
 CharacterRender::CharacterRender()
 {
-    m_projection = glm::ortho<float>(0.f, util::Globals::camera.width(), 0.f, util::Globals::camera.height());
+    m_projection = glm::ortho<float>(0.f, SRC_WIDTH, 0.f, util::Globals::camera.height());
 }
 
 void CharacterRender::set_projection(int window_w, int window_h)
@@ -57,7 +57,7 @@ void CharacterRender::render_text(const Shader::TextShader& shader, std::string 
         };
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 6 * 4, data);
         glEnableVertexAttribArray(0);
-        shader.set_uniforms(m_projection, color, ch.texture.texUnit);
+        shader.setUniforms(m_projection, color, ch.texture.texUnit);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         x += (ch.advance >> 6) * scale;
     }

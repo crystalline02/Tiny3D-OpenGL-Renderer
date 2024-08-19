@@ -1,5 +1,7 @@
 #version 460 core
 in vec2 texture_coord;
+
+// sceneFBO
 layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 BrightColor;
 
@@ -89,6 +91,7 @@ uniform float cascade_levels[10];
 uniform int cascade_count;
 uniform float threshold;
 uniform bool ssao;
+uniform bool bloom;
 
 vec3 caculate_point_light(Point_light light);
 vec3 caculate_spot_light(Spot_light light);
@@ -117,7 +120,7 @@ vec3 gamma_correct(vec3 color);
 void main()
 {
     // frag_alpha很小表示这个fragment根本就没有GBuffer信息，就不要做lighting了
-    if(frag_alpha <= 0.0001f) discard;
+    if(frag_alpha <= 1e-4f) discard;
     vec3 result = vec3(0.f), ambient = vec3(0.f);
     for(int i = 0; i < point_lights_count; ++i)
     {
@@ -135,11 +138,16 @@ void main()
         result += caculate_spot_light(spot_lights[i]);
     } 
     result += ambient;
+    result = max(result, vec3(0.f));
     result -= ssao ? (1.f - occulsion) * 0.15f : 0.f;
     result = gamma_correct(result);
     FragColor = vec4(result, 1.f);
-    if(dot(result, vec3(0.2126f, 0.7152f, 0.0722f)) < threshold) BrightColor = vec4(0.f);
-    else BrightColor = vec4(result, 1.f);
+
+    if(!bloom || dot(result, vec3(0.2126f, 0.7152f, 0.0722f)) < threshold)
+        BrightColor = vec4(vec3(0.f), 1.f);
+    else 
+        BrightColor = vec4(result, 1.f);
+    
 }
 
 vec3 caculate_point_light(Point_light light)

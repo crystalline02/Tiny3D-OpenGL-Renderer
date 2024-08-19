@@ -40,7 +40,7 @@ public:
     GLuint irradiancemap_unit() const;
     GLuint prefilteredmap_unit() const;
     GLuint BRDF_LUT_unit() const;
-    static Skybox* get_instance();
+    static Skybox* getInstance();
     static void set_uniforms(const char* name, const Camera& camera, GLuint program);
 private:
     Skybox();
@@ -49,7 +49,7 @@ private:
     }
 private:
     GLuint VAO, VBO;
-    Texture *m_tex_cubemap, *m_tex_diffuseirrad, *m_tex_prefilter, *m_BRDF_LUT;
+    Texture *m_cubemapTex, *m_tex_diffuseirrad, *m_tex_prefilter, *m_BRDF_LUT;
     bool m_affect_scene;
     float m_intensity;
     std::vector<std::string> m_directories;

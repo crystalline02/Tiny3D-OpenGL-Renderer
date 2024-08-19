@@ -9,6 +9,7 @@ out VS_OUT
 {
     vec3 normal;  // world space
     vec3 tangent;  // world space
+    vec3 positionPrev;  // world space
     vec2 texture_coord;
 } vs_out;
 

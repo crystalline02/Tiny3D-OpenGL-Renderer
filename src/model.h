@@ -43,29 +43,29 @@ class Model
 public:
     Model(const char *path, const glm::mat4& model = glm::mat4(1.f));
     ~Model();
-    void draw(const Shader::ObjectShader &shader, const Camera& camera, GLuint fbo = 0) const;
+    void foward(const Shader::ObjectShader &shader, const Camera& camera, GLuint fbo = 0) const;
     void gbufferPass(const Shader::GBuffer &shader, const Camera& camera, GLuint fbo);
     void transparentPass(const Shader::TransparentWBPBR &shader, const Camera& camera, GLuint fbo);
     void compositePass() const;
-    void draw_normals(const Shader::Normal &shader, const Camera &camera) const;
-    void draw_tangent(const Shader::TangentNormal &shader, const Camera &camera) const;
-    void draw_outline(const Shader::SingleColor &shader, const Camera &camera) const;
-    void draw_depthmaps(const Shader::CascadeMap &shader_cascade, const Shader::DepthCubemap &shader_depthcube) const;
+    void drawNormals(const Shader::Normal &shader, const Camera &camera) const;
+    void drawTangent(const Shader::TangentNormal &shader, const Camera &camera) const;
+    void drawOutline(const Shader::SingleColor &shader, const Camera &camera) const;
+    void depthmapPass(const Shader::CascadeMap &shader_cascade, const Shader::DepthCubemap &shader_depthcube) const;
     void reload(const std::string new_path);
     static void log_texture_info();
     static void switch_model(Model &model);
     static Texture getTexture(const char* texname);
     static GLuint fetchNewTexunit();
     static void add_texture(const char* name, const Texture& texture);
-    static void rm_texture(const Texture& texture);
+    static void rmTexture(const Texture& texture);
     inline static void set_selected(GLuint ind) { new_selected_ind = ind; }
     inline void set_model(glm::mat4 model) { m_model_mat = model; }
     inline static std::vector<std::string> all_models() { return model_dirs; }
     inline static unsigned int seleted_model() { return selected_ind; }
     void switch_mat_type(Mat_type new_type);
-    void set_blend(bool isblend);
+    void setBlend(bool isblend);
     void set_outline(bool isoutline);
-    void set_cullface(bool iscull);
+    void setCullface(bool iscull);
 private:
     void load_model(std::string path);
     void clear_model();

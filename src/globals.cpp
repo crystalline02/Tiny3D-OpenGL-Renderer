@@ -9,6 +9,7 @@
 #include "quad.h"
 #include "material.h"
 #include "fboManager.h"
+#include "TAAManager.h"
 
 #include <chrono>
 #include <memory>
@@ -22,29 +23,31 @@
 */
 bool util::Globals::first_mouse = true,
     util::Globals::blend = false,
-    util::Globals::cull_face = false,
+    util::Globals::cullFace = false,
     util::Globals::skybox = false,
-    util::Globals::visualize_normal = false,
-    util::Globals::visualize_tangent = false,
+    util::Globals::visualizeNormal = false,
+    util::Globals::visualizeTangent = false,
     util::Globals::wireframe = false,
     util::Globals::hdr = false,
     util::Globals::bloom = false,
-    util::Globals::deferred_rendering = false,
+    util::Globals::deferred = true,
     util::Globals::SSAO = false,
-    util::Globals::pbr_mat = true;
+    util::Globals::pbrMat = true;
 double util::Globals::last_xpos = 0.f,
     util::Globals::last_ypos = 0.f,
-    util::Globals::delta_time = 0.f,
-    util::Globals::last_time = 0.f;
+    util::Globals::deltaTime = 0.f,
+    util::Globals::lastTime = 0.f;
 float util::Globals::normal_magnitude = 0.2f,
     util::Globals::tangent_magnitude = 0.2f,
     util::Globals::shadow_bias = 0.0005f,
     util::Globals::exposure = 1.f,
     util::Globals::threshold = 1.f,
-    util::Globals::ssao_radius = 0.15f;
+    util::Globals::ssaoRadius = 0.15f;
 int util::Globals::cascade_size = 1024,
-    util::Globals::cubemap_size = 1024;
-GLuint util::Globals::blur_brightimage_unit;
+    util::Globals::cubemap_size = 1024,
+    util::Globals::frameIndexMod16 = 0;
+GLuint util::Globals::blurBrightImageUnit,
+    util::Globals::deferedFrameIndex = 0;
 
 // Camera util::Globals::camera(1920, 1080, glm::vec3(0.f, 2.f, 6.f), -90.f, 0.f, 45.f, 0.1f, 100.f, glm::vec3(0.f, 1.f, 0.f));
 Camera util::Globals::camera = Camera(1920, 1080, glm::vec3(0.f), 4.f);
@@ -90,6 +93,7 @@ void util::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
     CharacterRender::getInstance()->set_projection(width, height);
     FBOManager::regenWindowFBOs();
+    TAAManager::matchJitterVec(Globals::camera);
 }
 
 void util::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -114,17 +118,17 @@ void util::process_input(GLFWwindow* window)
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, 1);
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		Globals::camera.reaction_W(Globals::delta_time);
+		Globals::camera.reaction_W(Globals::deltaTime);
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		Globals::camera.reaction_S(Globals::delta_time);
+		Globals::camera.reaction_S(Globals::deltaTime);
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		Globals::camera.reaction_A(Globals::delta_time);
+		Globals::camera.reaction_A(Globals::deltaTime);
 	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		Globals::camera.reaction_D(Globals::delta_time);
+		Globals::camera.reaction_D(Globals::deltaTime);
 	if(glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		Globals::camera.reaction_Q(Globals::delta_time);
+		Globals::camera.reaction_Q(Globals::deltaTime);
 	if(glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-		Globals::camera.reaction_E(Globals::delta_time);
+		Globals::camera.reaction_E(Globals::deltaTime);
 }
 
 void APIENTRY util::debugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
@@ -406,7 +410,7 @@ void util::createCubemap(const char* hdri_path, Texture& hdri_cubemap_texture, T
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
             hdri_cubemap_texture.texBuffer, 0);
         util::checkFrameBufferInComplete("HDRI2CubemapFbo");
-        Skybox::get_instance()->draw_equirectangular_on_cubmap(*Shader::HDRI2cubemap::get_instance(), views[i],
+        Skybox::getInstance()->draw_equirectangular_on_cubmap(*Shader::HDRI2cubemap::getInstance(), views[i],
             hdri_texture.texUnit, hdri2cubemap_fbo);
     }
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
@@ -415,7 +419,7 @@ void util::createCubemap(const char* hdri_path, Texture& hdri_cubemap_texture, T
     glActiveTexture(GL_TEXTURE0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
-    Model::rm_texture(hdri_texture);  // hdir texture is no longer needed, remove it from current program
+    Model::rmTexture(hdri_texture);  // hdir texture is no longer needed, remove it from current program
 
     // create diffuse irradiance map for this hdircubemap
     util::create_diffuse_irrad(hdri_cubemap_texture, diffuse_irrad_texture);
@@ -473,7 +477,7 @@ void util::create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irr
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
             diffuse_irrad_tex.texBuffer, 0);
         assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-        Skybox::get_instance()->draw_irradiancemap(*Shader::Cubemap2Irradiance::get_instance(), views[i],
+        Skybox::getInstance()->draw_irradiancemap(*Shader::Cubemap2Irradiance::getInstance(), views[i],
             cubemap_tex.texUnit, cubemap2irradiance_fbo);
     }
 
@@ -541,7 +545,7 @@ void util::create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefilte
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                 prefiltered_envmap.texBuffer, mip);
             assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-            Skybox::get_instance()->prefilt_cubemap(*Shader::CubemapPrefilter::get_instance(),
+            Skybox::getInstance()->prefilt_cubemap(*Shader::CubemapPrefilter::getInstance(),
                 views[i],
                 roughness,
                 cubemap_tex.texUnit,
@@ -596,7 +600,7 @@ void util::create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, BRDF_LUT.texBuffer, 0);
     assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 
-    Skybox::get_instance()->BRDF_LUT_intergral(*Shader::CubemapBRDFIntergral::getInstance(), 
+    Skybox::getInstance()->BRDF_LUT_intergral(*Shader::CubemapBRDFIntergral::getInstance(), 
         brdf_intergral_fbo, 512, 512);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -609,7 +613,7 @@ void util::create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT)
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " ms\n";
 }
 
-void util::imgui_design(Model& model)
+void util::ImGUIDesign(Model& model)
 {
     ImGui::Begin("Settings");
 	ImGui::ColorEdit3("Backgroud", glm::value_ptr(Globals::bg_color));
@@ -643,7 +647,7 @@ void util::imgui_design(Model& model)
 		if(ImGui::CollapsingHeader(block_name))
 		{
 			ImGui::PushID(i);
-			ImGui::ColorEdit3("color", &light->color_ptr());
+			ImGui::ColorEdit3("color", &light->colorPtr());
             switch (light->type())
             {
             case Light_type::POINT:
@@ -683,9 +687,9 @@ void util::imgui_design(Model& model)
         ImGui::Checkbox("skybox", &Globals::skybox);
         if(Globals::skybox)
         {
-            ImGui::SliderFloat("stength", &Skybox::get_instance()->intensity_ptr(), 0.f, 10.f);
+            ImGui::SliderFloat("stength", &Skybox::getInstance()->intensity_ptr(), 0.f, 10.f);
 
-            Skybox* skybox = Skybox::get_instance();
+            Skybox* skybox = Skybox::getInstance();
             bool affect_scene = skybox->affect_scene();
             ImGui::Checkbox("affect", &affect_scene);
             skybox->set_affect_scene(affect_scene);
@@ -703,7 +707,7 @@ void util::imgui_design(Model& model)
     if(ImGui::CollapsingHeader("material"))
     {
         std::vector<std::string> mat_type_string = {"blinn phong", "PBR"};
-        if(ImGui::BeginCombo("type", mat_type_string[Globals::pbr_mat].c_str()))
+        if(ImGui::BeginCombo("type", mat_type_string[Globals::pbrMat].c_str()))
         {
             for(int i = 0; i < mat_type_string.size(); ++i)
             {
@@ -712,12 +716,12 @@ void util::imgui_design(Model& model)
                     Mat_type new_type;
                     if(i == 0)
                     {
-                        Globals::pbr_mat = false;
+                        Globals::pbrMat = false;
                         new_type = Mat_type::Blinn_Phong;
                     }
                     else if (i == 1)
                     {
-                        Globals::pbr_mat = true;
+                        Globals::pbrMat = true;
                         new_type = Mat_type::PBR;
                     }
                     model.switch_mat_type(new_type);
@@ -751,16 +755,16 @@ void util::imgui_design(Model& model)
                 Model::set_selected(i);
         ImGui::EndCombo();
     }
-    ImGui::Checkbox("normal", &Globals::visualize_normal);
-    if(Globals::visualize_normal)
+    ImGui::Checkbox("normal", &Globals::visualizeNormal);
+    if(Globals::visualizeNormal)
     {
         ImGui::SameLine();
         ImGui::PushID("normal_length");
         ImGui::SliderFloat("length", &Globals::normal_magnitude, 0.01f, .5f, "%.3f");
         ImGui::PopID();
     }
-    ImGui::Checkbox("tangent", &Globals::visualize_tangent);
-    if(Globals::visualize_tangent)
+    ImGui::Checkbox("tangent", &Globals::visualizeTangent);
+    if(Globals::visualizeTangent)
     {
         ImGui::SameLine();
         ImGui::PushID("tangent_length");
@@ -796,28 +800,32 @@ void util::imgui_design(Model& model)
         }
         ImGui::EndCombo();
     }
-    ImGui::Checkbox("deferred rendering(experimental)", &Globals::deferred_rendering);
-    if(Globals::deferred_rendering)
+    bool isDeferedOld = Globals::deferred;
+    ImGui::Checkbox("deferred rendering(experimental)", &Globals::deferred);
+    if(Globals::deferred)
     {
+        // false->true
+        if(Globals::deferred != isDeferedOld) Globals::deferedFrameIndex = 0;
         ImGui::Checkbox("SSAO", &Globals::SSAO);
         if(Globals::SSAO)
         {
             ImGui::SameLine();
-            ImGui::SliderFloat("radius", &Globals::ssao_radius, 0.01f, 0.3f);
+            ImGui::SliderFloat("radius", &Globals::ssaoRadius, 0.01f, 0.3f);
         }
     }
+
     ImGui::Checkbox("wireframe", &Globals::wireframe);
 	ImGui::Checkbox("blend", &Globals::blend);
-	ImGui::Checkbox("cull face", &Globals::cull_face);
+	ImGui::Checkbox("cull face", &Globals::cullFace);
 	ImGui::End();
 
     // render text onto the screen
-    Shader::TextShader* text_shader = Shader::TextShader::get_instance();
+    Shader::TextShader* text_shader = Shader::TextShader::getInstance();
     CharacterRender* rc = CharacterRender::getInstance();
     static int fps = 0;
     double current_time = glfwGetTime();
     if(std::abs(current_time - std::round(current_time)) < 0.01)
-        fps = (1.0 / Globals::delta_time);
+        fps = (1.0 / Globals::deltaTime);
     rc->render_text(*text_shader, "FPS: " + std::to_string(fps), 
         Globals::camera.width() - 135, 
         Globals::camera.height() - 40, .65f, {0.f, 1.f, 0.05f});

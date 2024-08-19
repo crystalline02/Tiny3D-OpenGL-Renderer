@@ -15,6 +15,9 @@
 #include "character.h"
 
 
+#define SRC_WIDTH util::Globals::camera.width()
+#define SRC_HEIGHT util::Globals::camera.height()
+
 class Light;
 class Camera;
 class Light_vertices;
@@ -36,14 +39,14 @@ namespace util
 {
     struct Globals
     {
-        static bool first_mouse, blend, cull_face, skybox, visualize_normal, wireframe, visualize_tangent,
-            hdr, bloom, deferred_rendering, SSAO, pbr_mat;
+        static bool first_mouse, blend, cullFace, skybox, visualizeNormal, wireframe, visualizeTangent,
+            hdr, bloom, deferred, SSAO, pbrMat;
         static double last_xpos, last_ypos;
-        static int cascade_size, cubemap_size;
-        static GLuint blur_brightimage_unit;
+        static int cascade_size, cubemap_size, frameIndexMod16;
+        static GLuint blurBrightImageUnit, deferedFrameIndex;
         static Camera camera;
-        static double delta_time, last_time;
-        static float normal_magnitude, shadow_bias, tangent_magnitude, exposure, threshold, ssao_radius;
+        static double deltaTime, lastTime;
+        static float normal_magnitude, shadow_bias, tangent_magnitude, exposure, threshold, ssaoRadius;
         static glm::vec3 bg_color;
         static std::vector<float> cascade_levels;
     };
@@ -166,7 +169,7 @@ namespace util
     void create_diffuse_irrad(const Texture& cubemap_tex, Texture& diffuse_irrad_tex);
     void create_prefilter_envmap(const Texture& cubemap_tex, Texture& prefiltered_envmap);
     void create_BRDF_intergral(const Texture& cubemap_tex, Texture& BRDF_LUT);
-    void imgui_design(Model &model);
+    void ImGUIDesign(Model &model);
     std::array<glm::vec3, 64> get_ssao_samples();
     std::array<glm::vec3, 8> get_frustum_corner_world(const Camera& camera, float near, float far);
 }
